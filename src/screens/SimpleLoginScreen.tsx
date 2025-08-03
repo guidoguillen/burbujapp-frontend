@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, StyleSheet, Alert } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Alert,
+} from 'react-native';
 
-export default function App() {
+const SimpleLoginScreen = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -16,7 +21,6 @@ export default function App() {
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
       <View style={styles.content}>
         <Text style={styles.title}>🫧 BurbujaApp</Text>
         <Text style={styles.subtitle}>Iniciar Sesión</Text>
@@ -51,7 +55,7 @@ export default function App() {
       </View>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -101,3 +105,5 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 });
+
+export default SimpleLoginScreen;

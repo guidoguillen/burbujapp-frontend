@@ -144,3 +144,42 @@ export const ZIndex = {
   tooltip: 1070,
   toast: 1080,
 };
+
+// Tema principal que combina todo
+export const theme = {
+  colors: {
+    primary: Colors.primary,
+    primaryDark: Colors.primaryDark,
+    primaryLight: Colors.primaryLight,
+    secondary: Colors.secondary,
+    success: Colors.success,
+    warning: Colors.warning,
+    error: Colors.error,
+    info: Colors.info,
+    background: Colors.background,
+    backgroundSecondary: Colors.backgroundSecondary,
+    surface: Colors.surface,
+    text: Colors.text,
+    textSecondary: Colors.textSecondary,
+    textTertiary: Colors.textTertiary,
+    border: Colors.border,
+    borderLight: Colors.borderLight,
+    overlay: Colors.overlay,
+    shadow: Colors.shadow,
+    white: '#FFFFFF',
+    black: '#000000',
+  },
+  spacing: {
+    xs: Spacing.xs,
+    small: Spacing.sm,
+    medium: Spacing.md,
+    large: Spacing.lg,
+    xlarge: Spacing.xl,
+    xxlarge: Spacing.xxl,
+  },
+  typography: Typography,
+  borderRadius: BorderRadius,
+  shadows: Shadows,
+  layout: Layout,
+  zIndex: ZIndex,
+};

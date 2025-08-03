@@ -1,84 +1,21 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { globalStyles } from '../../styles';
-import { Colors, Spacing, BorderRadius } from '../../constants/theme';
+import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
-  size?: 'small' | 'medium' | 'large';
   disabled?: boolean;
-  loading?: boolean;
-  fullWidth?: boolean;
 }
 
-export const Button: React.FC<ButtonProps> = ({
-  title,
-  onPress,
-  variant = 'primary',
-  size = 'medium',
-  disabled = false,
-  loading = false,
-  fullWidth = false,
-}) => {
-  const getButtonStyle = () => {
-    const baseStyle: any[] = [styles.button];
-    
-    if (fullWidth) baseStyle.push(styles.fullWidth);
-    
-    switch (variant) {
-      case 'secondary':
-        baseStyle.push(styles.secondary);
-        break;
-      case 'outline':
-        baseStyle.push(styles.outline);
-        break;
-      default:
-        baseStyle.push(styles.primary);
-    }
-    
-    switch (size) {
-      case 'small':
-        baseStyle.push(styles.small);
-        break;
-      case 'large':
-        baseStyle.push(styles.large);
-        break;
-      default:
-        baseStyle.push(styles.medium);
-    }
-    
-    if (disabled || loading) {
-      baseStyle.push(styles.disabled);
-    }
-    
-    return baseStyle;
-  };
-
-  const getTextStyle = () => {
-    const baseStyle: any[] = [styles.text];
-    
-    switch (variant) {
-      case 'outline':
-        baseStyle.push(styles.outlineText);
-        break;
-      default:
-        baseStyle.push(styles.primaryText);
-    }
-    
-    return baseStyle;
-  };
-
+const Button = ({ title, onPress, disabled = false }: ButtonProps) => {
   return (
     <TouchableOpacity
-      style={getButtonStyle()}
+      style={[styles.button, disabled && styles.buttonDisabled]}
       onPress={onPress}
-      disabled={disabled || loading}
-      activeOpacity={0.7}
+      disabled={disabled}
     >
-      <Text style={getTextStyle()}>
-        {loading ? 'Cargando...' : title}
+      <Text style={[styles.buttonText, disabled && styles.buttonTextDisabled]}>
+        {title}
       </Text>
     </TouchableOpacity>
   );
@@ -86,65 +23,25 @@ export const Button: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    borderRadius: BorderRadius.md,
+    backgroundColor: '#007AFF',
+    paddingVertical: 15,
+    paddingHorizontal: 30,
+    borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
+    minHeight: 50,
   },
-  
-  // Variantes
-  primary: {
-    backgroundColor: Colors.primary,
+  buttonDisabled: {
+    backgroundColor: '#cccccc',
   },
-  
-  secondary: {
-    backgroundColor: Colors.secondary,
-  },
-  
-  outline: {
-    backgroundColor: 'transparent',
-    borderWidth: 1,
-    borderColor: Colors.primary,
-  },
-  
-  // Tamaños
-  small: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    minHeight: 36,
-  },
-  
-  medium: {
-    paddingVertical: Spacing.md,
-    paddingHorizontal: Spacing.lg,
-    minHeight: 48,
-  },
-  
-  large: {
-    paddingVertical: Spacing.lg,
-    paddingHorizontal: Spacing.xl,
-    minHeight: 56,
-  },
-  
-  // Estados
-  disabled: {
-    opacity: 0.5,
-  },
-  
-  fullWidth: {
-    width: '100%',
-  },
-  
-  // Texto
-  text: {
-    fontWeight: '600',
+  buttonText: {
+    color: '#FFFFFF',
     fontSize: 16,
+    fontWeight: '600',
   },
-  
-  primaryText: {
-    color: 'white',
-  },
-  
-  outlineText: {
-    color: Colors.primary,
+  buttonTextDisabled: {
+    color: '#666666',
   },
 });
+
+export default Button;
