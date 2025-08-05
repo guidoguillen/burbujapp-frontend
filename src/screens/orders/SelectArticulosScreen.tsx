@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Modal, Animated } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Modal, Animated, Keyboard } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -228,6 +228,7 @@ export const SelectArticulosScreen: React.FC = () => {
   }, [busquedaArticulo]);
 
   const handleSeleccionarArticulo = (articulo: typeof articulosMock[0]) => {
+    Keyboard.dismiss(); // Ocultar el teclado automáticamente
     setArticuloActual(prev => ({
       ...prev,
       nombre: articulo.nombre,
@@ -239,18 +240,41 @@ export const SelectArticulosScreen: React.FC = () => {
   };
 
   const handleCrearNuevoArticulo = () => {
+    // Sugerir precio basado en el tipo de servicio por defecto (lavado)
+    const precioSugerido = 5; // Precio base para lavado
+    
+    Keyboard.dismiss(); // Ocultar el teclado automáticamente
     setArticuloActual(prev => ({
       ...prev,
       nombre: busquedaArticulo,
-      precio: 0
+      precio: precioSugerido
     }));
     setMostrarFormulario(true);
     setMostrarDropdown(false);
   };
 
   const handleAgregarAlCarrito = () => {
-    if (!articuloActual.nombre || articuloActual.cantidad <= 0 || articuloActual.precio <= 0) {
-      Alert.alert('Error', 'Completa todos los campos requeridos');
+    // Validaciones específicas con mensajes mejores
+    if (!articuloActual.nombre.trim()) {
+      Alert.alert('📝 Nombre del artículo', 'Por favor ingresa el nombre del artículo');
+      return;
+    }
+    
+    if (articuloActual.cantidad <= 0) {
+      Alert.alert('📦 Cantidad', 'La cantidad debe ser mayor a 0');
+      return;
+    }
+    
+    if (articuloActual.precio <= 0) {
+      Alert.alert('� Seleccionar precio', 'Por favor elige un precio para continuar', [
+        { text: 'Cancelar' },
+        { 
+          text: 'Usar $5', 
+          onPress: () => {
+            setArticuloActual(prev => ({ ...prev, precio: 5 }));
+          }
+        }
+      ]);
       return;
     }
 
@@ -261,13 +285,13 @@ export const SelectArticulosScreen: React.FC = () => {
 
     setArticulos(prev => [...prev, nuevoArticulo]);
 
-    // Resetear formulario
+    // Resetear formulario con precio sugerido
     setArticuloActual({
       nombre: '',
       tipoServicio: 'lavado',
       unidadCobro: 'unidad',
       cantidad: 1,
-      precio: 0
+      precio: 5 // Precio sugerido por defecto
     });
     setBusquedaArticulo('');
     setMostrarFormulario(false);
@@ -299,6 +323,27 @@ export const SelectArticulosScreen: React.FC = () => {
     setBusquedaArticulo('');
     setMostrarFormulario(true);
     setModalVisible(true);
+  };
+
+  const handleCambiarTipoServicio = (tipoServicio: 'lavado' | 'planchado' | 'otros') => {
+    let precioSugerido = articuloActual.precio;
+    
+    // Solo cambiar precio si está en 0 o si es la primera vez que selecciona
+    if (articuloActual.precio === 0) {
+      if (tipoServicio === 'lavado') {
+        precioSugerido = 5;
+      } else if (tipoServicio === 'planchado') {
+        precioSugerido = 4;
+      } else {
+        precioSugerido = 10;
+      }
+    }
+    
+    setArticuloActual(prev => ({ 
+      ...prev, 
+      tipoServicio,
+      precio: precioSugerido
+    }));
   };
 
   const calcularSubtotal = (articulo: Articulo) => {
@@ -483,7 +528,10 @@ export const SelectArticulosScreen: React.FC = () => {
                   onChangeText={setBusquedaArticulo}
                 />
                 {busquedaArticulo.length > 0 && (
-                  <TouchableOpacity onPress={() => setBusquedaArticulo('')}>
+                  <TouchableOpacity onPress={() => {
+                    setBusquedaArticulo('');
+                    Keyboard.dismiss();
+                  }}>
                     <MaterialCommunityIcons name="close" size={20} color="#6B7280" />
                   </TouchableOpacity>
                 )}
@@ -543,10 +591,7 @@ export const SelectArticulosScreen: React.FC = () => {
                           styles.servicioBtn,
                           articuloActual.tipoServicio === servicio.id && styles.servicioBtnActive
                         ]}
-                        onPress={() => setArticuloActual(prev => ({ 
-                          ...prev, 
-                          tipoServicio: servicio.id as any 
-                        }))}
+                        onPress={() => handleCambiarTipoServicio(servicio.id as any)}
                       >
                         <MaterialCommunityIcons
                           name={servicio.icon as any}
@@ -654,9 +699,25 @@ export const SelectArticulosScreen: React.FC = () => {
                       >
                         <MaterialCommunityIcons name="minus" size={16} color="#6B7280" />
                       </TouchableOpacity>
-                      <View style={styles.priceDisplay}>
+                      <View style={[
+                        styles.priceDisplay,
+                        articuloActual.precio === 0 && styles.priceDisplaySuggestion
+                      ]}>
                         <Text style={styles.priceSymbol}>$</Text>
-                        <Text style={styles.priceValue}>{articuloActual.precio.toFixed(2)}</Text>
+                        <Text style={[
+                          styles.priceValue,
+                          articuloActual.precio === 0 && styles.priceValueSuggestion
+                        ]}>
+                          {articuloActual.precio.toFixed(2)}
+                        </Text>
+                        {articuloActual.precio === 0 && (
+                          <MaterialCommunityIcons 
+                            name="lightbulb-outline" 
+                            size={16} 
+                            color="#F59E0B" 
+                            style={{ marginLeft: 4 }} 
+                          />
+                        )}
                       </View>
                       <TouchableOpacity
                         style={styles.priceBtn}
@@ -669,25 +730,52 @@ export const SelectArticulosScreen: React.FC = () => {
                       </TouchableOpacity>
                     </View>
                     <View style={styles.pricePresets}>
-                      {[5, 10, 15, 20].map((preset) => (
-                        <TouchableOpacity
-                          key={preset}
-                          style={styles.presetBtn}
-                          onPress={() => setArticuloActual(prev => ({ ...prev, precio: preset }))}
-                        >
-                          <Text style={styles.presetText}>${preset}</Text>
-                        </TouchableOpacity>
-                      ))}
+                      {/* Presets inteligentes basados en tipo de servicio */}
+                      {(() => {
+                        let presets = [];
+                        if (articuloActual.tipoServicio === 'lavado') {
+                          presets = [3, 5, 8, 12];
+                        } else if (articuloActual.tipoServicio === 'planchado') {
+                          presets = [2, 4, 6, 10];
+                        } else {
+                          presets = [5, 10, 15, 25];
+                        }
+                        
+                        return presets.map((preset) => (
+                          <TouchableOpacity
+                            key={preset}
+                            style={[
+                              styles.presetBtn,
+                              articuloActual.precio === preset && styles.presetBtnActive
+                            ]}
+                            onPress={() => setArticuloActual(prev => ({ ...prev, precio: preset }))}
+                          >
+                            <Text style={[
+                              styles.presetText,
+                              articuloActual.precio === preset && styles.presetTextActive
+                            ]}>${preset}</Text>
+                          </TouchableOpacity>
+                        ));
+                      })()}
                     </View>
                   </View>
                 </View>
 
                 {/* Total parcial */}
-                <View style={styles.totalParcialContainer}>
+                <View style={[
+                  styles.totalParcialContainer,
+                  articuloActual.precio === 0 && styles.totalParcialSuggestion
+                ]}>
                   <View style={styles.totalParcialInfo}>
                     <Text style={styles.totalParcialLabel}>Subtotal:</Text>
-                    <Text style={styles.totalParcialAmount}>
+                    <Text style={[
+                      styles.totalParcialAmount,
+                      articuloActual.precio === 0 && styles.totalParcialAmountSuggestion
+                    ]}>
                       ${(articuloActual.precio * articuloActual.cantidad).toFixed(2)}
+                      {articuloActual.precio === 0 && (
+                        <Text style={styles.suggestionText}> 💡 Elige un precio arriba</Text>
+                      )}
                     </Text>
                   </View>
                   <Text style={styles.totalParcialDetalle}>
@@ -707,11 +795,21 @@ export const SelectArticulosScreen: React.FC = () => {
                   </TouchableOpacity>
                   
                   <TouchableOpacity
-                    style={styles.agregarBtn}
+                    style={[
+                      styles.agregarBtn,
+                      articuloActual.precio === 0 && styles.agregarBtnDisabled
+                    ]}
                     onPress={handleAgregarAlCarrito}
+                    disabled={articuloActual.precio === 0}
                   >
-                    <MaterialCommunityIcons name="cart-plus" size={20} color="#FFFFFF" />
-                    <Text style={styles.agregarBtnText}>Agregar</Text>
+                    <MaterialCommunityIcons 
+                      name={articuloActual.precio === 0 ? "lightbulb-outline" : "cart-plus"} 
+                      size={20} 
+                      color="#FFFFFF" 
+                    />
+                    <Text style={styles.agregarBtnText}>
+                      {articuloActual.precio === 0 ? 'Elegir Precio' : 'Agregar'}
+                    </Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -1008,6 +1106,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E5E7EB',
   },
+  totalParcialSuggestion: {
+    backgroundColor: '#FFFBEB',
+    borderColor: '#FCD34D',
+  },
   totalParcialInfo: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -1023,6 +1125,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: '#059669',
+  },
+  totalParcialAmountSuggestion: {
+    color: '#D97706',
+  },
+  suggestionText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#92400E',
   },
   totalParcialDetalle: {
     fontSize: 14,
@@ -1055,6 +1165,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#3B82F6',
     gap: 8,
+  },
+  agregarBtnDisabled: {
+    backgroundColor: '#9CA3AF',
+    opacity: 0.6,
   },
   agregarBtnText: {
     fontSize: 16,
@@ -1326,6 +1440,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingVertical: 8,
   },
+  priceDisplaySuggestion: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#F59E0B',
+  },
   priceSymbol: {
     fontSize: 16,
     fontWeight: '600',
@@ -1336,6 +1456,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#1F2937',
+  },
+  priceValueSuggestion: {
+    color: '#D97706',
   },
   pricePresets: {
     flexDirection: 'row',
@@ -1350,9 +1473,15 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     alignItems: 'center',
   },
+  presetBtnActive: {
+    backgroundColor: '#059669',
+  },
   presetText: {
     fontSize: 12,
     fontWeight: '500',
     color: '#374151',
+  },
+  presetTextActive: {
+    color: '#FFFFFF',
   },
 });
