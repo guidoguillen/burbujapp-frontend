@@ -88,6 +88,7 @@ export type RootStackParamList = {
     total: number;
   };
   MisOrdenes: undefined;
+  DetalleOrden: { ordenId: string };
   Turnos: undefined;
   Turno: undefined;
   HistorialTurnos: undefined;

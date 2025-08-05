@@ -3,8 +3,8 @@
     "updates": {
       "enabled": false
     },
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "BurbujaApp",
+    "slug": "burbuja-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -16,17 +16,26 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.burbuja.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.burbuja.app",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f7106d70-c6a5-4ab3-97c8-e87bdecd3bc8"
+      }
+    },
+    "owner": "guido.guillen"
   }
 }
