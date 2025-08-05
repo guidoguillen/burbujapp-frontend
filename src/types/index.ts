@@ -3,7 +3,7 @@ export interface User {
   id: string;
   email: string;
   name: string;
-  role: 'admin' | 'user' | 'manager';
+  role: 'admin' | 'operator' | 'client' | 'user' | 'manager';
   avatar?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -79,6 +79,16 @@ export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
   Dashboard: undefined;
+  NuevaOrden: undefined;
+  SelectCliente: undefined;
+  SelectArticulos: { cliente: { id: string; nombre: string; apellido: string; telefono: string; direccion: string } };
+  ReviewOrden: { 
+    cliente: { id: string; nombre: string; apellido: string; telefono: string; direccion: string };
+    articulos: Array<{ id: string; nombre: string; tipoServicio: string; unidadCobro: string; cantidad: number; precio: number }>;
+    total: number;
+  };
+  MisOrdenes: undefined;
+  Turnos: undefined;
   Clients: undefined;
   ClientDetail: { clientId: string };
   Orders: undefined;

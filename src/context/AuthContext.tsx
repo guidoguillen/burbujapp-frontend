@@ -94,21 +94,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const login = async (email: string, password: string) => {
     dispatch({ type: 'LOGIN_START' });
-    
     try {
-      // Aquí iría la llamada a la API de login
-      // const response = await authService.login(email, password);
-      
-      // Mock user para desarrollo
+      // Usuarios simulados
+      const users = [
+        { username: 'adm', password: '123', role: 'admin' },
+        { username: 'opr', password: '123', role: 'operator' },
+        { username: 'cli', password: '123', role: 'client' },
+      ];
+      const found = users.find(
+        u => u.username === email.trim() && u.password === password.trim()
+      );
+      if (!found) {
+        throw new Error('Usuario o contraseña incorrectos');
+      }
       const mockUser: User = {
         id: '1',
         email,
         name: 'Usuario Demo',
-        role: 'admin',
+        role: found.role as User['role'],
         createdAt: new Date(),
         updatedAt: new Date(),
       };
-      
       dispatch({ type: 'LOGIN_SUCCESS', payload: mockUser });
     } catch (error) {
       dispatch({ 
