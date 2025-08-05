@@ -37,6 +37,13 @@ const clientesMock: Cliente[] = [
     apellido: 'López',
     telefono: '+1122334455',
     direccion: 'Plaza 789, Ciudad'
+  },
+  {
+    id: '4',
+    nombre: 'Gabriel',
+    apellido: 'Molina',
+    telefono: '+59179954303',
+    direccion: 'Plaza 789, Ciudad'
   }
 ];
 

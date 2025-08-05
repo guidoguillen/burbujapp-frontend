@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking, Share } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -6,6 +6,8 @@ import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
+import ViewShot from 'react-native-view-shot';
+import * as FileSystem from 'expo-file-system';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'ReviewOrden'>;
 type RoutePropType = RouteProp<RootStackParamList, 'ReviewOrden'>;
@@ -24,6 +26,7 @@ export const ReviewOrdenScreen: React.FC = () => {
   const [ordenCreada, setOrdenCreada] = useState(false);
   const [codigoOrden, setCodigoOrden] = useState('');
   const [qrValue, setQrValue] = useState('');
+  const qrRef = useRef<ViewShot>(null);
 
   const generateOrdenCode = () => {
     const timestamp = new Date().getTime();
@@ -55,6 +58,19 @@ export const ReviewOrdenScreen: React.FC = () => {
 
   const handleCompartirWhatsApp = async () => {
     try {
+      let qrImageUri = null;
+      
+      // Intentar capturar el QR como imagen
+      try {
+        if (qrRef.current && qrRef.current.capture) {
+          console.log('🎯 Intentando capturar QR...');
+          qrImageUri = await qrRef.current.capture();
+          console.log('✅ QR capturado exitosamente:', qrImageUri);
+        }
+      } catch (qrError) {
+        console.log('❌ Error capturando QR:', qrError);
+      }
+
       // Crear resumen detallado de artículos
       const articulosResumen = articulos.map((articulo, index) => {
         const servicio = tiposServicio.find(s => s.id === articulo.tipoServicio)?.label || 'Servicio';
@@ -78,7 +94,7 @@ Tu orden ha sido creada exitosamente:
 📋 *Código:* ${codigoOrden}
 📅 *Fecha:* ${fecha}
 👤 *Cliente:* ${cliente.nombre} ${cliente.apellido}
-� *Teléfono:* ${cliente.telefono}
+📞 *Teléfono:* ${cliente.telefono}
 
 📦 *ARTÍCULOS (${articulos.length}):*
 ${articulosResumen}
@@ -86,31 +102,75 @@ ${articulosResumen}
 💰 *TOTAL: $${total.toFixed(2)}*
 📱 *Estado:* Pendiente
 
+${qrImageUri ? '� *Ver código QR adjunto para seguimiento*' : '🔍 *Código QR disponible en la aplicación*'}
+
 ¡Te notificaremos cuando esté lista! ✨
 
 ---
 🏪 *Lavandería Burbuja*`;
       
+      // Intentar compartir con imagen del QR
+      if (qrImageUri) {
+        try {
+          console.log('📤 Intentando compartir con imagen:', qrImageUri);
+          await Share.share({
+            title: 'Orden de Lavandería - Código QR',
+            message: mensaje,
+            url: qrImageUri,
+          });
+          console.log('✅ Compartido exitosamente con QR');
+          return;
+        } catch (shareError) {
+          console.log('❌ Error compartiendo con imagen:', shareError);
+        }
+      }
+      
+      // Fallback: abrir WhatsApp directamente
+      console.log('📱 Fallback: Abriendo WhatsApp directamente');
       const whatsappUrl = `https://wa.me/${cliente.telefono.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(mensaje)}`;
       
       const supported = await Linking.canOpenURL(whatsappUrl);
       if (supported) {
         await Linking.openURL(whatsappUrl);
       } else {
-        Alert.alert('Error', 'No se puede abrir WhatsApp');
+        Alert.alert('Error', 'No se puede abrir WhatsApp. ¿Está instalado?');
       }
     } catch (error) {
-      Alert.alert('Error', 'No se pudo abrir WhatsApp');
+      console.log('💥 Error general en compartir WhatsApp:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert('Error', `No se pudo compartir: ${errorMessage}`);
     }
   };
 
   const handleCompartirQR = async () => {
     try {
-      await Share.share({
-        message: `Código QR de la orden ${codigoOrden} para ${cliente.nombre} ${cliente.apellido}. Total: $${total.toFixed(2)}`,
-        title: 'Código QR - Orden de Lavandería'
-      });
+      let qrImageUri = null;
+      
+      // Intentar capturar el QR como imagen
+      try {
+        if (qrRef.current && qrRef.current.capture) {
+          qrImageUri = await qrRef.current.capture();
+        }
+      } catch (qrError) {
+        console.log('Error capturando QR para compartir:', qrError);
+      }
+
+      const mensaje = `📱 Código QR de la orden ${codigoOrden} para ${cliente.nombre} ${cliente.apellido}. Total: $${total.toFixed(2)}`;
+
+      if (qrImageUri) {
+        await Share.share({
+          title: 'Código QR - Orden de Lavandería',
+          message: mensaje,
+          url: qrImageUri,
+        });
+      } else {
+        await Share.share({
+          message: mensaje,
+          title: 'Código QR - Orden de Lavandería'
+        });
+      }
     } catch (error) {
+      console.log('Error compartiendo QR:', error);
       Alert.alert('Error', 'No se pudo compartir el código QR');
     }
   };
@@ -127,12 +187,98 @@ ${articulosResumen}
         {
           text: 'Imprimir',
           onPress: () => {
-            // Aquí se implementaría la lógica de impresión
-            Alert.alert('✅ Enviado', 'Código QR enviado a impresora');
+            // Aquí iría la lógica de impresión
+            Alert.alert('✅ Éxito', 'Etiqueta enviada a impresora');
           }
         }
       ]
     );
+  };
+
+  // Función de debugging para probar la captura del QR
+  const handleTestQRCapture = async () => {
+    try {
+      if (qrRef.current && qrRef.current.capture) {
+        console.log('🔍 Probando captura de QR...');
+        const uri = await qrRef.current.capture();
+        console.log('✅ QR capturado exitosamente en:', uri);
+        
+        Alert.alert(
+          '✅ QR Capturado',
+          `Imagen guardada en:\n${uri}\n\nAhora prueba compartir por WhatsApp`,
+          [
+            { text: 'OK' },
+            { 
+              text: 'Compartir Ahora', 
+              onPress: () => handleCompartirQR() 
+            }
+          ]
+        );
+      } else {
+        Alert.alert('❌ Error', 'Referencia QR no disponible');
+      }
+    } catch (error) {
+      console.log('❌ Error en test QR:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert('❌ Error', `No se pudo capturar QR: ${errorMessage}`);
+    }
+  };
+
+  // Función para compartir solo texto sin QR
+  const handleCompartirSoloTexto = async () => {
+    try {
+      // Crear resumen detallado de artículos
+      const articulosResumen = articulos.map((articulo, index) => {
+        const servicio = tiposServicio.find(s => s.id === articulo.tipoServicio)?.label || 'Servicio';
+        const subtotal = (articulo.cantidad * articulo.precio).toFixed(2);
+        return `${index + 1}. ${articulo.nombre}\n   ${servicio} - ${articulo.cantidad} ${articulo.unidadCobro === 'kilo' ? 'kg' : 'und'} × $${articulo.precio} = $${subtotal}`;
+      }).join('\n\n');
+
+      const fecha = new Date().toLocaleDateString('es-ES', {
+        weekday: 'long',
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+
+      const mensaje = `🧺 *ORDEN DE LAVANDERÍA* 🧺
+
+¡Hola ${cliente.nombre}! 👋
+
+Tu orden ha sido creada exitosamente:
+
+📋 *Código:* ${codigoOrden}
+📅 *Fecha:* ${fecha}
+👤 *Cliente:* ${cliente.nombre} ${cliente.apellido}
+📞 *Teléfono:* ${cliente.telefono}
+
+📦 *ARTÍCULOS (${articulos.length}):*
+${articulosResumen}
+
+💰 *TOTAL: $${total.toFixed(2)}*
+📱 *Estado:* Pendiente
+
+🔍 *Código QR disponible en la aplicación*
+
+¡Te notificaremos cuando esté lista! ✨
+
+---
+🏪 *Lavandería Burbuja*`;
+
+      console.log('📱 Compartiendo solo texto por WhatsApp');
+      const whatsappUrl = `https://wa.me/${cliente.telefono.replace(/[^0-9]/g, '')}?text=${encodeURIComponent(mensaje)}`;
+      
+      const supported = await Linking.canOpenURL(whatsappUrl);
+      if (supported) {
+        await Linking.openURL(whatsappUrl);
+      } else {
+        Alert.alert('Error', 'No se puede abrir WhatsApp. ¿Está instalado?');
+      }
+    } catch (error) {
+      console.log('💥 Error compartiendo solo texto:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert('Error', `No se pudo compartir: ${errorMessage}`);
+    }
   };
 
   const calcularSubtotal = (articulo: any) => {
@@ -165,15 +311,21 @@ ${articulosResumen}
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>📱 Código QR de la Orden</Text>
             <View style={styles.qrContainer}>
-              <QRCode
-                value={qrValue}
-                size={200}
-                backgroundColor="#FFFFFF"
-                color="#111827"
-                logo={require('../../../assets/icon.png')}
-                logoSize={30}
-                logoBackgroundColor="transparent"
-              />
+              <ViewShot 
+                ref={qrRef} 
+                options={{ format: "jpg", quality: 0.9 }}
+                style={{ backgroundColor: '#FFFFFF', padding: 20, borderRadius: 10 }}
+              >
+                <QRCode
+                  value={qrValue}
+                  size={200}
+                  backgroundColor="#FFFFFF"
+                  color="#111827"
+                  logo={require('../../../assets/icon.png')}
+                  logoSize={30}
+                  logoBackgroundColor="transparent"
+                />
+              </ViewShot>
               <Text style={styles.qrHelp}>
                 Escanea este código para ver los detalles de la orden
               </Text>
@@ -215,6 +367,30 @@ ${articulosResumen}
                 <Text style={styles.actionDesc}>Etiquetar ropa con código QR</Text>
               </View>
               <MaterialCommunityIcons name="chevron-right" size={20} color="#6B7280" />
+            </TouchableOpacity>
+
+            {/* Botón de debugging para test QR */}
+            <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#FEF3C7' }]} onPress={handleTestQRCapture}>
+              <View style={styles.actionIcon}>
+                <MaterialCommunityIcons name="bug" size={24} color="#D97706" />
+              </View>
+              <View style={styles.actionContent}>
+                <Text style={[styles.actionTitle, { color: '#D97706' }]}>Test QR Capture</Text>
+                <Text style={[styles.actionDesc, { color: '#92400E' }]}>Probar captura de imagen QR</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color="#D97706" />
+            </TouchableOpacity>
+
+            {/* Botón para compartir solo texto */}
+            <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#DBEAFE' }]} onPress={handleCompartirSoloTexto}>
+              <View style={styles.actionIcon}>
+                <MaterialCommunityIcons name="text" size={24} color="#2563EB" />
+              </View>
+              <View style={styles.actionContent}>
+                <Text style={[styles.actionTitle, { color: '#2563EB' }]}>Compartir Solo Texto</Text>
+                <Text style={[styles.actionDesc, { color: '#1D4ED8' }]}>WhatsApp sin imagen QR</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color="#2563EB" />
             </TouchableOpacity>
           </View>
 

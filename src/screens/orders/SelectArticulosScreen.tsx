@@ -20,14 +20,137 @@ interface Articulo {
 
 // Datos mock de artículos existentes
 const articulosMock = [
+  // Ropa casual
   { id: '1', nombre: 'Camisa', precio: 5 },
-  { id: '2', nombre: 'Pantalón', precio: 7 },
-  { id: '3', nombre: 'Edredón', precio: 15 },
-  { id: '4', nombre: 'Vestido', precio: 10 },
-  { id: '5', nombre: 'Chaqueta', precio: 12 },
-  { id: '6', nombre: 'Falda', precio: 8 },
-  { id: '7', nombre: 'Sábanas', precio: 12 },
-  { id: '8', nombre: 'Toalla', precio: 6 },
+  { id: '2', nombre: 'Camiseta', precio: 4 },
+  { id: '3', nombre: 'Polo', precio: 4.5 },
+  { id: '4', nombre: 'Blusa', precio: 6 },
+  { id: '5', nombre: 'Top', precio: 3.5 },
+  { id: '6', nombre: 'Tank top', precio: 3 },
+  
+  // Pantalones
+  { id: '7', nombre: 'Pantalón', precio: 7 },
+  { id: '8', nombre: 'Jeans', precio: 8 },
+  { id: '9', nombre: 'Pantalón corto', precio: 5 },
+  { id: '10', nombre: 'Bermudas', precio: 5.5 },
+  { id: '11', nombre: 'Leggings', precio: 4 },
+  { id: '12', nombre: 'Pantalón de vestir', precio: 9 },
+  
+  // Vestidos y faldas
+  { id: '13', nombre: 'Vestido', precio: 10 },
+  { id: '14', nombre: 'Vestido largo', precio: 12 },
+  { id: '15', nombre: 'Vestido corto', precio: 8 },
+  { id: '16', nombre: 'Falda', precio: 6 },
+  { id: '17', nombre: 'Falda larga', precio: 7 },
+  { id: '18', nombre: 'Minifalda', precio: 5 },
+  
+  // Abrigos y chaquetas
+  { id: '19', nombre: 'Chaqueta', precio: 12 },
+  { id: '20', nombre: 'Abrigo', precio: 15 },
+  { id: '21', nombre: 'Blazer', precio: 14 },
+  { id: '22', nombre: 'Cardigan', precio: 8 },
+  { id: '23', nombre: 'Suéter', precio: 9 },
+  { id: '24', nombre: 'Hoodie', precio: 10 },
+  { id: '25', nombre: 'Chaleco', precio: 6 },
+  { id: '26', nombre: 'Chamarra', precio: 13 },
+  
+  // Ropa de dormir
+  { id: '27', nombre: 'Pijama', precio: 8 },
+  { id: '28', nombre: 'Bata', precio: 10 },
+  { id: '29', nombre: 'Camisón', precio: 7 },
+  { id: '30', nombre: 'Shorts de dormir', precio: 4 },
+  
+  // Ropa interior
+  { id: '31', nombre: 'Ropa interior', precio: 2 },
+  { id: '32', nombre: 'Boxer', precio: 2.5 },
+  { id: '33', nombre: 'Calcetines', precio: 1.5 },
+  { id: '34', nombre: 'Medias', precio: 1.5 },
+  { id: '35', nombre: 'Pantyhose', precio: 2 },
+  
+  // Ropa deportiva
+  { id: '36', nombre: 'Pants deportivo', precio: 8 },
+  { id: '37', nombre: 'Playera deportiva', precio: 5 },
+  { id: '38', nombre: 'Shorts deportivos', precio: 4 },
+  { id: '39', nombre: 'Top deportivo', precio: 6 },
+  { id: '40', nombre: 'Traje de baño', precio: 6 },
+  { id: '41', nombre: 'Bikini', precio: 5 },
+  { id: '42', nombre: 'Malla deportiva', precio: 7 },
+  
+  // Ropa formal
+  { id: '43', nombre: 'Traje completo', precio: 25 },
+  { id: '44', nombre: 'Saco', precio: 15 },
+  { id: '45', nombre: 'Pantalón de vestir', precio: 9 },
+  { id: '46', nombre: 'Corbata', precio: 3 },
+  { id: '47', nombre: 'Moño', precio: 2.5 },
+  { id: '48', nombre: 'Vestido de gala', precio: 18 },
+  { id: '49', nombre: 'Esmoquin', precio: 30 },
+  
+  // Ropa de bebé
+  { id: '50', nombre: 'Body de bebé', precio: 2.5 },
+  { id: '51', nombre: 'Mameluco', precio: 4 },
+  { id: '52', nombre: 'Pañal de tela', precio: 3 },
+  { id: '53', nombre: 'Babero', precio: 2 },
+  { id: '54', nombre: 'Gorro de bebé', precio: 2 },
+  { id: '55', nombre: 'Manta de bebé', precio: 8 },
+  
+  // Ropa de hogar
+  { id: '56', nombre: 'Sábanas individuales', precio: 8 },
+  { id: '57', nombre: 'Sábanas matrimoniales', precio: 12 },
+  { id: '58', nombre: 'Sábanas king size', precio: 15 },
+  { id: '59', nombre: 'Funda de almohada', precio: 3 },
+  { id: '60', nombre: 'Edredón individual', precio: 12 },
+  { id: '61', nombre: 'Edredón matrimonial', precio: 18 },
+  { id: '62', nombre: 'Edredón king size', precio: 25 },
+  { id: '63', nombre: 'Cobertor', precio: 10 },
+  { id: '64', nombre: 'Manta', precio: 8 },
+  { id: '65', nombre: 'Colcha', precio: 15 },
+  
+  // Toallas
+  { id: '66', nombre: 'Toalla de baño', precio: 6 },
+  { id: '67', nombre: 'Toalla de mano', precio: 3 },
+  { id: '68', nombre: 'Toalla de cara', precio: 2 },
+  { id: '69', nombre: 'Toalla de playa', precio: 8 },
+  { id: '70', nombre: 'Toalla de cocina', precio: 2.5 },
+  { id: '71', nombre: 'Toalla de piso', precio: 5 },
+  
+  // Cortinas
+  { id: '72', nombre: 'Cortinas pequeñas', precio: 10 },
+  { id: '73', nombre: 'Cortinas medianas', precio: 15 },
+  { id: '74', nombre: 'Cortinas grandes', precio: 20 },
+  { id: '75', nombre: 'Visillos', precio: 8 },
+  { id: '76', nombre: 'Blackout', precio: 18 },
+  
+  // Manteles y servilletas
+  { id: '77', nombre: 'Mantel pequeño', precio: 8 },
+  { id: '78', nombre: 'Mantel mediano', precio: 12 },
+  { id: '79', nombre: 'Mantel grande', precio: 18 },
+  { id: '80', nombre: 'Servilletas de tela', precio: 1 },
+  { id: '81', nombre: 'Individuales', precio: 2 },
+  
+  // Uniformes
+  { id: '82', nombre: 'Uniforme escolar', precio: 12 },
+  { id: '83', nombre: 'Uniforme médico', precio: 15 },
+  { id: '84', nombre: 'Uniforme de chef', precio: 18 },
+  { id: '85', nombre: 'Uniforme deportivo', precio: 10 },
+  { id: '86', nombre: 'Delantal', precio: 6 },
+  { id: '87', nombre: 'Bata médica', precio: 12 },
+  
+  // Accesorios textiles
+  { id: '88', nombre: 'Bufanda', precio: 4 },
+  { id: '89', nombre: 'Pañuelo', precio: 2 },
+  { id: '90', nombre: 'Gorro', precio: 3 },
+  { id: '91', nombre: 'Guantes', precio: 3 },
+  { id: '92', nombre: 'Cinturón de tela', precio: 4 },
+  
+  // Artículos especiales
+  { id: '93', nombre: 'Peluche', precio: 8 },
+  { id: '94', nombre: 'Cojín', precio: 6 },
+  { id: '95', nombre: 'Forro de silla', precio: 10 },
+  { id: '96', nombre: 'Tapete', precio: 12 },
+  { id: '97', nombre: 'Alfombra pequeña', precio: 15 },
+  { id: '98', nombre: 'Sleeping bag', precio: 20 },
+  { id: '99', nombre: 'Funda de auto', precio: 25 },
+  { id: '100', nombre: 'Lona', precio: 30 },
 ];
 
 const tiposServicio = [
@@ -97,7 +220,7 @@ export const SelectArticulosScreen: React.FC = () => {
         articulo.nombre.toLowerCase().includes(busquedaArticulo.toLowerCase())
       );
       setArticulosFiltrados(filtrados);
-      setMostrarDropdown(true);
+      setMostrarDropdown(filtrados.length > 0);
     } else {
       setArticulosFiltrados([]);
       setMostrarDropdown(false);
@@ -110,7 +233,7 @@ export const SelectArticulosScreen: React.FC = () => {
       nombre: articulo.nombre,
       precio: articulo.precio
     }));
-    setBusquedaArticulo(articulo.nombre);
+    setBusquedaArticulo('');
     setMostrarDropdown(false);
     setMostrarFormulario(true);
   };
