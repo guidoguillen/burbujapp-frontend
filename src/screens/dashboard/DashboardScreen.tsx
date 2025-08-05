@@ -49,6 +49,13 @@ export const DashboardScreen: React.FC = () => {
               <Text style={styles.cardTitle}>Mis Turnos</Text>
             </TouchableOpacity>
             
+            <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Turno')}>
+              <View style={[styles.cardIconContainer, { backgroundColor: '#F0FDF4' }]}>
+                <MaterialCommunityIcons name="clock-check-outline" size={24} color="#059669" />
+              </View>
+              <Text style={styles.cardTitle}>Control Turno</Text>
+            </TouchableOpacity>
+            
             <TouchableOpacity style={styles.card} onPress={() => { logout(); navigation.reset({ index: 0, routes: [{ name: 'Auth' }] }); }}>
               <View style={[styles.cardIconContainer, { backgroundColor: '#FEF2F2' }]}>
                 <MaterialCommunityIcons name="logout" size={24} color="#DC2626" />

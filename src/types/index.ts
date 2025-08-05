@@ -89,6 +89,7 @@ export type RootStackParamList = {
   };
   MisOrdenes: undefined;
   Turnos: undefined;
+  Turno: undefined;
   Clients: undefined;
   ClientDetail: { clientId: string };
   Orders: undefined;
