@@ -1,4 +1,8 @@
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../../types';
+import { useAuth } from '../../context/AuthContext';
 import {
   View,
   Text,
@@ -13,40 +17,61 @@ import { Input } from '../../components/common';
 import Button from '../../components/common/Button';
 
 export const LoginScreen = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const { login } = useAuth();
+
+  // Usuarios simulados
+  const users = [
+    { username: 'adm', password: '123', role: 'admin' },
+    { username: 'opr', password: '123', role: 'operator' },
+    { username: 'cli', password: '123', role: 'client' },
+  ];
 
   const handleLogin = async () => {
-    if (!email.trim() || !password.trim()) {
-      Alert.alert('Error', 'Por favor completa todos los campos');
-      return;
-    }
-
-    if (!isValidEmail(email)) {
-      Alert.alert('Error', 'Por favor ingresa un email válido');
+    setError(null);
+    if (!username.trim() || !password.trim()) {
+      setError('Por favor completa todos los campos');
       return;
     }
 
     setIsLoading(true);
-    
-    try {
-      // Simulamos una llamada a la API
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      // Aquí iría la lógica real de autenticación
-      Alert.alert('¡Éxito!', 'Inicio de sesión exitoso');
-    } catch (error) {
-      Alert.alert('Error', 'No se pudo iniciar sesión. Intenta nuevamente.');
-    } finally {
+    await new Promise(resolve => setTimeout(resolve, 800));
+
+    const found = users.find(
+      u => u.username === username.trim() && u.password === password.trim()
+    );
+
+    if (!found) {
+      setError('Usuario o contraseña incorrectos');
       setIsLoading(false);
+      return;
     }
+
+    // Simular login en contexto
+    await login(username, password);
+
+    // Redirección por rol
+    switch (found.role) {
+      case 'admin':
+        navigation.navigate('Dashboard');
+        break;
+      case 'operator':
+        navigation.navigate('Dashboard'); // Cambia a tu pantalla de operador si existe
+        break;
+      case 'client':
+        navigation.navigate('Dashboard'); // Cambia a tu dashboard de cliente si existe
+        break;
+      default:
+        navigation.navigate('Dashboard');
+    }
+    setIsLoading(false);
   };
 
-  const isValidEmail = (email: string): boolean => {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    return emailRegex.test(email);
-  };
+  // ...existing code...
 
   return (
     <KeyboardAvoidingView
@@ -69,14 +94,12 @@ export const LoginScreen = () => {
           <Text style={styles.title}>Iniciar Sesión</Text>
           
           <Input
-            placeholder="Correo electrónico"
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
+            placeholder="Usuario"
+            value={username}
+            onChangeText={setUsername}
             autoCapitalize="none"
             autoCorrect={false}
           />
-          
           <Input
             placeholder="Contraseña"
             value={password}
@@ -84,11 +107,14 @@ export const LoginScreen = () => {
             secureTextEntry
           />
 
+          {error && (
+            <Text style={{ color: 'red', marginBottom: 8 }}>{error}</Text>
+          )}
+
           <Button
             title={isLoading ? "Iniciando sesión..." : "Iniciar Sesión"}
             onPress={handleLogin}
             disabled={isLoading}
-            style={styles.loginButton}
           />
 
           <TouchableOpacity style={styles.forgotPasswordContainer}>
