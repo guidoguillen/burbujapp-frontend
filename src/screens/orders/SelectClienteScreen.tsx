@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Modal } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types';
@@ -13,37 +13,68 @@ interface Cliente {
   apellido: string;
   telefono: string;
   direccion: string;
+  email?: string;
+  fechaUltimaOrden?: string;
+  totalOrdenes?: number;
+  esFavorito?: boolean;
 }
 
-// Datos mock de clientes
+// Datos mock de clientes expandidos
 const clientesMock: Cliente[] = [
   {
     id: '1',
     nombre: 'Juan',
     apellido: 'Pérez',
-    telefono: '+1234567890',
-    direccion: 'Calle 123, Ciudad'
+    telefono: '+591 70123456',
+    direccion: 'Av. Banzer 2do anillo, Santa Cruz',
+    email: 'juan.perez@email.com',
+    fechaUltimaOrden: '2024-08-05',
+    totalOrdenes: 15,
+    esFavorito: true
   },
   {
     id: '2',
     nombre: 'María',
     apellido: 'González',
-    telefono: '+0987654321',
-    direccion: 'Avenida 456, Ciudad'
+    telefono: '+591 75987654',
+    direccion: 'Calle Beni entre 6to y 7mo anillo',
+    email: 'maria.gonzalez@email.com',
+    fechaUltimaOrden: '2024-08-03',
+    totalOrdenes: 8,
+    esFavorito: false
   },
   {
     id: '3',
     nombre: 'Carlos',
     apellido: 'López',
-    telefono: '+1122334455',
-    direccion: 'Plaza 789, Ciudad'
+    telefono: '+591 68445566',
+    direccion: 'Barrio Hamacas, Plan 3000',
+    email: 'carlos.lopez@email.com',
+    fechaUltimaOrden: '2024-07-28',
+    totalOrdenes: 23,
+    esFavorito: true
   },
   {
     id: '4',
     nombre: 'Gabriel',
     apellido: 'Molina',
-    telefono: '+59179954303',
-    direccion: 'Plaza 789, Ciudad'
+    telefono: '+591 79954303',
+    direccion: 'Zona Norte, Av. Cristo Redentor',
+    email: 'gabriel.molina@email.com',
+    fechaUltimaOrden: '2024-08-01',
+    totalOrdenes: 5,
+    esFavorito: false
+  },
+  {
+    id: '5',
+    nombre: 'Ana',
+    apellido: 'Rodríguez',
+    telefono: '+591 72334455',
+    direccion: 'Equipetrol Norte, calle 1',
+    email: 'ana.rodriguez@email.com',
+    fechaUltimaOrden: '2024-08-04',
+    totalOrdenes: 12,
+    esFavorito: true
   }
 ];
 
@@ -53,63 +84,126 @@ export const SelectClienteScreen: React.FC = () => {
   const [clientesFiltrados, setClientesFiltrados] = useState<Cliente[]>([]);
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [cargando, setCargando] = useState(false);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
     apellido: '',
     telefono: '',
-    direccion: ''
+    direccion: '',
+    email: ''
   });
 
-  // Limpiar estados al iniciar nueva orden
+  // Inicializar datos
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      // Resetear todos los campos cuando se enfoca la pantalla
-      setBusqueda('');
-      setClientesFiltrados([]);
-      setMostrarDropdown(false);
-      setMostrarFormulario(false);
-      setNuevoCliente({
-        nombre: '',
-        apellido: '',
-        telefono: '',
-        direccion: ''
-      });
+      inicializarDatos();
     });
-
     return unsubscribe;
   }, [navigation]);
 
+  const inicializarDatos = () => {
+    // Resetear campos
+    setBusqueda('');
+    setClientesFiltrados([]);
+    setMostrarDropdown(false);
+    setMostrarFormulario(false);
+    setNuevoCliente({
+      nombre: '',
+      apellido: '',
+      telefono: '',
+      direccion: '',
+      email: ''
+    });
+  };
+
+  // Búsqueda mejorada
   useEffect(() => {
     if (busqueda.length > 0) {
-      const filtrados = clientesMock.filter(cliente =>
-        cliente.nombre.toLowerCase().includes(busqueda.toLowerCase()) ||
-        cliente.apellido.toLowerCase().includes(busqueda.toLowerCase()) ||
-        cliente.telefono.includes(busqueda)
-      );
-      setClientesFiltrados(filtrados);
-      setMostrarDropdown(true);
+      setCargando(true);
+      
+      // Simular delay de búsqueda
+      const timeoutId = setTimeout(() => {
+        const filtrados = clientesMock.filter(cliente => {
+          const searchTerm = busqueda.toLowerCase();
+          return (
+            cliente.nombre.toLowerCase().includes(searchTerm) ||
+            cliente.apellido.toLowerCase().includes(searchTerm) ||
+            cliente.telefono.includes(busqueda) ||
+            (cliente.email && cliente.email.toLowerCase().includes(searchTerm)) ||
+            cliente.direccion.toLowerCase().includes(searchTerm)
+          );
+        });
+        
+        setClientesFiltrados(filtrados);
+        setMostrarDropdown(true);
+        setCargando(false);
+      }, 300);
+
+      return () => {
+        clearTimeout(timeoutId);
+        setCargando(false);
+      };
     } else {
       setClientesFiltrados([]);
       setMostrarDropdown(false);
+      setCargando(false);
     }
   }, [busqueda]);
 
   const handleSeleccionarCliente = (cliente: Cliente) => {
+    setBusqueda('');
+    setMostrarDropdown(false);
     navigation.navigate('SelectArticulos', { cliente });
   };
 
+  const validarFormulario = () => {
+    const errores = [];
+    
+    if (!nuevoCliente.nombre.trim()) errores.push('El nombre es obligatorio');
+    if (!nuevoCliente.apellido.trim()) errores.push('El apellido es obligatorio');
+    if (!nuevoCliente.telefono.trim()) errores.push('El teléfono es obligatorio');
+    
+    // Validar formato de teléfono boliviano
+    const telefonoRegex = /^\+591\s[67]\d{7}$/;
+    if (nuevoCliente.telefono && !telefonoRegex.test(nuevoCliente.telefono)) {
+      errores.push('El teléfono debe tener el formato: +591 7XXXXXXX');
+    }
+    
+    // Validar email si se proporciona
+    if (nuevoCliente.email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(nuevoCliente.email)) {
+        errores.push('El email no tiene un formato válido');
+      }
+    }
+    
+    return errores;
+  };
+
   const handleCrearNuevoCliente = () => {
-    if (!nuevoCliente.nombre || !nuevoCliente.apellido || !nuevoCliente.telefono) {
-      Alert.alert('Error', 'Por favor completa los campos obligatorios');
+    const errores = validarFormulario();
+    
+    if (errores.length > 0) {
+      Alert.alert('Errores en el formulario', errores.join('\n'));
       return;
     }
 
     const cliente: Cliente = {
       id: Date.now().toString(),
-      ...nuevoCliente
+      ...nuevoCliente,
+      fechaUltimaOrden: new Date().toISOString().split('T')[0],
+      totalOrdenes: 0,
+      esFavorito: false
     };
     
+    setMostrarFormulario(false);
     navigation.navigate('SelectArticulos', { cliente });
+  };
+
+  const getAvatarColor = (nombre: string) => {
+    const colors = ['#EF4444', '#F59E0B', '#10B981', '#3B82F6', '#8B5CF6', '#EC4899'];
+    const index = nombre.charCodeAt(0) % colors.length;
+    return colors[index];
   };
 
   const mostrarCrearNuevo = busqueda.length > 0 && clientesFiltrados.length === 0;
@@ -154,116 +248,213 @@ export const SelectClienteScreen: React.FC = () => {
       </View>
 
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Sección principal de búsqueda */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>🧩 Etapa 1: Selección o creación de cliente</Text>
-          <Text style={styles.sectionDesc}>Busca un cliente existente o crea uno nuevo</Text>
+          <View style={styles.sectionHeader}>
+            <MaterialCommunityIcons name="account-search" size={24} color="#059669" />
+            <Text style={styles.sectionTitle}>Buscar Cliente</Text>
+          </View>
+          <Text style={styles.sectionDesc}>Encuentra un cliente existente o crea uno nuevo</Text>
           
           <View style={styles.searchContainer}>
             <MaterialCommunityIcons name="magnify" size={20} color="#6B7280" style={styles.searchIcon} />
             <TextInput
               style={styles.searchInput}
-              placeholder="Buscar por nombre, apellido o teléfono..."
+              placeholder="Buscar por nombre, teléfono, email..."
               value={busqueda}
               onChangeText={setBusqueda}
-              autoFocus
+              autoFocus={false}
             />
-            {busqueda.length > 0 && (
-              <TouchableOpacity onPress={() => setBusqueda('')}>
-                <MaterialCommunityIcons name="close" size={20} color="#6B7280" />
+            {cargando && (
+              <MaterialCommunityIcons name="loading" size={20} color="#059669" style={styles.loadingIcon} />
+            )}
+            {busqueda.length > 0 && !cargando && (
+              <TouchableOpacity onPress={() => setBusqueda('')} style={styles.clearButton}>
+                <MaterialCommunityIcons name="close-circle" size={20} color="#6B7280" />
               </TouchableOpacity>
             )}
           </View>
 
-          {/* Dropdown de resultados */}
+          {/* Resultados de búsqueda */}
           {mostrarDropdown && (
-            <View style={styles.dropdown}>
-              <ScrollView nestedScrollEnabled={true} showsVerticalScrollIndicator={false}>
-                {clientesFiltrados.map((item) => (
+            <View style={styles.searchResults}>
+              {clientesFiltrados.length > 0 ? (
+                clientesFiltrados.map((cliente, index) => (
                   <TouchableOpacity
-                    key={item.id}
-                    style={styles.dropdownItem}
-                    onPress={() => handleSeleccionarCliente(item)}
+                    key={cliente.id}
+                    style={[
+                      styles.clienteCard,
+                      index === clientesFiltrados.length - 1 && { borderBottomWidth: 0 }
+                    ]}
+                    onPress={() => handleSeleccionarCliente(cliente)}
+                    activeOpacity={0.7}
                   >
-                    <View>
-                      <Text style={styles.dropdownName}>{item.nombre} {item.apellido}</Text>
-                      <Text style={styles.dropdownPhone}>{item.telefono}</Text>
+                    <View style={styles.clienteInfo}>
+                      <View style={[styles.avatar, { backgroundColor: getAvatarColor(cliente.nombre) }]}>
+                        <Text style={styles.avatarText}>
+                          {cliente.nombre.charAt(0)}{cliente.apellido.charAt(0)}
+                        </Text>
+                      </View>
+                      <View style={styles.clienteDetalles}>
+                        <Text style={styles.clienteNombre}>{cliente.nombre} {cliente.apellido}</Text>
+                        <Text style={styles.clienteTelefono}>{cliente.telefono}</Text>
+                        {cliente.email && (
+                          <Text style={styles.clienteEmail}>{cliente.email}</Text>
+                        )}
+                        <Text style={styles.clienteDireccion} numberOfLines={1}>{cliente.direccion}</Text>
+                      </View>
                     </View>
-                    <MaterialCommunityIcons name="chevron-right" size={20} color="#6B7280" />
+                    <MaterialCommunityIcons name="chevron-right" size={18} color="#C7C7CC" />
                   </TouchableOpacity>
-                ))}
-              </ScrollView>
+                ))
+              ) : (
+                <View style={styles.noResultados}>
+                  <MaterialCommunityIcons name="account-search-outline" size={48} color="#9CA3AF" />
+                  <Text style={styles.noResultadosTexto}>No se encontraron clientes</Text>
+                  <TouchableOpacity
+                    style={styles.crearNuevoBtn}
+                    onPress={() => setMostrarFormulario(true)}
+                  >
+                    <MaterialCommunityIcons name="plus-circle" size={20} color="#FFFFFF" />
+                    <Text style={styles.crearNuevoText}>Crear nuevo cliente</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
-          )}
-
-          {/* Opción crear nuevo cliente */}
-          {mostrarCrearNuevo && (
-            <TouchableOpacity
-              style={styles.crearNuevoBtn}
-              onPress={() => setMostrarFormulario(true)}
-            >
-              <MaterialCommunityIcons name="plus-circle" size={24} color="#059669" />
-              <Text style={styles.crearNuevoText}>Crear nuevo cliente</Text>
-            </TouchableOpacity>
           )}
         </View>
 
-        {/* Formulario nuevo cliente */}
-        {mostrarFormulario && (
+        {/* Filtros y clientes sugeridos */}
+        {!mostrarDropdown && (
           <View style={styles.section}>
-            <Text style={styles.sectionTitle}>Nuevo Cliente</Text>
-            
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Nombre *</Text>
-              <TextInput
-                style={styles.input}
-                value={nuevoCliente.nombre}
-                onChangeText={(text) => setNuevoCliente(prev => ({ ...prev, nombre: text }))}
-                placeholder="Ingresa el nombre"
-              />
-            </View>
-
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Apellido *</Text>
-              <TextInput
-                style={styles.input}
-                value={nuevoCliente.apellido}
-                onChangeText={(text) => setNuevoCliente(prev => ({ ...prev, apellido: text }))}
-                placeholder="Ingresa el apellido"
-              />
-            </View>
-
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Teléfono *</Text>
-              <TextInput
-                style={styles.input}
-                value={nuevoCliente.telefono}
-                onChangeText={(text) => setNuevoCliente(prev => ({ ...prev, telefono: text }))}
-                placeholder="Ingresa el teléfono"
-                keyboardType="phone-pad"
-              />
-            </View>
-
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Dirección</Text>
-              <TextInput
-                style={styles.input}
-                value={nuevoCliente.direccion}
-                onChangeText={(text) => setNuevoCliente(prev => ({ ...prev, direccion: text }))}
-                placeholder="Ingresa la dirección"
-                multiline
-              />
-            </View>
-
-            <View style={styles.formActions}>
+            <View style={styles.emptyStateContainer}>
+              <MaterialCommunityIcons name="account-search-outline" size={64} color="#9CA3AF" />
+              <Text style={styles.emptyStateTitle}>Busca un cliente</Text>
+              <Text style={styles.emptyStateDesc}>
+                Escribe el nombre, teléfono o email del cliente en el campo de búsqueda
+              </Text>
+              
               <TouchableOpacity
-                style={styles.cancelBtn}
+                style={styles.crearNuevoMainBtn}
+                onPress={() => setMostrarFormulario(true)}
+              >
+                <MaterialCommunityIcons name="account-plus" size={20} color="#FFFFFF" />
+                <Text style={styles.crearNuevoMainText}>Crear Nuevo Cliente</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
+        {/* Botón flotante para crear nuevo cliente */}
+        {/* Eliminado - ya no es necesario */}
+
+        {/* Modal para crear nuevo cliente */}
+        <Modal
+          visible={mostrarFormulario}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setMostrarFormulario(false)}
+        >
+          <View style={styles.modalContainer}>
+            {/* Header del modal */}
+            <View style={styles.modalHeader}>
+              <TouchableOpacity 
+                onPress={() => setMostrarFormulario(false)}
+                style={styles.modalCloseBtn}
+              >
+                <MaterialCommunityIcons name="close" size={24} color="#6B7280" />
+              </TouchableOpacity>
+              <Text style={styles.modalTitle}>Nuevo Cliente</Text>
+              <View style={styles.headerSpacer} />
+            </View>
+
+            <ScrollView style={styles.modalContent} showsVerticalScrollIndicator={false}>
+              <Text style={styles.modalSubtitle}>
+                Complete la información del nuevo cliente
+              </Text>
+
+              <View style={styles.formRow}>
+                <View style={styles.formColumn}>
+                  <Text style={styles.label}>Nombre *</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={nuevoCliente.nombre}
+                    onChangeText={(text) => setNuevoCliente(prev => ({ ...prev, nombre: text }))}
+                    placeholder="Ej: Juan"
+                    autoCapitalize="words"
+                  />
+                </View>
+
+                <View style={styles.formColumn}>
+                  <Text style={styles.label}>Apellido *</Text>
+                  <TextInput
+                    style={styles.input}
+                    value={nuevoCliente.apellido}
+                    onChangeText={(text) => setNuevoCliente(prev => ({ ...prev, apellido: text }))}
+                    placeholder="Ej: Pérez"
+                    autoCapitalize="words"
+                  />
+                </View>
+              </View>
+
+              <View style={styles.formGroup}>
+                <Text style={styles.label}>Teléfono *</Text>
+                <View style={styles.phoneInputContainer}>
+                  <Text style={styles.phonePrefix}>🇧🇴 +591</Text>
+                  <TextInput
+                    style={styles.phoneInput}
+                    value={nuevoCliente.telefono.replace('+591 ', '')}
+                    onChangeText={(text) => {
+                      // Limpiar entrada y formatear
+                      const cleaned = text.replace(/\D/g, '');
+                      const formatted = cleaned.length > 0 ? `+591 ${cleaned}` : '';
+                      setNuevoCliente(prev => ({ ...prev, telefono: formatted }));
+                    }}
+                    placeholder="70123456"
+                    keyboardType="phone-pad"
+                    maxLength={8}
+                  />
+                </View>
+                <Text style={styles.helpText}>Formato: +591 7XXXXXXX</Text>
+              </View>
+
+              <View style={styles.formGroup}>
+                <Text style={styles.label}>Email</Text>
+                <TextInput
+                  style={styles.input}
+                  value={nuevoCliente.email}
+                  onChangeText={(text) => setNuevoCliente(prev => ({ ...prev, email: text }))}
+                  placeholder="cliente@email.com"
+                  keyboardType="email-address"
+                  autoCapitalize="none"
+                />
+              </View>
+
+              <View style={styles.formGroup}>
+                <Text style={styles.label}>Dirección</Text>
+                <TextInput
+                  style={[styles.input, styles.textArea]}
+                  value={nuevoCliente.direccion}
+                  onChangeText={(text) => setNuevoCliente(prev => ({ ...prev, direccion: text }))}
+                  placeholder="Av. Banzer 2do anillo, Santa Cruz"
+                  multiline
+                  numberOfLines={3}
+                  textAlignVertical="top"
+                />
+              </View>
+            </ScrollView>
+
+            {/* Botones del modal */}
+            <View style={styles.modalFooter}>
+              <TouchableOpacity 
+                style={styles.cancelBtn} 
                 onPress={() => setMostrarFormulario(false)}
               >
                 <Text style={styles.cancelBtnText}>Cancelar</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity
-                style={styles.crearBtn}
+              <TouchableOpacity 
+                style={styles.crearBtn} 
                 onPress={handleCrearNuevoCliente}
               >
                 <MaterialCommunityIcons name="account-plus" size={20} color="#FFFFFF" />
@@ -271,7 +462,7 @@ export const SelectClienteScreen: React.FC = () => {
               </TouchableOpacity>
             </View>
           </View>
-        )}
+        </Modal>
       </ScrollView>
     </View>
   );
@@ -376,20 +567,21 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
+    backgroundColor: '#F2F2F7',
+    borderRadius: 10,
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
+    paddingVertical: 10,
+    borderWidth: 0,
   },
   searchIcon: {
     marginRight: 8,
+    color: '#8E8E93',
   },
   searchInput: {
     flex: 1,
-    fontSize: 16,
-    color: '#111827',
+    fontSize: 17,
+    color: '#000000',
+    fontWeight: '400',
   },
   dropdown: {
     marginTop: 8,
@@ -481,6 +673,296 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   crearBtnText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#FFFFFF',
+  },
+
+  // Nuevos estilos mejorados
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 8,
+  },
+  loadingIcon: {
+    marginRight: 8,
+  },
+  clearButton: {
+    padding: 4,
+  },
+  searchResults: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 10,
+    marginTop: 8,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.04,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  clienteCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#E5E5E7',
+  },
+  clienteInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
+  },
+  avatarText: {
+    color: '#FFFFFF',
+    fontSize: 13,
+    fontWeight: '600',
+  },
+  clienteDetalles: {
+    flex: 1,
+  },
+  clienteNombreContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  clienteNombre: {
+    fontSize: 17,
+    fontWeight: '400',
+    color: '#000000',
+    marginBottom: 2,
+    letterSpacing: -0.2,
+  },
+  clienteTelefono: {
+    fontSize: 15,
+    color: '#007AFF',
+    marginBottom: 1,
+    fontWeight: '400',
+  },
+  clienteEmail: {
+    fontSize: 13,
+    color: '#8E8E93',
+    marginBottom: 1,
+    fontWeight: '400',
+  },
+  clienteDireccion: {
+    fontSize: 13,
+    color: '#8E8E93',
+    fontWeight: '400',
+  },
+  clienteEstadisticas: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  estadistica: {
+    fontSize: 12,
+    color: '#9CA3AF',
+  },
+  noResultados: {
+    alignItems: 'center',
+    padding: 32,
+  },
+  noResultadosTexto: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginTop: 8,
+    marginBottom: 16,
+    textAlign: 'center',
+  },
+  filtrosContainer: {
+    flexDirection: 'row',
+    gap: 8,
+    marginBottom: 16,
+  },
+  filtroBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#059669',
+    backgroundColor: '#FFFFFF',
+  },
+  filtroActivo: {
+    backgroundColor: '#059669',
+  },
+  filtroTexto: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#059669',
+  },
+  filtroTextoActivo: {
+    color: '#FFFFFF',
+  },
+  subsectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  sinClientes: {
+    alignItems: 'center',
+    padding: 32,
+  },
+  sinClientesTexto: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginTop: 12,
+    textAlign: 'center',
+  },
+  fabButton: {
+    position: 'absolute',
+    bottom: 20,
+    right: 20,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#059669',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 8,
+  },
+
+  // Estilos para el modal
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 16,
+    paddingHorizontal: 20,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  modalCloseBtn: {
+    padding: 8,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  modalContent: {
+    flex: 1,
+    padding: 20,
+  },
+  modalSubtitle: {
+    fontSize: 16,
+    color: '#6B7280',
+    marginBottom: 24,
+    textAlign: 'center',
+  },
+  formRow: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  formColumn: {
+    flex: 1,
+  },
+  phoneInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    backgroundColor: '#FFFFFF',
+  },
+  phonePrefix: {
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    backgroundColor: '#F3F4F6',
+    borderTopLeftRadius: 8,
+    borderBottomLeftRadius: 8,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    borderRightWidth: 1,
+    borderRightColor: '#D1D5DB',
+  },
+  phoneInput: {
+    flex: 1,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    fontSize: 16,
+    color: '#111827',
+  },
+  helpText: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 4,
+  },
+  textArea: {
+    height: 80,
+    textAlignVertical: 'top',
+  },
+  modalFooter: {
+    flexDirection: 'row',
+    gap: 12,
+    padding: 20,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#E5E7EB',
+  },
+
+  // Estilos para el estado vacío
+  emptyStateContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 48,
+    paddingHorizontal: 24,
+  },
+  emptyStateTitle: {
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#111827',
+    marginTop: 16,
+    marginBottom: 8,
+  },
+  emptyStateDesc: {
+    fontSize: 16,
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: 24,
+    marginBottom: 24,
+  },
+  crearNuevoMainBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: '#059669',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  crearNuevoMainText: {
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',

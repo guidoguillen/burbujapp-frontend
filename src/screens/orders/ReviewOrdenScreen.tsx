@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking, Share } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking, Share, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -195,6 +195,99 @@ ${qrImageUri ? '� *Ver código QR adjunto para seguimiento*' : '🔍 *Código 
     );
   };
 
+  // Función para guardar QR en ubicación accesible
+  const handleGuardarQRAccesible = async () => {
+    try {
+      if (!qrRef.current || !qrRef.current.capture) {
+        Alert.alert('❌ Error', 'Referencia QR no disponible');
+        return;
+      }
+
+      console.log('🔍 Iniciando captura y guardado de QR...');
+      
+      // Capturar el QR
+      const tempUri = await qrRef.current.capture();
+      console.log('✅ QR capturado temporalmente en:', tempUri);
+
+      // Crear nombre de archivo único
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+      const fileName = `QR_Orden_${codigoOrden}_${timestamp}.jpg`;
+      
+      // Definir ubicación accesible
+      let finalUri = '';
+      
+      if (Platform.OS === 'android') {
+        // Para Android, usar Downloads o Documents
+        const downloadDir = FileSystem.documentDirectory + 'QR_Codes/';
+        
+        // Crear directorio si no existe
+        const dirInfo = await FileSystem.getInfoAsync(downloadDir);
+        if (!dirInfo.exists) {
+          await FileSystem.makeDirectoryAsync(downloadDir, { intermediates: true });
+        }
+        
+        finalUri = downloadDir + fileName;
+        
+        // Copiar archivo a ubicación accesible
+        await FileSystem.copyAsync({
+          from: tempUri,
+          to: finalUri
+        });
+        
+        console.log('✅ QR guardado en ubicación accesible:', finalUri);
+        
+        Alert.alert(
+          '✅ QR Guardado',
+          `Código QR guardado exitosamente en:\n\n📁 QR_Codes/${fileName}\n\n📱 Ubicación: ${finalUri}`,
+          [
+            { text: 'OK' },
+            { 
+              text: 'Compartir', 
+              onPress: () => handleCompartirQR() 
+            },
+            {
+              text: 'Copiar Ruta',
+              onPress: () => {
+                // En una implementación real, esto copiaría la ruta al clipboard
+                console.log('📋 Ruta copiada:', finalUri);
+              }
+            }
+          ]
+        );
+        
+      } else {
+        // Para iOS, usar documentDirectory
+        finalUri = FileSystem.documentDirectory + fileName;
+        
+        await FileSystem.copyAsync({
+          from: tempUri,
+          to: finalUri
+        });
+        
+        console.log('✅ QR guardado en Documents:', finalUri);
+        
+        Alert.alert(
+          '✅ QR Guardado',
+          `Código QR guardado en Documents:\n\n📁 ${fileName}\n\n📱 Ubicación: ${finalUri}`,
+          [
+            { text: 'OK' },
+            { 
+              text: 'Compartir', 
+              onPress: () => handleCompartirQR() 
+            }
+          ]
+        );
+      }
+      
+      return finalUri;
+      
+    } catch (error) {
+      console.log('❌ Error guardando QR accesible:', error);
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      Alert.alert('❌ Error', `No se pudo guardar QR: ${errorMessage}`);
+    }
+  };
+
   // Función de debugging para probar la captura del QR
   const handleTestQRCapture = async () => {
     try {
@@ -205,11 +298,15 @@ ${qrImageUri ? '� *Ver código QR adjunto para seguimiento*' : '🔍 *Código 
         
         Alert.alert(
           '✅ QR Capturado',
-          `Imagen guardada en:\n${uri}\n\nAhora prueba compartir por WhatsApp`,
+          `Imagen guardada en:\n${uri}\n\n¿Qué deseas hacer?`,
           [
-            { text: 'OK' },
+            { text: 'Solo Ver' },
             { 
-              text: 'Compartir Ahora', 
+              text: 'Guardar Accesible', 
+              onPress: () => handleGuardarQRAccesible() 
+            },
+            { 
+              text: 'Compartir', 
               onPress: () => handleCompartirQR() 
             }
           ]
@@ -379,6 +476,18 @@ ${articulosResumen}
                 <Text style={[styles.actionDesc, { color: '#92400E' }]}>Probar captura de imagen QR</Text>
               </View>
               <MaterialCommunityIcons name="chevron-right" size={20} color="#D97706" />
+            </TouchableOpacity>
+
+            {/* Botón para guardar QR en ubicación accesible */}
+            <TouchableOpacity style={[styles.actionBtn, { backgroundColor: '#DCFCE7' }]} onPress={handleGuardarQRAccesible}>
+              <View style={styles.actionIcon}>
+                <MaterialCommunityIcons name="content-save" size={24} color="#16A34A" />
+              </View>
+              <View style={styles.actionContent}>
+                <Text style={[styles.actionTitle, { color: '#16A34A' }]}>Guardar QR Accesible</Text>
+                <Text style={[styles.actionDesc, { color: '#15803D' }]}>Guardar en carpeta QR_Codes</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color="#16A34A" />
             </TouchableOpacity>
 
             {/* Botón para compartir solo texto */}

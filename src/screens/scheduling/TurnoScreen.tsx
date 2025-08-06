@@ -222,11 +222,35 @@ _Reporte automático - BurbujApp_ 🧼✨`;
     setObservacionesInput('');
     setModalSalidaVisible(false);
     
-    // Mostrar resumen del turno
+    // Mostrar resumen completo del turno con estadísticas del día
+    const estadisticasDelDia = {
+      ordenesHoy: 12,
+      ordenesEnProceso: 0,
+      ventasHoy: totalVentas,
+      clientesAtendidos: 8,
+      ordenesPendientes: 0,
+      ordenesTerminadas: 12
+    };
+
     Alert.alert(
-      '🎯 Turno completado',
-      `Entrada: ${turnoActual.horaEntrada} | Salida: ${horaSalida}\nCaja inicial: ${turnoActual.cajaInicial} Bs\nCaja final: ${cajaFinal} Bs\nTotal ventas: ${totalVentas} Bs`,
-      [{ text: 'OK' }]
+      '🎯 Turno Completado Exitosamente',
+      `📅 RESUMEN DEL TURNO:
+⏰ Entrada: ${turnoActual.horaEntrada} | Salida: ${horaSalida}
+💰 Caja inicial: ${turnoActual.cajaInicial} Bs
+💰 Caja final: ${cajaFinal} Bs
+📈 Total ventas: ${totalVentas} Bs
+
+📊 ESTADÍSTICAS DEL DÍA:
+📋 Órdenes procesadas: ${estadisticasDelDia.ordenesHoy}
+✅ Órdenes terminadas: ${estadisticasDelDia.ordenesTerminadas}
+👥 Clientes atendidos: ${estadisticasDelDia.clientesAtendidos}
+💵 Total facturado: $${estadisticasDelDia.ventasHoy}
+
+¡Excelente trabajo hoy! 🎉`,
+      [
+        { text: 'Enviar Reporte', onPress: enviarReportePorWhatsApp },
+        { text: 'OK', style: 'default' }
+      ]
     );
   };
 
@@ -277,7 +301,7 @@ _Reporte automático - BurbujApp_ 🧼✨`;
         <View style={styles.statusContainer}>
           <View style={styles.statusHeader}>
             <MaterialCommunityIcons 
-              name={turnoEnCurso ? "clock-check" : turnoCompletado ? "check-circle" : "clock-outline"} 
+              name={turnoEnCurso ? "clock-time-four" : turnoCompletado ? "check-circle" : "clock-outline"} 
               size={24} 
               color={turnoEnCurso ? "#059669" : turnoCompletado ? "#3B82F6" : "#6B7280"} 
             />
@@ -332,14 +356,14 @@ _Reporte automático - BurbujApp_ 🧼✨`;
         <View style={styles.actionsContainer}>
           {!turnoActual.horaEntrada && (
             <TouchableOpacity style={styles.primaryBtn} onPress={handleRegistrarEntrada}>
-              <MaterialCommunityIcons name="clock-in" size={20} color="#FFFFFF" />
+              <MaterialCommunityIcons name="login" size={20} color="#FFFFFF" />
               <Text style={styles.primaryBtnText}>Registrar Entrada</Text>
             </TouchableOpacity>
           )}
 
           {turnoEnCurso && (
             <TouchableOpacity style={styles.secondaryBtn} onPress={handleRegistrarSalida}>
-              <MaterialCommunityIcons name="clock-out" size={20} color="#FFFFFF" />
+              <MaterialCommunityIcons name="logout" size={20} color="#FFFFFF" />
               <Text style={styles.secondaryBtnText}>Registrar Salida</Text>
             </TouchableOpacity>
           )}
@@ -363,7 +387,7 @@ _Reporte automático - BurbujApp_ 🧼✨`;
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
-              <MaterialCommunityIcons name="clock-in" size={24} color="#059669" />
+              <MaterialCommunityIcons name="login" size={24} color="#059669" />
               <Text style={styles.modalTitle}>Registrar Entrada</Text>
             </View>
 
@@ -405,7 +429,7 @@ _Reporte automático - BurbujApp_ 🧼✨`;
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <View style={styles.modalHeader}>
-              <MaterialCommunityIcons name="clock-out" size={24} color="#DC2626" />
+              <MaterialCommunityIcons name="logout" size={24} color="#DC2626" />
               <Text style={styles.modalTitle}>Registrar Salida</Text>
             </View>
 

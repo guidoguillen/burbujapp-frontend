@@ -140,11 +140,11 @@ export const MisOrdenesScreen: React.FC = () => {
   const getEstadoColor = (estado: EstadoFiltro) => {
     switch (estado) {
       case 'Registrado':
-        return { backgroundColor: '#FEF3C7', color: '#92400E', icon: 'clipboard-text' as const };
+        return { backgroundColor: '#FEF3C7', color: '#92400E', icon: 'clipboard-plus' as const };
       case 'En proceso':
-        return { backgroundColor: '#D1FAE5', color: '#065F46', icon: 'cog' as const };
+        return { backgroundColor: '#DBEAFE', color: '#1E40AF', icon: 'clock-time-four' as const };
       case 'Terminado':
-        return { backgroundColor: '#DBEAFE', color: '#1E40AF', icon: 'check-circle' as const };
+        return { backgroundColor: '#D1FAE5', color: '#065F46', icon: 'check-circle' as const };
     }
   };
 

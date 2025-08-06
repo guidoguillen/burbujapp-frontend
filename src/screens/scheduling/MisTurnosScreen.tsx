@@ -23,6 +23,16 @@ interface TurnoHistorial {
 export const MisTurnosScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   
+  // Estadísticas del día (mock - en app real vendría de API)
+  const [estadisticasDelDia] = useState({
+    ordenesHoy: 12,
+    ordenesEnProceso: 4,
+    ventasHoy: 420,
+    clientesAtendidos: 8,
+    ordenesPendientes: 3,
+    ordenesTerminadas: 5
+  });
+  
   // Datos mock del turno actual y historial
   const [turnoActual] = useState<TurnoHistorial>({
     id: '1',
@@ -99,7 +109,7 @@ export const MisTurnosScreen: React.FC = () => {
       case 'Pendiente':
         return 'clock-outline';
       case 'En curso':
-        return 'clock-check';
+        return 'clock-time-four';
       case 'Finalizado':
         return 'check-circle';
       default:
@@ -156,6 +166,177 @@ export const MisTurnosScreen: React.FC = () => {
       </View>
 
       <ScrollView style={styles.content}>
+        {/* Resumen del Día */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>📊 Resumen del Día</Text>
+          
+          <View style={styles.resumenContainer}>
+            <View style={styles.resumenGrid}>
+              <View style={styles.resumenCard}>
+                <View style={[styles.resumenIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                  <MaterialCommunityIcons name="clipboard-list" size={20} color="#3B82F6" />
+                </View>
+                <Text style={styles.resumenNumber}>{estadisticasDelDia.ordenesHoy}</Text>
+                <Text style={styles.resumenLabel}>Órdenes hoy</Text>
+              </View>
+
+              <View style={styles.resumenCard}>
+                <View style={[styles.resumenIconContainer, { backgroundColor: '#FEF3C7' }]}>
+                  <MaterialCommunityIcons name="clock-time-four" size={20} color="#F59E0B" />
+                </View>
+                <Text style={styles.resumenNumber}>{estadisticasDelDia.ordenesEnProceso}</Text>
+                <Text style={styles.resumenLabel}>En proceso</Text>
+              </View>
+
+              <View style={styles.resumenCard}>
+                <View style={[styles.resumenIconContainer, { backgroundColor: '#D1FAE5' }]}>
+                  <MaterialCommunityIcons name="cash-multiple" size={20} color="#059669" />
+                </View>
+                <Text style={styles.resumenNumber}>${estadisticasDelDia.ventasHoy}</Text>
+                <Text style={styles.resumenLabel}>Ventas hoy</Text>
+              </View>
+
+              <View style={styles.resumenCard}>
+                <View style={[styles.resumenIconContainer, { backgroundColor: '#F3E8FF' }]}>
+                  <MaterialCommunityIcons name="account-group" size={20} color="#8B5CF6" />
+                </View>
+                <Text style={styles.resumenNumber}>{estadisticasDelDia.clientesAtendidos}</Text>
+                <Text style={styles.resumenLabel}>Clientes</Text>
+              </View>
+
+              <View style={styles.resumenCard}>
+                <View style={[styles.resumenIconContainer, { backgroundColor: '#FECACA' }]}>
+                  <MaterialCommunityIcons name="clock-alert" size={20} color="#DC2626" />
+                </View>
+                <Text style={styles.resumenNumber}>{estadisticasDelDia.ordenesPendientes}</Text>
+                <Text style={styles.resumenLabel}>Pendientes</Text>
+              </View>
+
+              <View style={styles.resumenCard}>
+                <View style={[styles.resumenIconContainer, { backgroundColor: '#DCFCE7' }]}>
+                  <MaterialCommunityIcons name="check-circle" size={20} color="#16A34A" />
+                </View>
+                <Text style={styles.resumenNumber}>{estadisticasDelDia.ordenesTerminadas}</Text>
+                <Text style={styles.resumenLabel}>Terminadas</Text>
+              </View>
+            </View>
+          </View>
+        </View>
+
+        {/* Progreso del Turno */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>⏱ Progreso del Turno</Text>
+          
+          <View style={styles.progresoContainer}>
+            <View style={styles.progresoHeader}>
+              <Text style={styles.progresoTitulo}>Para cerrar el turno debes:</Text>
+            </View>
+            
+            <View style={styles.progresoListaContainer}>
+              <View style={styles.progresoItem}>
+                <MaterialCommunityIcons 
+                  name={turnoActual.entrada ? "check-circle" : "circle-outline"} 
+                  size={20} 
+                  color={turnoActual.entrada ? "#059669" : "#9CA3AF"} 
+                />
+                <Text style={[
+                  styles.progresoTexto,
+                  turnoActual.entrada && styles.progresoTextoCompletado
+                ]}>
+                  Registrar entrada ✓
+                </Text>
+              </View>
+
+              <View style={styles.progresoItem}>
+                <MaterialCommunityIcons 
+                  name={turnoActual.salida ? "check-circle" : "circle-outline"} 
+                  size={20} 
+                  color={turnoActual.salida ? "#059669" : "#9CA3AF"} 
+                />
+                <Text style={[
+                  styles.progresoTexto,
+                  turnoActual.salida && styles.progresoTextoCompletado
+                ]}>
+                  Procesar órdenes del día
+                </Text>
+              </View>
+
+              <View style={styles.progresoItem}>
+                <MaterialCommunityIcons 
+                  name={turnoActual.salida ? "check-circle" : "circle-outline"} 
+                  size={20} 
+                  color={turnoActual.salida ? "#059669" : "#9CA3AF"} 
+                />
+                <Text style={[
+                  styles.progresoTexto,
+                  turnoActual.salida && styles.progresoTextoCompletado
+                ]}>
+                  Registrar salida y caja final
+                </Text>
+              </View>
+
+              <View style={styles.progresoItem}>
+                <MaterialCommunityIcons 
+                  name={turnoActual.salida ? "check-circle" : "circle-outline"} 
+                  size={20} 
+                  color={turnoActual.salida ? "#059669" : "#9CA3AF"} 
+                />
+                <Text style={[
+                  styles.progresoTexto,
+                  turnoActual.salida && styles.progresoTextoCompletado
+                ]}>
+                  Ver resumen y enviar reporte
+                </Text>
+              </View>
+            </View>
+
+            {turnoActual.entrada && !turnoActual.salida && (
+              <View style={styles.progresoBadge}>
+                <Text style={styles.progresoEstado}>
+                  🔄 Turno en progreso - Puedes seguir trabajando
+                </Text>
+              </View>
+            )}
+
+            {turnoActual.salida && (
+              <View style={[styles.progresoBadge, { backgroundColor: '#D1FAE5' }]}>
+                <Text style={[styles.progresoEstado, { color: '#065F46' }]}>
+                  ✅ Turno completado - ¡Buen trabajo!
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
+
+        {/* Acciones Rápidas */}
+        {turnoActual.entrada && !turnoActual.salida && (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>⚡ Acciones Rápidas</Text>
+            
+            <View style={styles.accionesContainer}>
+              <TouchableOpacity style={styles.accionBoton}>
+                <MaterialCommunityIcons name="plus-circle" size={24} color="#3B82F6" />
+                <Text style={styles.accionTexto}>Nueva Orden</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.accionBoton}>
+                <MaterialCommunityIcons name="clock-check" size={24} color="#059669" />
+                <Text style={styles.accionTexto}>Ver Programados</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.accionBoton}>
+                <MaterialCommunityIcons name="cash-register" size={24} color="#DC2626" />
+                <Text style={styles.accionTexto}>Registrar Venta</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.accionBoton}>
+                <MaterialCommunityIcons name="chart-line" size={24} color="#7C3AED" />
+                <Text style={styles.accionTexto}>Ver Métricas</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+
         {/* Turno Actual */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🕒 Turno Actual</Text>
@@ -197,10 +378,10 @@ export const MisTurnosScreen: React.FC = () => {
                   Salida: {turnoActual.salida || 'Pendiente'}
                 </Text>
               </View>
-              
+
               {turnoActual.cajaInicial && (
                 <View style={styles.detalleRow}>
-                  <MaterialCommunityIcons name="cash" size={16} color="#3B82F6" />
+                  <MaterialCommunityIcons name="cash-multiple" size={16} color="#3B82F6" />
                   <Text style={styles.detalleText}>
                     Caja inicial: {turnoActual.cajaInicial} Bs
                   </Text>
@@ -209,11 +390,29 @@ export const MisTurnosScreen: React.FC = () => {
             </View>
 
             <TouchableOpacity 
-              style={styles.controlTurnoBtn} 
+              style={[
+                styles.controlTurnoBtn,
+                { backgroundColor: turnoActual.salida ? '#059669' : '#DC2626' }
+              ]} 
               onPress={() => navigation.navigate('Turno')}
             >
-              <MaterialCommunityIcons name="clipboard-clock" size={20} color="#FFFFFF" />
-              <Text style={styles.controlTurnoBtnText}>Ver Control de Turno</Text>
+              <MaterialCommunityIcons 
+                name={turnoActual.salida ? "check-circle" : "logout"} 
+                size={20} 
+                color="#FFFFFF" 
+              />
+              <View style={styles.controlTurnoBtnContent}>
+                <Text style={styles.controlTurnoBtnText}>
+                  {turnoActual.salida ? "Ver Resumen del Turno" : "Finalizar Turno & Ver Resumen"}
+                </Text>
+                <Text style={styles.controlTurnoBtnSubtext}>
+                  {turnoActual.salida 
+                    ? "Turno completado - revisar estadísticas"
+                    : `${estadisticasDelDia.ordenesHoy} órdenes procesadas hoy`
+                  }
+                </Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={16} color="#FFFFFF" />
             </TouchableOpacity>
           </View>
         </View>
@@ -429,5 +628,141 @@ const styles = StyleSheet.create({
     color: '#3B82F6',
     flex: 1,
     textAlign: 'center',
+  },
+  // Estilos para Resumen del Día
+  resumenContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  resumenGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  resumenCard: {
+    flex: 1,
+    minWidth: '30%',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#F3F4F6',
+  },
+  resumenIconContainer: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  resumenNumber: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 2,
+  },
+  resumenLabel: {
+    fontSize: 11,
+    color: '#6B7280',
+    textAlign: 'center',
+    fontWeight: '500',
+  },
+
+  // Estilos para el progreso del turno
+  progresoContainer: {
+    backgroundColor: '#FAFAFA',
+    borderRadius: 12,
+    padding: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#3B82F6',
+  },
+  progresoHeader: {
+    marginBottom: 16,
+  },
+  progresoTitulo: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1F2937',
+  },
+  progresoListaContainer: {
+    gap: 12,
+  },
+  progresoItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingVertical: 8,
+  },
+  progresoTexto: {
+    fontSize: 14,
+    color: '#6B7280',
+    flex: 1,
+  },
+  progresoTextoCompletado: {
+    color: '#059669',
+    fontWeight: '500',
+  },
+  progresoBadge: {
+    backgroundColor: '#EEF2FF',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  progresoEstado: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#4338CA',
+    textAlign: 'center',
+  },
+
+  // Estilos para acciones rápidas
+  accionesContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    justifyContent: 'space-between',
+  },
+  accionBoton: {
+    flex: 1,
+    minWidth: '22%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    gap: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  accionTexto: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#374151',
+    textAlign: 'center',
+  },
+
+  // Estilos adicionales para el botón de control del turno
+  controlTurnoBtnContent: {
+    flex: 1,
+    marginLeft: 12,
+    marginRight: 8,
+  },
+  controlTurnoBtnSubtext: {
+    fontSize: 12,
+    color: 'rgba(255, 255, 255, 0.8)',
+    marginTop: 2,
   },
 });

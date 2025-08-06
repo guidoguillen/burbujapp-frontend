@@ -5,6 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { NotificationService } from '../../services/NotificationService';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'DetalleOrden'>;
 type RoutePropType = RouteProp<RootStackParamList, 'DetalleOrden'>;
@@ -134,11 +135,11 @@ export const DetalleOrdenScreen: React.FC = () => {
   const getEstadoColor = (estado: string) => {
     switch (estado) {
       case 'Registrado':
-        return { backgroundColor: '#FEF3C7', color: '#92400E', icon: 'clipboard-text' as const };
+        return { backgroundColor: '#FEF3C7', color: '#92400E', icon: 'clipboard-plus' as const };
       case 'En proceso':
-        return { backgroundColor: '#D1FAE5', color: '#065F46', icon: 'cog' as const };
+        return { backgroundColor: '#DBEAFE', color: '#1E40AF', icon: 'clock-time-four' as const };
       case 'Terminado':
-        return { backgroundColor: '#DBEAFE', color: '#1E40AF', icon: 'check-circle' as const };
+        return { backgroundColor: '#D1FAE5', color: '#065F46', icon: 'check-circle' as const };
       default:
         return { backgroundColor: '#F3F4F6', color: '#374151', icon: 'clipboard-text' as const };
     }

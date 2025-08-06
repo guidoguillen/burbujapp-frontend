@@ -35,61 +35,38 @@ export const DashboardScreen: React.FC = () => {
         </View>
         
         <View style={styles.main}>
-          {/* Estadísticas rápidas */}
-          <View style={styles.statsContainer}>
-            <Text style={styles.statsTitle}>📊 Resumen del día</Text>
-            <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>{estadisticas.ordenesHoy}</Text>
-                <Text style={styles.statLabel}>Órdenes hoy</Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>{estadisticas.ordenesEnProceso}</Text>
-                <Text style={styles.statLabel}>En proceso</Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>${estadisticas.ventasHoy}</Text>
-                <Text style={styles.statLabel}>Ventas hoy</Text>
-              </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>{estadisticas.clientesAtendidos}</Text>
-                <Text style={styles.statLabel}>Clientes</Text>
-              </View>
-            </View>
-          </View>
-
           <View style={styles.grid}>
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('SelectCliente')}>
-              <View style={[styles.cardIconContainer, { backgroundColor: '#DBEAFE' }]}>
-                <MaterialCommunityIcons name="plus-box-outline" size={24} color="#2563EB" />
+              <View style={[styles.cardIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                <MaterialCommunityIcons name="plus-circle" size={28} color="#3B82F6" />
               </View>
               <Text style={styles.cardTitle}>Crear Orden</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('MisOrdenes')}>
-              <View style={[styles.cardIconContainer, { backgroundColor: '#EDE9FE' }]}>
-                <MaterialCommunityIcons name="format-list-bulleted" size={24} color="#7C3AED" />
+              <View style={[styles.cardIconContainer, { backgroundColor: '#F3E8FF' }]}>
+                <MaterialCommunityIcons name="clipboard-list" size={28} color="#8B5CF6" />
               </View>
               <Text style={styles.cardTitle}>Mis Órdenes</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Turnos')}>
-              <View style={[styles.cardIconContainer, { backgroundColor: '#F0FDFA' }]}>
-                <MaterialCommunityIcons name="calendar-clock" size={24} color="#0D9488" />
+              <View style={[styles.cardIconContainer, { backgroundColor: '#D1FAE5' }]}>
+                <MaterialCommunityIcons name="calendar-today" size={28} color="#059669" />
               </View>
               <Text style={styles.cardTitle}>Mis Turnos</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Turno')}>
-              <View style={[styles.cardIconContainer, { backgroundColor: '#F0FDF4' }]}>
-                <MaterialCommunityIcons name="clock-check-outline" size={24} color="#059669" />
+              <View style={[styles.cardIconContainer, { backgroundColor: '#FEF3C7' }]}>
+                <MaterialCommunityIcons name="clock-check" size={28} color="#F59E0B" />
               </View>
               <Text style={styles.cardTitle}>Control Turno</Text>
             </TouchableOpacity>
             
             <TouchableOpacity style={styles.card} onPress={() => { logout(); navigation.reset({ index: 0, routes: [{ name: 'Auth' }] }); }}>
               <View style={[styles.cardIconContainer, { backgroundColor: '#FEF2F2' }]}>
-                <MaterialCommunityIcons name="logout" size={24} color="#DC2626" />
+                <MaterialCommunityIcons name="logout-variant" size={28} color="#DC2626" />
               </View>
               <Text style={styles.cardTitle}>Cerrar Sesión</Text>
             </TouchableOpacity>
@@ -141,8 +118,9 @@ const styles = StyleSheet.create({
   },
   main: {
     flex: 1,
-    paddingHorizontal: 16,
-    marginTop: 32,
+    paddingHorizontal: 20,
+    paddingTop: 24,
+    paddingBottom: 24,
   },
   grid: {
     flexDirection: 'row',
@@ -152,28 +130,31 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
+    borderRadius: 16,
     padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
     width: '48%',
     aspectRatio: 1,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 4,
   },
   cardIconContainer: {
-    borderRadius: 50,
+    borderRadius: 12,
     padding: 12,
     marginBottom: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   cardTitle: {
     fontSize: 14,
-    fontWeight: '500',
+    fontWeight: '600',
     color: '#374151',
     textAlign: 'center',
+    lineHeight: 18,
   },
   statsContainer: {
     backgroundColor: '#FFFFFF',

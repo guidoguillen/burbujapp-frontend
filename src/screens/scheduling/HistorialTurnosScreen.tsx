@@ -111,9 +111,9 @@ export const HistorialTurnosScreen: React.FC = () => {
       case 'Pendiente':
         return { backgroundColor: '#FEF3C7', color: '#92400E', icon: 'clock-outline' as const };
       case 'En curso':
-        return { backgroundColor: '#D1FAE5', color: '#065F46', icon: 'clock-check' as const };
+        return { backgroundColor: '#DBEAFE', color: '#1E40AF', icon: 'clock-time-four' as const };
       case 'Finalizado':
-        return { backgroundColor: '#DBEAFE', color: '#1E40AF', icon: 'check-circle' as const };
+        return { backgroundColor: '#D1FAE5', color: '#065F46', icon: 'check-circle' as const };
       case 'Cancelado':
         return { backgroundColor: '#FEE2E2', color: '#DC2626', icon: 'close-circle' as const };
       default:
