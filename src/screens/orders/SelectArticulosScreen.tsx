@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Modal, Animated, Keyboard } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert, Modal, Animated, Keyboard, Image } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -16,6 +16,9 @@ interface Articulo {
   unidadCobro: 'kilo' | 'unidad';
   cantidad: number;
   precio: number;
+  foto?: string;
+  notas?: string;
+  estadoRopa?: string;
 }
 
 // Datos mock de artículos existentes
@@ -176,7 +179,10 @@ export const SelectArticulosScreen: React.FC = () => {
     tipoServicio: 'lavado' as 'lavado' | 'planchado' | 'otros',
     unidadCobro: 'unidad' as 'kilo' | 'unidad',
     cantidad: 1,
-    precio: 0
+    precio: 0,
+    foto: '',
+    notas: '',
+    estadoRopa: ''
   });
   const [carritoAnimation] = useState(new Animated.Value(0));
 
@@ -194,7 +200,10 @@ export const SelectArticulosScreen: React.FC = () => {
         tipoServicio: 'lavado',
         unidadCobro: 'unidad',
         cantidad: 1,
-        precio: 0
+        precio: 0,
+        foto: '',
+        notas: '',
+        estadoRopa: ''
       });
     });
 
@@ -291,7 +300,10 @@ export const SelectArticulosScreen: React.FC = () => {
       tipoServicio: 'lavado',
       unidadCobro: 'unidad',
       cantidad: 1,
-      precio: 5 // Precio sugerido por defecto
+      precio: 5, // Precio sugerido por defecto
+      foto: '',
+      notas: '',
+      estadoRopa: ''
     });
     setBusquedaArticulo('');
     setMostrarFormulario(false);
@@ -311,6 +323,38 @@ export const SelectArticulosScreen: React.FC = () => {
     setArticulos(prev => prev.filter(item => item.id !== id));
   };
 
+  // Nueva función para tomar foto
+  const handleTomarFoto = () => {
+    Alert.alert(
+      '📸 Agregar Foto',
+      'Selecciona una opción para agregar la foto del artículo:',
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel'
+        },
+        {
+          text: 'Cámara',
+          onPress: () => {
+            // Simulación de tomar foto
+            const fotoSimulada = `https://picsum.photos/300/300?random=${Date.now()}`;
+            setArticuloActual(prev => ({ ...prev, foto: fotoSimulada }));
+            Alert.alert('✅ Foto capturada', 'La foto ha sido agregada al artículo');
+          }
+        },
+        {
+          text: 'Galería',
+          onPress: () => {
+            // Simulación de seleccionar de galería
+            const fotoSimulada = `https://picsum.photos/300/300?random=${Date.now() + 1}`;
+            setArticuloActual(prev => ({ ...prev, foto: fotoSimulada }));
+            Alert.alert('✅ Foto seleccionada', 'La foto ha sido agregada al artículo');
+          }
+        }
+      ]
+    );
+  };
+
   const handleAbrirModalNuevoArticulo = () => {
     // Resetear formulario
     setArticuloActual({
@@ -318,7 +362,10 @@ export const SelectArticulosScreen: React.FC = () => {
       tipoServicio: 'lavado',
       unidadCobro: 'unidad',
       cantidad: 1,
-      precio: 0
+      precio: 0,
+      foto: '',
+      notas: '',
+      estadoRopa: ''
     });
     setBusquedaArticulo('');
     setMostrarFormulario(true);
@@ -781,6 +828,117 @@ export const SelectArticulosScreen: React.FC = () => {
                   <Text style={styles.totalParcialDetalle}>
                     {articuloActual.cantidad} {articuloActual.unidadCobro === 'kilo' ? 'kg' : 'unidad(es)'} × ${articuloActual.precio}/{articuloActual.unidadCobro === 'kilo' ? 'kg' : 'unidad'}
                   </Text>
+                </View>
+
+                {/* Nueva sección: Foto del artículo */}
+                <View style={styles.formGroup}>
+                  <Text style={styles.label}>📸 Foto del artículo (opcional)</Text>
+                  <Text style={styles.helperText}>Captura el estado actual de la prenda</Text>
+                  
+                  <View style={styles.fotoContainer}>
+                    {articuloActual.foto ? (
+                      <View style={styles.fotoPreview}>
+                        <Image source={{ uri: articuloActual.foto }} style={styles.fotoImage} />
+                        <TouchableOpacity 
+                          style={styles.fotoRemoveBtn}
+                          onPress={() => setArticuloActual(prev => ({ ...prev, foto: '' }))}
+                        >
+                          <MaterialCommunityIcons name="close" size={20} color="#FFFFFF" />
+                        </TouchableOpacity>
+                      </View>
+                    ) : (
+                      <TouchableOpacity style={styles.fotoPlaceholder} onPress={handleTomarFoto}>
+                        <MaterialCommunityIcons name="camera-plus" size={32} color="#6B7280" />
+                        <Text style={styles.fotoPlaceholderText}>Tomar foto</Text>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                </View>
+
+                {/* Nueva sección: Estado de la ropa */}
+                <View style={styles.formGroup}>
+                  <Text style={styles.label}>🏷️ Estado de la ropa</Text>
+                  <Text style={styles.helperText}>Selecciona el estado actual de la prenda</Text>
+                  
+                  <View style={styles.estadoContainer}>
+                    {[
+                      { id: 'bueno', label: 'Bueno', icon: 'check-circle', color: '#10B981' },
+                      { id: 'manchas', label: 'Con manchas', icon: 'alert-circle', color: '#F59E0B' },
+                      { id: 'desgaste', label: 'Desgaste', icon: 'information', color: '#8B5CF6' },
+                      { id: 'dañado', label: 'Dañado', icon: 'close-circle', color: '#EF4444' }
+                    ].map((estado) => (
+                      <TouchableOpacity
+                        key={estado.id}
+                        style={[
+                          styles.estadoBtn,
+                          articuloActual.estadoRopa === estado.id && styles.estadoBtnActive,
+                          { borderColor: estado.color }
+                        ]}
+                        onPress={() => setArticuloActual(prev => ({ ...prev, estadoRopa: estado.id }))}
+                      >
+                        <MaterialCommunityIcons 
+                          name={estado.icon as any} 
+                          size={20} 
+                          color={articuloActual.estadoRopa === estado.id ? '#FFFFFF' : estado.color} 
+                        />
+                        <Text style={[
+                          styles.estadoBtnText,
+                          articuloActual.estadoRopa === estado.id && styles.estadoBtnTextActive
+                        ]}>
+                          {estado.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+
+                {/* Nueva sección: Notas adicionales */}
+                <View style={styles.formGroup}>
+                  <Text style={styles.label}>📝 Notas adicionales (opcional)</Text>
+                  <Text style={styles.helperText}>Describe manchas, daños o instrucciones especiales</Text>
+                  
+                  <View style={styles.notasContainer}>
+                    <TextInput
+                      style={styles.notasInput}
+                      placeholder="Ej: Mancha de grasa en la manga izquierda, requiere tratamiento especial..."
+                      value={articuloActual.notas}
+                      onChangeText={(text) => setArticuloActual(prev => ({ ...prev, notas: text }))}
+                      multiline
+                      numberOfLines={3}
+                      maxLength={200}
+                    />
+                    <Text style={styles.notasCounter}>
+                      {articuloActual.notas.length}/200 caracteres
+                    </Text>
+                  </View>
+                  
+                  {/* Sugerencias rápidas */}
+                  <View style={styles.sugerenciasContainer}>
+                    <Text style={styles.sugerenciasLabel}>Sugerencias rápidas:</Text>
+                    <View style={styles.sugerenciasBtns}>
+                      {[
+                        'Mancha difícil',
+                        'Tela delicada',
+                        'No planchar',
+                        'Secar a la sombra',
+                        'Lavado en frío'
+                      ].map((sugerencia) => (
+                        <TouchableOpacity
+                          key={sugerencia}
+                          style={styles.sugerenciaBtn}
+                          onPress={() => {
+                            const notasActuales = articuloActual.notas;
+                            const nuevaNota = notasActuales ? `${notasActuales}, ${sugerencia}` : sugerencia;
+                            if (nuevaNota.length <= 200) {
+                              setArticuloActual(prev => ({ ...prev, notas: nuevaNota }));
+                            }
+                          }}
+                        >
+                          <Text style={styles.sugerenciaBtnText}>{sugerencia}</Text>
+                        </TouchableOpacity>
+                      ))}
+                    </View>
+                  </View>
                 </View>
 
                 <View style={styles.formActions}>
@@ -1483,5 +1641,123 @@ const styles = StyleSheet.create({
   },
   presetTextActive: {
     color: '#FFFFFF',
+  },
+  // Estilos para funcionalidad de foto y notas
+  helperText: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 4,
+    fontStyle: 'italic',
+  },
+  fotoContainer: {
+    alignItems: 'center',
+    gap: 12,
+  },
+  fotoPreview: {
+    position: 'relative',
+    borderRadius: 8,
+    overflow: 'hidden',
+  },
+  fotoImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 8,
+  },
+  fotoRemoveBtn: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 12,
+    width: 24,
+    height: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  fotoPlaceholder: {
+    width: 120,
+    height: 120,
+    backgroundColor: '#F3F4F6',
+    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: '#D1D5DB',
+    borderStyle: 'dashed',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  fotoPlaceholderText: {
+    fontSize: 12,
+    color: '#6B7280',
+    textAlign: 'center',
+    lineHeight: 16,
+  },
+  estadoContainer: {
+    gap: 8,
+  },
+  estadoBtn: {
+    backgroundColor: '#F3F4F6',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+  },
+  estadoBtnActive: {
+    backgroundColor: '#059669',
+    borderColor: '#059669',
+  },
+  estadoBtnText: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+    textAlign: 'center',
+  },
+  estadoBtnTextActive: {
+    color: '#FFFFFF',
+  },
+  notasContainer: {
+    gap: 8,
+  },
+  notasInput: {
+    backgroundColor: '#F9FAFB',
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    color: '#111827',
+    textAlignVertical: 'top',
+    minHeight: 80,
+  },
+  notasCounter: {
+    fontSize: 12,
+    color: '#6B7280',
+    textAlign: 'right',
+  },
+  sugerenciasContainer: {
+    gap: 8,
+  },
+  sugerenciasLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+  },
+  sugerenciasBtns: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
+  sugerenciaBtn: {
+    backgroundColor: '#F3F4F6',
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 6,
+    borderWidth: 1,
+    borderColor: '#D1D5DB',
+  },
+  sugerenciaBtnText: {
+    fontSize: 12,
+    color: '#374151',
   },
 });

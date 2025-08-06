@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Alert, Linking, Share, Platform } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
@@ -8,6 +8,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import ViewShot from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'ReviewOrden'>;
 type RoutePropType = RouteProp<RootStackParamList, 'ReviewOrden'>;
@@ -26,7 +27,57 @@ export const ReviewOrdenScreen: React.FC = () => {
   const [ordenCreada, setOrdenCreada] = useState(false);
   const [codigoOrden, setCodigoOrden] = useState('');
   const [qrValue, setQrValue] = useState('');
+  const [fechaEntrega, setFechaEntrega] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const qrRef = useRef<ViewShot>(null);
+
+  // Calcular fecha mínima de entrega (48 horas desde ahora)
+  const calcularFechaMinima = () => {
+    const ahora = new Date();
+    ahora.setHours(ahora.getHours() + 48);
+    return ahora;
+  };
+
+  // Calcular fecha sugerida de entrega (72 horas desde ahora)
+  const calcularFechaSugerida = () => {
+    const ahora = new Date();
+    ahora.setHours(ahora.getHours() + 72);
+    return ahora;
+  };
+
+  // Inicializar con fecha recomendada
+  useEffect(() => {
+    setFechaEntrega(calcularFechaSugerida());
+  }, []);
+
+  // Manejar cambio de fecha
+  const handleDateChange = (event: any, selectedDate?: Date) => {
+    setShowDatePicker(false);
+    if (selectedDate) {
+      // Mantener la hora actual si ya hay una fecha seleccionada
+      const newDate = new Date(selectedDate);
+      if (fechaEntrega) {
+        newDate.setHours(fechaEntrega.getHours());
+        newDate.setMinutes(fechaEntrega.getMinutes());
+      } else {
+        // Si no hay fecha previa, usar hora sugerida (14:00)
+        newDate.setHours(14, 0, 0, 0);
+      }
+      setFechaEntrega(newDate);
+    }
+  };
+
+  // Manejar cambio de hora
+  const handleTimeChange = (event: any, selectedTime?: Date) => {
+    setShowTimePicker(false);
+    if (selectedTime && fechaEntrega) {
+      const newDate = new Date(fechaEntrega);
+      newDate.setHours(selectedTime.getHours());
+      newDate.setMinutes(selectedTime.getMinutes());
+      setFechaEntrega(newDate);
+    }
+  };
 
   const generateOrdenCode = () => {
     const timestamp = new Date().getTime();
@@ -35,6 +86,16 @@ export const ReviewOrdenScreen: React.FC = () => {
   };
 
   const handleProcesarOrden = () => {
+    // Validar que se haya seleccionado una fecha de entrega
+    if (!fechaEntrega) {
+      Alert.alert(
+        'Fecha de Entrega Requerida',
+        'Por favor selecciona cuándo estará lista la orden.',
+        [{ text: 'Entendido' }]
+      );
+      return;
+    }
+
     const codigo = generateOrdenCode();
     const fechaCreacion = new Date().toLocaleString('es-ES');
     
@@ -44,6 +105,7 @@ export const ReviewOrdenScreen: React.FC = () => {
       cliente: `${cliente.nombre} ${cliente.apellido}`,
       telefono: cliente.telefono,
       fecha: fechaCreacion,
+      fechaEntrega: fechaEntrega.toLocaleString('es-ES'),
       articulos: articulos.length,
       total: total.toFixed(2),
       estado: 'Pendiente'
@@ -92,7 +154,15 @@ export const ReviewOrdenScreen: React.FC = () => {
 Tu orden ha sido creada exitosamente:
 
 📋 *Código:* ${codigoOrden}
-📅 *Fecha:* ${fecha}
+📅 *Fecha de Orden:* ${fecha}
+🎯 *Fecha de Entrega:* ${fechaEntrega?.toLocaleDateString('es-ES', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })}
 👤 *Cliente:* ${cliente.nombre} ${cliente.apellido}
 📞 *Teléfono:* ${cliente.telefono}
 
@@ -102,7 +172,7 @@ ${articulosResumen}
 💰 *TOTAL: $${total.toFixed(2)}*
 📱 *Estado:* Pendiente
 
-${qrImageUri ? '� *Ver código QR adjunto para seguimiento*' : '🔍 *Código QR disponible en la aplicación*'}
+${qrImageUri ? '📊 *Ver código QR adjunto para seguimiento*' : '🔍 *Código QR disponible en la aplicación*'}
 
 ¡Te notificaremos cuando esté lista! ✨
 
@@ -345,7 +415,15 @@ ${qrImageUri ? '� *Ver código QR adjunto para seguimiento*' : '🔍 *Código 
 Tu orden ha sido creada exitosamente:
 
 📋 *Código:* ${codigoOrden}
-📅 *Fecha:* ${fecha}
+📅 *Fecha de Orden:* ${fecha}
+🎯 *Fecha de Entrega:* ${fechaEntrega?.toLocaleDateString('es-ES', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit'
+      })}
 👤 *Cliente:* ${cliente.nombre} ${cliente.apellido}
 📞 *Teléfono:* ${cliente.telefono}
 
@@ -518,6 +596,21 @@ ${articulosResumen}
                 <Text style={styles.summaryValue}>{cliente.telefono}</Text>
               </View>
               
+              {fechaEntrega && (
+                <View style={styles.summaryRow}>
+                  <Text style={styles.summaryLabel}>Entrega:</Text>
+                  <Text style={styles.summaryValue}>
+                    {fechaEntrega.toLocaleDateString('es-ES', {
+                      weekday: 'short',
+                      day: 'numeric',
+                      month: 'short',
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    })}
+                  </Text>
+                </View>
+              )}
+              
               <View style={styles.summaryRow}>
                 <Text style={styles.summaryLabel}>Artículos:</Text>
                 <Text style={styles.summaryValue}>{articulos.length} prendas</Text>
@@ -637,6 +730,109 @@ ${articulosResumen}
               </View>
             </View>
           ))}
+        </View>
+
+        {/* Fecha de entrega */}
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>📅 Fecha de Entrega</Text>
+          
+          <View style={styles.fechaContainer}>
+            <Text style={styles.fechaLabel}>Selecciona cuándo estará lista:</Text>
+            
+            {/* Opciones rápidas */}
+            <View style={styles.opcionesRapidas}>
+              <TouchableOpacity
+                style={styles.opcionRapida}
+                onPress={() => setFechaEntrega(calcularFechaMinima())}
+              >
+                <MaterialCommunityIcons name="clock-fast" size={16} color="#F59E0B" />
+                <Text style={styles.opcionRapidaText}>48h (Express)</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity
+                style={styles.opcionRapida}
+                onPress={() => setFechaEntrega(calcularFechaSugerida())}
+              >
+                <MaterialCommunityIcons name="star" size={16} color="#059669" />
+                <Text style={styles.opcionRapidaText}>72h (Recomendado)</Text>
+              </TouchableOpacity>
+            </View>
+
+            {/* Selectores de fecha y hora */}
+            <View style={styles.dateTimeContainer}>
+              <TouchableOpacity
+                style={styles.dateTimeButton}
+                onPress={() => setShowDatePicker(true)}
+              >
+                <MaterialCommunityIcons name="calendar" size={20} color="#3B82F6" />
+                <View style={styles.dateTimeText}>
+                  <Text style={styles.dateTimeLabel}>Fecha</Text>
+                  <Text style={styles.dateTimeValue}>
+                    {fechaEntrega?.toLocaleDateString('es-ES', {
+                      weekday: 'short',
+                      day: 'numeric',
+                      month: 'short',
+                      year: 'numeric'
+                    }) || 'Seleccionar fecha'}
+                  </Text>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={20} color="#6B7280" />
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.dateTimeButton}
+                onPress={() => setShowTimePicker(true)}
+              >
+                <MaterialCommunityIcons name="clock" size={20} color="#3B82F6" />
+                <View style={styles.dateTimeText}>
+                  <Text style={styles.dateTimeLabel}>Hora</Text>
+                  <Text style={styles.dateTimeValue}>
+                    {fechaEntrega?.toLocaleTimeString('es-ES', {
+                      hour: '2-digit',
+                      minute: '2-digit'
+                    }) || 'Seleccionar hora'}
+                  </Text>
+                </View>
+                <MaterialCommunityIcons name="chevron-right" size={20} color="#6B7280" />
+              </TouchableOpacity>
+            </View>
+
+            {fechaEntrega && (
+              <View style={styles.fechaSeleccionada}>
+                <MaterialCommunityIcons name="calendar-check" size={16} color="#059669" />
+                <Text style={styles.fechaSeleccionadaTexto}>
+                  Entrega programada: {fechaEntrega.toLocaleDateString('es-ES', {
+                    weekday: 'long',
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </Text>
+              </View>
+            )}
+
+            {/* DateTimePickers */}
+            {showDatePicker && (
+              <DateTimePicker
+                value={fechaEntrega || calcularFechaSugerida()}
+                mode="date"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                minimumDate={calcularFechaMinima()}
+                onChange={handleDateChange}
+              />
+            )}
+
+            {showTimePicker && (
+              <DateTimePicker
+                value={fechaEntrega || calcularFechaSugerida()}
+                mode="time"
+                display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+                onChange={handleTimeChange}
+              />
+            )}
+          </View>
         </View>
 
         {/* Totales */}
@@ -1007,5 +1203,80 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 18,
     fontWeight: '700',
+  },
+  // Estilos para fecha de entrega
+  fechaContainer: {
+    gap: 16,
+  },
+  fechaLabel: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 8,
+  },
+  opcionesRapidas: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  opcionRapida: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 8,
+    padding: 12,
+    gap: 8,
+  },
+  opcionRapidaText: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#374151',
+  },
+  dateTimeContainer: {
+    gap: 12,
+  },
+  dateTimeButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    borderRadius: 12,
+    padding: 16,
+    gap: 12,
+  },
+  dateTimeText: {
+    flex: 1,
+  },
+  dateTimeLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#6B7280',
+    marginBottom: 4,
+  },
+  dateTimeValue: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  fechaSeleccionada: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+    borderRadius: 8,
+    padding: 12,
+    gap: 8,
+    marginTop: 16,
+  },
+  fechaSeleccionadaTexto: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#059669',
+    flex: 1,
   },
 });
