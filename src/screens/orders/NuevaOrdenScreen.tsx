@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types';
@@ -56,13 +56,47 @@ export const NuevaOrdenScreen: React.FC = () => {
   };
 
   const handleFinalizarOrden = () => {
-    // Aquí se procesaría la orden
-    console.log('Orden finalizada:', {
+    if (!clienteSeleccionado) {
+      Alert.alert('Error', 'Debes seleccionar un cliente');
+      return;
+    }
+    
+    if (articulosCarrito.length === 0) {
+      Alert.alert('Error', 'Debes agregar al menos un artículo');
+      return;
+    }
+    
+    const total = calcularTotal();
+    const nuevaOrden = {
+      id: Date.now().toString(),
       cliente: clienteSeleccionado,
       articulos: articulosCarrito,
-      total: calcularTotal()
-    });
-    navigation.goBack();
+      total: total,
+      fechaCreacion: new Date().toISOString(),
+      estado: 'Registrado'
+    };
+    
+    Alert.alert(
+      '✅ Orden creada exitosamente',
+      `Cliente: ${clienteSeleccionado.nombre} ${clienteSeleccionado.apellido}\nArtículos: ${articulosCarrito.length}\nTotal: $${total.toFixed(2)}`,
+      [
+        {
+          text: 'Ver órdenes',
+          onPress: () => {
+            navigation.navigate('MisOrdenes');
+          }
+        },
+        {
+          text: 'Crear nueva',
+          onPress: () => {
+            // Limpiar formulario
+            setClienteSeleccionado(null);
+            setArticulosCarrito([]);
+            setEtapaActual(1);
+          }
+        }
+      ]
+    );
   };
 
   return (

@@ -61,6 +61,26 @@ export const TurnoScreen: React.FC = () => {
     });
   };
 
+  // Función para guardar turno en histórico
+  const guardarTurnoHistorico = (turnoCompleto: any) => {
+    const turnoHistorico = {
+      id: Date.now().toString(),
+      fecha: turnoCompleto.fecha,
+      inicio: turnoCompleto.horaInicio,
+      fin: '16:00', // Hora estándar de fin
+      estado: 'Finalizado',
+      entrada: turnoCompleto.horaEntrada,
+      salida: turnoCompleto.horaSalida,
+      cajaInicial: turnoCompleto.cajaInicial,
+      cajaFinal: turnoCompleto.cajaFinal,
+      totalVentas: turnoCompleto.totalVentas,
+      observaciones: turnoCompleto.observaciones
+    };
+    
+    // Aquí se guardaría en AsyncStorage o se enviaría a una API
+    console.log('Turno guardado en histórico:', turnoHistorico);
+  };
+
   const enviarReportePorWhatsApp = async () => {
     if (!turnoActual.horaEntrada || !turnoActual.horaSalida) {
       Alert.alert('Error', 'El turno debe estar completado para enviar el reporte');
@@ -187,6 +207,16 @@ _Reporte automático - BurbujApp_ 🧼✨`;
       totalVentas,
       observaciones: observacionesInput
     }));
+
+    // Guardar en histórico
+    const turnoCompleto = {
+      ...turnoActual,
+      horaSalida,
+      cajaFinal,
+      totalVentas,
+      observaciones: observacionesInput
+    };
+    guardarTurnoHistorico(turnoCompleto);
 
     setCajaFinalInput('');
     setObservacionesInput('');

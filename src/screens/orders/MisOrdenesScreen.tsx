@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, FlatList, TextInput, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types';
@@ -157,6 +157,31 @@ export const MisOrdenesScreen: React.FC = () => {
 
   const ordenesFiltradas = filtrarOrdenes();
 
+  // Función para exportar órdenes
+  const exportarOrdenes = () => {
+    const ordenesParaExportar = ordenesFiltradas.map(orden => ({
+      id: orden.id,
+      fecha: orden.fechaCreacion,
+      cliente: `${orden.cliente.nombre} ${orden.cliente.apellido}`,
+      telefono: orden.cliente.telefono,
+      total: orden.total,
+      estado: orden.estado,
+      articulos: 3 // orden.articulos.length - temporal
+    }));
+    
+    Alert.alert(
+      '📊 Exportar Órdenes',
+      `Se exportarán ${ordenesParaExportar.length} órdenes del estado "${estadoActivo}"`,
+      [
+        { text: 'Cancelar', style: 'cancel' },
+        { 
+          text: 'Exportar', 
+          onPress: () => Alert.alert('✅ Éxito', 'Las órdenes se han exportado correctamente')
+        }
+      ]
+    );
+  };
+
   const getContadorPorEstado = (estado: EstadoFiltro): number => {
     return ordenes.filter(orden => orden.estado === estado).length;
   };
@@ -217,7 +242,9 @@ export const MisOrdenesScreen: React.FC = () => {
           <MaterialCommunityIcons name="arrow-left" size={24} color="#374151" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Mis Órdenes</Text>
-        <View style={styles.headerSpacer} />
+        <TouchableOpacity style={styles.exportBtn} onPress={exportarOrdenes}>
+          <MaterialCommunityIcons name="download" size={20} color="#3B82F6" />
+        </TouchableOpacity>
       </View>
 
       {/* Filtros por estado */}
@@ -352,6 +379,9 @@ const styles = StyleSheet.create({
     width: 24,
   },
   backBtn: {
+    padding: 8,
+  },
+  exportBtn: {
     padding: 8,
   },
   filtrosEstado: {

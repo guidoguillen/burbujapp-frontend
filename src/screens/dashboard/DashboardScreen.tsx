@@ -11,6 +11,14 @@ export const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const { logout, state } = useAuth();
 
+  // Estadísticas mock (en una app real vendrían de una API)
+  const estadisticas = {
+    ordenesHoy: 8,
+    ordenesEnProceso: 3,
+    ventasHoy: 280,
+    clientesAtendidos: 6
+  };
+
   // Solo mostrar opciones si el usuario es operador
   if (state.user?.role === 'operator') {
     return (
@@ -27,6 +35,29 @@ export const DashboardScreen: React.FC = () => {
         </View>
         
         <View style={styles.main}>
+          {/* Estadísticas rápidas */}
+          <View style={styles.statsContainer}>
+            <Text style={styles.statsTitle}>📊 Resumen del día</Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>{estadisticas.ordenesHoy}</Text>
+                <Text style={styles.statLabel}>Órdenes hoy</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>{estadisticas.ordenesEnProceso}</Text>
+                <Text style={styles.statLabel}>En proceso</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>${estadisticas.ventasHoy}</Text>
+                <Text style={styles.statLabel}>Ventas hoy</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>{estadisticas.clientesAtendidos}</Text>
+                <Text style={styles.statLabel}>Clientes</Text>
+              </View>
+            </View>
+          </View>
+
           <View style={styles.grid}>
             <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('SelectCliente')}>
               <View style={[styles.cardIconContainer, { backgroundColor: '#DBEAFE' }]}>
@@ -142,6 +173,48 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '500',
     color: '#374151',
+    textAlign: 'center',
+  },
+  statsContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  statsTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#111827',
+    marginBottom: 16,
+  },
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+  },
+  statCard: {
+    flex: 1,
+    minWidth: '45%',
+    backgroundColor: '#F8FAFC',
+    borderRadius: 8,
+    padding: 12,
+    alignItems: 'center',
+  },
+  statNumber: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#059669',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#6B7280',
+    fontWeight: '500',
     textAlign: 'center',
   },
 });

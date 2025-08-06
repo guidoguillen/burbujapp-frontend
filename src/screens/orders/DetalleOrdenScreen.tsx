@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
@@ -47,6 +47,9 @@ export const DetalleOrdenScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RoutePropType>();
   const { ordenId } = route.params;
+
+  const [editandoObservaciones, setEditandoObservaciones] = useState(false);
+  const [nuevasObservaciones, setNuevasObservaciones] = useState('');
 
   // Datos mock de la orden específica
   const [orden] = useState<OrdenDetalle>({
