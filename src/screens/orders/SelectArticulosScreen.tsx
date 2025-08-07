@@ -18,7 +18,6 @@ interface Articulo {
   precio: number;
   foto?: string;
   notas?: string;
-  estadoRopa?: string;
 }
 
 // Datos mock de artículos existentes
@@ -181,8 +180,7 @@ export const SelectArticulosScreen: React.FC = () => {
     cantidad: 1,
     precio: 0,
     foto: '',
-    notas: '',
-    estadoRopa: ''
+    notas: ''
   });
   const [carritoAnimation] = useState(new Animated.Value(0));
 
@@ -202,8 +200,7 @@ export const SelectArticulosScreen: React.FC = () => {
         cantidad: 1,
         precio: 0,
         foto: '',
-        notas: '',
-        estadoRopa: ''
+        notas: ''
       });
     });
 
@@ -302,8 +299,7 @@ export const SelectArticulosScreen: React.FC = () => {
       cantidad: 1,
       precio: 5, // Precio sugerido por defecto
       foto: '',
-      notas: '',
-      estadoRopa: ''
+      notas: ''
     });
     setBusquedaArticulo('');
     setMostrarFormulario(false);
@@ -364,8 +360,7 @@ export const SelectArticulosScreen: React.FC = () => {
       cantidad: 1,
       precio: 0,
       foto: '',
-      notas: '',
-      estadoRopa: ''
+      notas: ''
     });
     setBusquedaArticulo('');
     setMostrarFormulario(true);
@@ -852,43 +847,6 @@ export const SelectArticulosScreen: React.FC = () => {
                         <Text style={styles.fotoPlaceholderText}>Tomar foto</Text>
                       </TouchableOpacity>
                     )}
-                  </View>
-                </View>
-
-                {/* Nueva sección: Estado de la ropa */}
-                <View style={styles.formGroup}>
-                  <Text style={styles.label}>🏷️ Estado de la ropa</Text>
-                  <Text style={styles.helperText}>Selecciona el estado actual de la prenda</Text>
-                  
-                  <View style={styles.estadoContainer}>
-                    {[
-                      { id: 'bueno', label: 'Bueno', icon: 'check-circle', color: '#10B981' },
-                      { id: 'manchas', label: 'Con manchas', icon: 'alert-circle', color: '#F59E0B' },
-                      { id: 'desgaste', label: 'Desgaste', icon: 'information', color: '#8B5CF6' },
-                      { id: 'dañado', label: 'Dañado', icon: 'close-circle', color: '#EF4444' }
-                    ].map((estado) => (
-                      <TouchableOpacity
-                        key={estado.id}
-                        style={[
-                          styles.estadoBtn,
-                          articuloActual.estadoRopa === estado.id && styles.estadoBtnActive,
-                          { borderColor: estado.color }
-                        ]}
-                        onPress={() => setArticuloActual(prev => ({ ...prev, estadoRopa: estado.id }))}
-                      >
-                        <MaterialCommunityIcons 
-                          name={estado.icon as any} 
-                          size={20} 
-                          color={articuloActual.estadoRopa === estado.id ? '#FFFFFF' : estado.color} 
-                        />
-                        <Text style={[
-                          styles.estadoBtnText,
-                          articuloActual.estadoRopa === estado.id && styles.estadoBtnTextActive
-                        ]}>
-                          {estado.label}
-                        </Text>
-                      </TouchableOpacity>
-                    ))}
                   </View>
                 </View>
 
@@ -1691,30 +1649,6 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     textAlign: 'center',
     lineHeight: 16,
-  },
-  estadoContainer: {
-    gap: 8,
-  },
-  estadoBtn: {
-    backgroundColor: '#F3F4F6',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: '#D1D5DB',
-  },
-  estadoBtnActive: {
-    backgroundColor: '#059669',
-    borderColor: '#059669',
-  },
-  estadoBtnText: {
-    fontSize: 14,
-    fontWeight: '500',
-    color: '#374151',
-    textAlign: 'center',
-  },
-  estadoBtnTextActive: {
-    color: '#FFFFFF',
   },
   notasContainer: {
     gap: 8,
