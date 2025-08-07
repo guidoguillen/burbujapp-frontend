@@ -4,7 +4,7 @@
 Aplicación móvil desarrollada en React Native con Expo para gestión empresarial completa. Incluye módulos para manejo de clientes, inventario, pedidos, pagos, promociones, reportes, programación de citas y servicios.
 
 ## Tecnologías
-- React Native
+- React Native GG
 - Expo ~53.0.20
 - TypeScript ~5.8.3
 - React Navigation v6
