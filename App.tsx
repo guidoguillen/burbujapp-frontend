@@ -12,6 +12,14 @@ import { DetalleOrdenScreen } from './src/screens/orders/DetalleOrdenScreen';
 import { TurnoScreen } from './src/screens/scheduling/TurnoScreen';
 import { MisTurnosScreen } from './src/screens/scheduling/MisTurnosScreen';
 import { HistorialTurnosScreen } from './src/screens/scheduling/HistorialTurnosScreen';
+import { GestionUsuariosScreen } from './src/screens/admin/GestionUsuariosScreen';
+import { ControlFinancieroScreen } from './src/screens/admin/ControlFinancieroScreen';
+import { ReportesAnalyticsScreen } from './src/screens/admin/ReportesAnalyticsScreen';
+import { ConfiguracionSistemaScreen } from './src/screens/admin/ConfiguracionSistemaScreen';
+import { FuncionesAvanzadasScreen } from './src/screens/admin/FuncionesAvanzadasScreen';
+import { ActividadLogsScreen } from './src/screens/admin/ActividadLogsScreen';
+import { GestionHorariosScreen } from './src/screens/admin/GestionHorariosScreen';
+import { GestionPermisosScreen } from './src/screens/admin/GestionPermisosScreen';
 import { View, Text } from 'react-native';
 
 const Stack = createStackNavigator();
@@ -31,6 +39,14 @@ export default function App() {
           <Stack.Screen name="Turnos" component={MisTurnosScreen} />
           <Stack.Screen name="Turno" component={TurnoScreen} />
           <Stack.Screen name="HistorialTurnos" component={HistorialTurnosScreen} />
+          <Stack.Screen name="GestionUsuarios" component={GestionUsuariosScreen} />
+          <Stack.Screen name="ControlFinanciero" component={ControlFinancieroScreen} />
+          <Stack.Screen name="ReportesAnalytics" component={ReportesAnalyticsScreen} />
+          <Stack.Screen name="ConfiguracionSistema" component={ConfiguracionSistemaScreen} />
+          <Stack.Screen name="FuncionesAvanzadas" component={FuncionesAvanzadasScreen} />
+          <Stack.Screen name="ActividadLogs" component={ActividadLogsScreen} />
+          <Stack.Screen name="GestionHorarios" component={GestionHorariosScreen} />
+          <Stack.Screen name="GestionPermisos" component={GestionPermisosScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

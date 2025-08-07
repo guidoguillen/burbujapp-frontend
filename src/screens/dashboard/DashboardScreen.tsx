@@ -451,7 +451,7 @@ export const DashboardScreen: React.FC = () => {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>👥 Gestión de Usuarios</Text>
             <View style={styles.adminGrid}>
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Operadores', 'Gestionar cuentas de operadores')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('GestionUsuarios')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#EBF8FF' }]}>
                   <MaterialCommunityIcons name="account-group" size={24} color="#3B82F6" />
                 </View>
@@ -459,7 +459,7 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.adminCardSubtitle}>3 activos</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Permisos', 'Configurar roles y permisos')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('GestionPermisos')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#F3E8FF' }]}>
                   <MaterialCommunityIcons name="shield-account" size={24} color="#8B5CF6" />
                 </View>
@@ -467,7 +467,7 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.adminCardSubtitle}>Roles y accesos</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Actividad', 'Historial de usuarios')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('ActividadLogs')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#D1FAE5' }]}>
                   <MaterialCommunityIcons name="history" size={24} color="#059669" />
                 </View>
@@ -475,7 +475,7 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.adminCardSubtitle}>Logs del sistema</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Horarios', 'Gestión de turnos')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('GestionHorarios')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#FEF3C7' }]}>
                   <MaterialCommunityIcons name="clock-time-eight" size={24} color="#F59E0B" />
                 </View>
@@ -527,7 +527,7 @@ export const DashboardScreen: React.FC = () => {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>📈 Reportes y Analytics</Text>
             <View style={styles.adminGrid}>
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Ventas', 'Análisis detallado de ventas')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('ReportesAnalytics')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#EBF8FF' }]}>
                   <MaterialCommunityIcons name="trending-up" size={24} color="#3B82F6" />
                 </View>
@@ -535,7 +535,7 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.adminCardSubtitle}>Tendencias</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Clientes', 'Análisis de comportamiento de clientes')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('ReportesAnalytics')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#F3E8FF' }]}>
                   <MaterialCommunityIcons name="account-star" size={24} color="#8B5CF6" />
                 </View>
@@ -543,7 +543,7 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.adminCardSubtitle}>Frecuentes</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Exportar', 'Exportar datos para contabilidad')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('ReportesAnalytics')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#D1FAE5' }]}>
                   <MaterialCommunityIcons name="file-excel" size={24} color="#059669" />
                 </View>
@@ -551,7 +551,7 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.adminCardSubtitle}>Excel/PDF</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Servicios', 'Análisis de rentabilidad por servicio')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('ReportesAnalytics')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#FEF3C7' }]}>
                   <MaterialCommunityIcons name="washing-machine" size={24} color="#F59E0B" />
                 </View>
@@ -565,7 +565,7 @@ export const DashboardScreen: React.FC = () => {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>⚙️ Configuración del Sistema</Text>
             <View style={styles.adminGrid}>
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Precios', 'Actualizar tarifas de servicios')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('ConfiguracionSistema')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#FEF3C7' }]}>
                   <MaterialCommunityIcons name="currency-usd" size={24} color="#F59E0B" />
                 </View>
@@ -581,15 +581,15 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.adminCardSubtitle}>Personalizar</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Notificaciones', 'Configurar alertas automáticas')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('ConfiguracionSistema')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#F3E8FF' }]}>
-                  <MaterialCommunityIcons name="bell-cog" size={24} color="#8B5CF6" />
+                  <MaterialCommunityIcons name="bell" size={24} color="#8B5CF6" />
                 </View>
                 <Text style={styles.adminCardTitle}>Alertas</Text>
                 <Text style={styles.adminCardSubtitle}>Push/SMS</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Backup', 'Respaldo de datos del sistema')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('ConfiguracionSistema')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#D1FAE5' }]}>
                   <MaterialCommunityIcons name="database-export" size={24} color="#059669" />
                 </View>
@@ -603,7 +603,7 @@ export const DashboardScreen: React.FC = () => {
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>📱 Funciones Avanzadas</Text>
             <View style={styles.adminGrid}>
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Promociones', 'Crear ofertas especiales')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('FuncionesAvanzadas')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#FEF3C7' }]}>
                   <MaterialCommunityIcons name="tag-multiple" size={24} color="#F59E0B" />
                 </View>
@@ -611,7 +611,7 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.adminCardSubtitle}>Ofertas</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Fidelidad', 'Programa de puntos y descuentos')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('FuncionesAvanzadas')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#F3E8FF' }]}>
                   <MaterialCommunityIcons name="star-circle" size={24} color="#8B5CF6" />
                 </View>
@@ -619,7 +619,7 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.adminCardSubtitle}>Puntos</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('WhatsApp', 'Integración de notificaciones automáticas')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('FuncionesAvanzadas')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#ECFDF5' }]}>
                   <MaterialCommunityIcons name="whatsapp" size={24} color="#10B981" />
                 </View>
@@ -627,7 +627,7 @@ export const DashboardScreen: React.FC = () => {
                 <Text style={styles.adminCardSubtitle}>Automático</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Calendario', 'Gestión de citas y reservas')}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('FuncionesAvanzadas')}>
                 <View style={[styles.adminIconContainer, { backgroundColor: '#EBF8FF' }]}>
                   <MaterialCommunityIcons name="calendar-month" size={24} color="#3B82F6" />
                 </View>

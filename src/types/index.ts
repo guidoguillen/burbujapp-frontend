@@ -103,6 +103,14 @@ export type RootStackParamList = {
   Payments: undefined;
   Reports: undefined;
   Settings: undefined;
+  GestionUsuarios: undefined;
+  ControlFinanciero: undefined;
+  ReportesAnalytics: undefined;
+  ConfiguracionSistema: undefined;
+  FuncionesAvanzadas: undefined;
+  ActividadLogs: undefined;
+  GestionHorarios: undefined;
+  GestionPermisos: undefined;
 };
 
 // Tipos para formularios
