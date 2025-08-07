@@ -402,7 +402,370 @@ export const DashboardScreen: React.FC = () => {
       </View>
     );
   }
-  // ...existing dashboard para otros roles...
+
+  // Panel de Administración
+  if (state.user?.role === 'admin') {
+    return (
+      <View style={styles.container}>
+        {/* Header para Admin */}
+        <View style={styles.header}>
+          {navigation.canGoBack() && (
+            <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+              <MaterialCommunityIcons name="arrow-left" size={24} color="#374151" />
+            </TouchableOpacity>
+          )}
+          <Text style={styles.headerTitle}>Panel Administrador</Text>
+          <TouchableOpacity 
+            style={styles.notificationBtn} 
+            onPress={() => setShowNotifications(true)}
+          >
+            <MaterialCommunityIcons name="shield-crown" size={24} color="#DC2626" />
+          </TouchableOpacity>
+        </View>
+        
+        <ScrollView style={styles.main} showsVerticalScrollIndicator={false}>
+          {/* Dashboard Ejecutivo */}
+          <View style={styles.statsContainer}>
+            <Text style={styles.statsTitle}>📊 Dashboard Ejecutivo</Text>
+            <View style={styles.statsGrid}>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>$2,450</Text>
+                <Text style={styles.statLabel}>Ventas Hoy</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>15</Text>
+                <Text style={styles.statLabel}>Órdenes</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>8</Text>
+                <Text style={styles.statLabel}>Clientes Nuevos</Text>
+              </View>
+              <View style={styles.statCard}>
+                <Text style={styles.statNumber}>92%</Text>
+                <Text style={styles.statLabel}>Satisfacción</Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Gestión de Usuarios */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>👥 Gestión de Usuarios</Text>
+            <View style={styles.adminGrid}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Operadores', 'Gestionar cuentas de operadores')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                  <MaterialCommunityIcons name="account-group" size={24} color="#3B82F6" />
+                </View>
+                <Text style={styles.adminCardTitle}>Operadores</Text>
+                <Text style={styles.adminCardSubtitle}>3 activos</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Permisos', 'Configurar roles y permisos')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#F3E8FF' }]}>
+                  <MaterialCommunityIcons name="shield-account" size={24} color="#8B5CF6" />
+                </View>
+                <Text style={styles.adminCardTitle}>Permisos</Text>
+                <Text style={styles.adminCardSubtitle}>Roles y accesos</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Actividad', 'Historial de usuarios')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#D1FAE5' }]}>
+                  <MaterialCommunityIcons name="history" size={24} color="#059669" />
+                </View>
+                <Text style={styles.adminCardTitle}>Actividad</Text>
+                <Text style={styles.adminCardSubtitle}>Logs del sistema</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Horarios', 'Gestión de turnos')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#FEF3C7' }]}>
+                  <MaterialCommunityIcons name="clock-time-eight" size={24} color="#F59E0B" />
+                </View>
+                <Text style={styles.adminCardTitle}>Horarios</Text>
+                <Text style={styles.adminCardSubtitle}>Turnos laborales</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Control Financiero */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>💰 Control Financiero</Text>
+            <View style={styles.adminGrid}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Caja', `Ingresos del día: $2,450\nEfectivo: $1,800\nTarjeta: $650`)}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#ECFDF5' }]}>
+                  <MaterialCommunityIcons name="cash-register" size={24} color="#10B981" />
+                </View>
+                <Text style={styles.adminCardTitle}>Caja</Text>
+                <Text style={styles.adminCardSubtitle}>$2,450 hoy</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Reportes', 'Generar reportes financieros')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                  <MaterialCommunityIcons name="chart-line" size={24} color="#3B82F6" />
+                </View>
+                <Text style={styles.adminCardTitle}>Reportes</Text>
+                <Text style={styles.adminCardSubtitle}>Análisis financiero</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Gastos', 'Control de gastos operativos')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#FEE2E2' }]}>
+                  <MaterialCommunityIcons name="receipt" size={24} color="#EF4444" />
+                </View>
+                <Text style={styles.adminCardTitle}>Gastos</Text>
+                <Text style={styles.adminCardSubtitle}>$320 hoy</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Comisiones', 'Cálculo de comisiones por operador')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#F3E8FF' }]}>
+                  <MaterialCommunityIcons name="percent" size={24} color="#8B5CF6" />
+                </View>
+                <Text style={styles.adminCardTitle}>Comisiones</Text>
+                <Text style={styles.adminCardSubtitle}>Por operador</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Reportes y Analytics */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>📈 Reportes y Analytics</Text>
+            <View style={styles.adminGrid}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Ventas', 'Análisis detallado de ventas')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                  <MaterialCommunityIcons name="trending-up" size={24} color="#3B82F6" />
+                </View>
+                <Text style={styles.adminCardTitle}>Ventas</Text>
+                <Text style={styles.adminCardSubtitle}>Tendencias</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Clientes', 'Análisis de comportamiento de clientes')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#F3E8FF' }]}>
+                  <MaterialCommunityIcons name="account-star" size={24} color="#8B5CF6" />
+                </View>
+                <Text style={styles.adminCardTitle}>Clientes</Text>
+                <Text style={styles.adminCardSubtitle}>Frecuentes</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Exportar', 'Exportar datos para contabilidad')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#D1FAE5' }]}>
+                  <MaterialCommunityIcons name="file-excel" size={24} color="#059669" />
+                </View>
+                <Text style={styles.adminCardTitle}>Exportar</Text>
+                <Text style={styles.adminCardSubtitle}>Excel/PDF</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Servicios', 'Análisis de rentabilidad por servicio')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#FEF3C7' }]}>
+                  <MaterialCommunityIcons name="washing-machine" size={24} color="#F59E0B" />
+                </View>
+                <Text style={styles.adminCardTitle}>Servicios</Text>
+                <Text style={styles.adminCardSubtitle}>Rentabilidad</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Configuración del Sistema */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>⚙️ Configuración del Sistema</Text>
+            <View style={styles.adminGrid}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Precios', 'Actualizar tarifas de servicios')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#FEF3C7' }]}>
+                  <MaterialCommunityIcons name="currency-usd" size={24} color="#F59E0B" />
+                </View>
+                <Text style={styles.adminCardTitle}>Precios</Text>
+                <Text style={styles.adminCardSubtitle}>Tarifas</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => setShowQROptions(true)}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#E0E7FF' }]}>
+                  <MaterialCommunityIcons name="qrcode-plus" size={24} color="#6366F1" />
+                </View>
+                <Text style={styles.adminCardTitle}>Config QR</Text>
+                <Text style={styles.adminCardSubtitle}>Personalizar</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Notificaciones', 'Configurar alertas automáticas')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#F3E8FF' }]}>
+                  <MaterialCommunityIcons name="bell-cog" size={24} color="#8B5CF6" />
+                </View>
+                <Text style={styles.adminCardTitle}>Alertas</Text>
+                <Text style={styles.adminCardSubtitle}>Push/SMS</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Backup', 'Respaldo de datos del sistema')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#D1FAE5' }]}>
+                  <MaterialCommunityIcons name="database-export" size={24} color="#059669" />
+                </View>
+                <Text style={styles.adminCardTitle}>Backup</Text>
+                <Text style={styles.adminCardSubtitle}>Datos</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Funciones Avanzadas */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>📱 Funciones Avanzadas</Text>
+            <View style={styles.adminGrid}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Promociones', 'Crear ofertas especiales')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#FEF3C7' }]}>
+                  <MaterialCommunityIcons name="tag-multiple" size={24} color="#F59E0B" />
+                </View>
+                <Text style={styles.adminCardTitle}>Promociones</Text>
+                <Text style={styles.adminCardSubtitle}>Ofertas</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Fidelidad', 'Programa de puntos y descuentos')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#F3E8FF' }]}>
+                  <MaterialCommunityIcons name="star-circle" size={24} color="#8B5CF6" />
+                </View>
+                <Text style={styles.adminCardTitle}>Fidelidad</Text>
+                <Text style={styles.adminCardSubtitle}>Puntos</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('WhatsApp', 'Integración de notificaciones automáticas')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#ECFDF5' }]}>
+                  <MaterialCommunityIcons name="whatsapp" size={24} color="#10B981" />
+                </View>
+                <Text style={styles.adminCardTitle}>WhatsApp</Text>
+                <Text style={styles.adminCardSubtitle}>Automático</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => Alert.alert('Calendario', 'Gestión de citas y reservas')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                  <MaterialCommunityIcons name="calendar-month" size={24} color="#3B82F6" />
+                </View>
+                <Text style={styles.adminCardTitle}>Calendario</Text>
+                <Text style={styles.adminCardSubtitle}>Citas</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Acceso Rápido a Gestión */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>🚀 Acceso Rápido</Text>
+            <View style={styles.compactGrid}>
+              <TouchableOpacity style={styles.compactCard} onPress={() => navigation.navigate('MisOrdenes')}>
+                <View style={[styles.compactIconContainer, { backgroundColor: '#F3E8FF' }]}>
+                  <MaterialCommunityIcons name="clipboard-list" size={20} color="#8B5CF6" />
+                </View>
+                <Text style={styles.compactCardTitle}>Todas las Órdenes</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.compactCard} onPress={() => navigation.navigate('SelectCliente')}>
+                <View style={[styles.compactIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                  <MaterialCommunityIcons name="plus-circle" size={20} color="#3B82F6" />
+                </View>
+                <Text style={styles.compactCardTitle}>Nueva Orden</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.compactCard} onPress={() => { logout(); navigation.reset({ index: 0, routes: [{ name: 'Auth' }] }); }}>
+                <View style={[styles.compactIconContainer, { backgroundColor: '#FEF2F2' }]}>
+                  <MaterialCommunityIcons name="logout-variant" size={20} color="#DC2626" />
+                </View>
+                <Text style={styles.compactCardTitle}>Cerrar Sesión</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </ScrollView>
+
+        {/* Modales reutilizados del operador */}
+        {/* Modal de Notificaciones */}
+        <Modal
+          visible={showNotifications}
+          animationType="slide"
+          transparent={true}
+          onRequestClose={() => setShowNotifications(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>📊 Alertas Administrativas</Text>
+                <TouchableOpacity onPress={() => setShowNotifications(false)}>
+                  <MaterialCommunityIcons name="close" size={24} color="#6B7280" />
+                </TouchableOpacity>
+              </View>
+              
+              <ScrollView style={styles.modalContent}>
+                <TouchableOpacity style={[styles.notificationItem, styles.notificationUrgent]}>
+                  <View style={styles.notificationIcon}>
+                    <MaterialCommunityIcons name="alert-circle" size={20} color="#EF4444" />
+                  </View>
+                  <View style={styles.notificationContent}>
+                    <Text style={[styles.notificationText, styles.notificationTextUrgent]}>
+                      Meta de ventas mensual al 85%
+                    </Text>
+                    <Text style={styles.notificationTime}>hace 2h</Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.notificationItem}>
+                  <View style={styles.notificationIcon}>
+                    <MaterialCommunityIcons name="cash-register" size={20} color="#10B981" />
+                  </View>
+                  <View style={styles.notificationContent}>
+                    <Text style={styles.notificationText}>
+                      Ingresos del día: $2,450 (+12%)
+                    </Text>
+                    <Text style={styles.notificationTime}>hace 30min</Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.notificationItem}>
+                  <View style={styles.notificationIcon}>
+                    <MaterialCommunityIcons name="account-plus" size={20} color="#3B82F6" />
+                  </View>
+                  <View style={styles.notificationContent}>
+                    <Text style={styles.notificationText}>
+                      8 nuevos clientes registrados hoy
+                    </Text>
+                    <Text style={styles.notificationTime}>hace 1h</Text>
+                  </View>
+                </TouchableOpacity>
+              </ScrollView>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Modal de Opciones QR (reutilizado) */}
+        <Modal
+          visible={showQROptions}
+          animationType="fade"
+          transparent={true}
+          onRequestClose={() => setShowQROptions(false)}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalTitle}>⚙️ Configuración QR</Text>
+                <TouchableOpacity onPress={() => setShowQROptions(false)}>
+                  <MaterialCommunityIcons name="close" size={24} color="#6B7280" />
+                </TouchableOpacity>
+              </View>
+              
+              <View style={styles.modalContent}>
+                <TouchableOpacity style={styles.actionButton} onPress={() => Alert.alert('Personalizar', 'Configurar diseño de códigos QR')}>
+                  <MaterialCommunityIcons name="palette" size={24} color="#8B5CF6" />
+                  <Text style={styles.actionButtonText}>Personalizar Diseño</Text>
+                  <Text style={styles.actionButtonSubtext}>Colores y logos</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.actionButton} onPress={() => Alert.alert('Enlaces', 'Configurar URLs de destino')}>
+                  <MaterialCommunityIcons name="link-variant" size={24} color="#3B82F6" />
+                  <Text style={styles.actionButtonText}>Enlaces de Destino</Text>
+                  <Text style={styles.actionButtonSubtext}>URLs personalizadas</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.actionButton} onPress={() => Alert.alert('Análisis', 'Estadísticas de escaneos')}>
+                  <MaterialCommunityIcons name="chart-bar" size={24} color="#10B981" />
+                  <Text style={styles.actionButtonText}>Análisis de Uso</Text>
+                  <Text style={styles.actionButtonSubtext}>Estadísticas de escaneo</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </View>
+    );
+  }
+
+  // Dashboard para otros roles...
   return (
     <View style={globalStyles.containerPadded}>
       <Text style={globalStyles.heading1}>Dashboard</Text>
@@ -729,5 +1092,46 @@ const styles = StyleSheet.create({
     color: '#374151',
     textAlign: 'center',
     lineHeight: 16,
+  },
+  // Estilos para panel de administrador
+  adminGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 12,
+  },
+  adminCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '48%',
+    minHeight: 110,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  adminIconContainer: {
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  adminCardTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  adminCardSubtitle: {
+    fontSize: 12,
+    color: '#6B7280',
+    textAlign: 'center',
+    fontWeight: '500',
   },
 });
