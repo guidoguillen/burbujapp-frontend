@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, TextInput, Modal } from 'react-native';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import QRCode from 'react-native-qrcode-svg';
 import { NotificationService } from '../../services/NotificationService';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'DetalleOrden'>;
@@ -51,6 +52,7 @@ export const DetalleOrdenScreen: React.FC = () => {
 
   const [editandoObservaciones, setEditandoObservaciones] = useState(false);
   const [nuevasObservaciones, setNuevasObservaciones] = useState('');
+  const [modalQRVisible, setModalQRVisible] = useState(false);
 
   // Datos mock de la orden específica
   const [orden] = useState<OrdenDetalle>({
@@ -149,6 +151,29 @@ export const DetalleOrdenScreen: React.FC = () => {
     return orden.estado === 'Registrado' || orden.estado === 'En proceso';
   };
 
+  // Función para generar datos del QR
+  const generarDatosQR = (): string => {
+    const ordenData = {
+      tipo: 'ORDEN_LAVANDERIA',
+      accion: 'VER_DETALLE',
+      codigo: orden.id,
+      cliente: `${orden.cliente.nombre} ${orden.cliente.apellido}`,
+      telefono: orden.cliente.telefono,
+      direccion: orden.cliente.direccion,
+      fechaCreacion: orden.fechaCreacion,
+      fechaEntrega: orden.fechaEntrega,
+      articulos: orden.articulos.length,
+      total: orden.total.toFixed(2),
+      estado: orden.estado,
+      observaciones: orden.observaciones,
+      // URL para abrir directamente la orden
+      deepLink: `burbujapp://orden/${orden.id}`,
+      // Información legible para humanos
+      descripcion: `Orden #${orden.id} - ${orden.cliente.nombre} ${orden.cliente.apellido} - Total: ${orden.total} Bs`
+    };
+    return JSON.stringify(ordenData);
+  };
+
   const getSiguienteEstado = () => {
     switch (orden.estado) {
       case 'Registrado':
@@ -189,7 +214,12 @@ export const DetalleOrdenScreen: React.FC = () => {
           <MaterialCommunityIcons name="arrow-left" size={24} color="#374151" />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Orden #{orden.id}</Text>
-        <View style={styles.headerSpacer} />
+        <TouchableOpacity 
+          style={styles.qrBtn}
+          onPress={() => setModalQRVisible(true)}
+        >
+          <MaterialCommunityIcons name="qrcode" size={24} color="#10B981" />
+        </TouchableOpacity>
       </View>
 
       <ScrollView style={styles.content}>
@@ -306,6 +336,66 @@ export const DetalleOrdenScreen: React.FC = () => {
           ))}
         </View>
       </ScrollView>
+
+      {/* Modal QR */}
+      <Modal
+        visible={modalQRVisible}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setModalQRVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>
+                🔗 Código QR - Orden #{orden.id}
+              </Text>
+              <TouchableOpacity 
+                style={styles.closeBtn}
+                onPress={() => setModalQRVisible(false)}
+              >
+                <MaterialCommunityIcons name="close" size={24} color="#6B7280" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.qrContent}>
+              <View style={styles.qrWrapper}>
+                <QRCode
+                  value={generarDatosQR()}
+                  size={200}
+                  color="#111827"
+                  backgroundColor="#FFFFFF"
+                />
+              </View>
+              
+              <View style={styles.qrInfo}>
+                <Text style={styles.qrClienteNombre}>
+                  👤 {orden.cliente.nombre} {orden.cliente.apellido}
+                </Text>
+                <Text style={styles.qrDetalle}>📞 {orden.cliente.telefono}</Text>
+                <Text style={styles.qrDetalle}>📍 {orden.cliente.direccion}</Text>
+                <Text style={styles.qrDetalle}>💵 Total: {orden.total} Bs</Text>
+                <Text style={styles.qrDetalle}>📦 Artículos: {orden.articulos.length}</Text>
+                <Text style={styles.qrInstruction}>
+                  💡 Escanea este QR para abrir directamente esta orden
+                </Text>
+              </View>
+
+              <View style={styles.qrActions}>
+                <TouchableOpacity style={styles.shareBtn}>
+                  <MaterialCommunityIcons name="share-variant" size={18} color="#3B82F6" />
+                  <Text style={styles.shareBtnText}>Compartir QR</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity style={styles.saveBtn}>
+                  <MaterialCommunityIcons name="download" size={18} color="#10B981" />
+                  <Text style={styles.saveBtnText}>Guardar QR</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -498,5 +588,118 @@ const styles = StyleSheet.create({
   historialFecha: {
     fontSize: 12,
     color: '#6B7280',
+  },
+  qrBtn: {
+    padding: 8,
+    backgroundColor: '#ECFDF5',
+    borderRadius: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  // Estilos del Modal QR
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  modalContainer: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    width: '100%',
+    maxWidth: 350,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 10,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+    flex: 1,
+  },
+  closeBtn: {
+    padding: 4,
+  },
+  qrContent: {
+    alignItems: 'center',
+  },
+  qrWrapper: {
+    padding: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+    marginBottom: 16,
+  },
+  qrInfo: {
+    alignItems: 'center',
+    marginBottom: 20,
+    gap: 4,
+  },
+  qrClienteNombre: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#111827',
+    textAlign: 'center',
+    marginBottom: 8,
+  },
+  qrDetalle: {
+    fontSize: 14,
+    color: '#6B7280',
+    textAlign: 'center',
+  },
+  qrInstruction: {
+    fontSize: 12,
+    color: '#10B981',
+    textAlign: 'center',
+    fontStyle: 'italic',
+    marginTop: 8,
+  },
+  qrActions: {
+    flexDirection: 'row',
+    gap: 12,
+    justifyContent: 'center',
+  },
+  shareBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#EBF8FF',
+    borderRadius: 8,
+    gap: 6,
+  },
+  shareBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#3B82F6',
+  },
+  saveBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    backgroundColor: '#ECFDF5',
+    borderRadius: 8,
+    gap: 6,
+  },
+  saveBtnText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#10B981',
   },
 });

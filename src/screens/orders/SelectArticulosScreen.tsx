@@ -624,25 +624,25 @@ export const SelectArticulosScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.formGroup}>
-                  <Text style={styles.label}>Tipo de servicio</Text>
-                  <View style={styles.servicioContainer}>
+                  <Text style={styles.labelCompact}>Tipo de servicio</Text>
+                  <View style={styles.servicioContainerCompact}>
                     {tiposServicio.map((servicio) => (
                       <TouchableOpacity
                         key={servicio.id}
                         style={[
-                          styles.servicioBtn,
-                          articuloActual.tipoServicio === servicio.id && styles.servicioBtnActive
+                          styles.servicioBtnCompact,
+                          articuloActual.tipoServicio === servicio.id && styles.servicioBtnCompactActive
                         ]}
                         onPress={() => handleCambiarTipoServicio(servicio.id as any)}
                       >
                         <MaterialCommunityIcons
                           name={servicio.icon as any}
-                          size={24}
+                          size={18}
                           color={articuloActual.tipoServicio === servicio.id ? '#FFFFFF' : servicio.color}
                         />
                         <Text style={[
-                          styles.servicioText,
-                          articuloActual.tipoServicio === servicio.id && styles.servicioTextActive
+                          styles.servicioTextCompact,
+                          articuloActual.tipoServicio === servicio.id && styles.servicioTextCompactActive
                         ]}>
                           {servicio.label}
                         </Text>
@@ -652,23 +652,23 @@ export const SelectArticulosScreen: React.FC = () => {
                 </View>
 
                 <View style={styles.formGroup}>
-                  <Text style={styles.label}>Unidad de cobro</Text>
-                  <View style={styles.unidadContainer}>
+                  <Text style={styles.labelCompact}>Unidad de cobro</Text>
+                  <View style={styles.unidadContainerCompact}>
                     <TouchableOpacity
                       style={[
-                        styles.unidadBtn,
-                        articuloActual.unidadCobro === 'unidad' && styles.unidadBtnActive
+                        styles.unidadBtnCompact,
+                        articuloActual.unidadCobro === 'unidad' && styles.unidadBtnCompactActive
                       ]}
                       onPress={() => setArticuloActual(prev => ({ ...prev, unidadCobro: 'unidad' }))}
                     >
                       <MaterialCommunityIcons
                         name="numeric"
-                        size={20}
+                        size={16}
                         color={articuloActual.unidadCobro === 'unidad' ? '#FFFFFF' : '#6B7280'}
                       />
                       <Text style={[
-                        styles.unidadText,
-                        articuloActual.unidadCobro === 'unidad' && styles.unidadTextActive
+                        styles.unidadTextCompact,
+                        articuloActual.unidadCobro === 'unidad' && styles.unidadTextCompactActive
                       ]}>
                         Por cantidad
                       </Text>
@@ -676,19 +676,19 @@ export const SelectArticulosScreen: React.FC = () => {
                     
                     <TouchableOpacity
                       style={[
-                        styles.unidadBtn,
-                        articuloActual.unidadCobro === 'kilo' && styles.unidadBtnActive
+                        styles.unidadBtnCompact,
+                        articuloActual.unidadCobro === 'kilo' && styles.unidadBtnCompactActive
                       ]}
                       onPress={() => setArticuloActual(prev => ({ ...prev, unidadCobro: 'kilo' }))}
                     >
                       <MaterialCommunityIcons
                         name="weight-kilogram"
-                        size={20}
+                        size={16}
                         color={articuloActual.unidadCobro === 'kilo' ? '#FFFFFF' : '#6B7280'}
                       />
                       <Text style={[
-                        styles.unidadText,
-                        articuloActual.unidadCobro === 'kilo' && styles.unidadTextActive
+                        styles.unidadTextCompact,
+                        articuloActual.unidadCobro === 'kilo' && styles.unidadTextCompactActive
                       ]}>
                         Por kilo
                       </Text>
@@ -696,110 +696,100 @@ export const SelectArticulosScreen: React.FC = () => {
                   </View>
                 </View>
 
-                <View style={styles.formRow}>
-                  <View style={styles.formGroup}>
-                    <Text style={styles.label}>
+                {/* Cantidad y Precio en una fila */}
+                <View style={styles.formRowCompact}>
+                  <View style={styles.formGroupHalf}>
+                    <Text style={styles.labelCompact}>
                       {articuloActual.unidadCobro === 'kilo' ? 'Peso (kg)' : 'Cantidad'}
                     </Text>
-                    <View style={styles.counterContainer}>
+                    <View style={styles.counterContainerCompact}>
                       <TouchableOpacity
-                        style={styles.counterBtn}
+                        style={styles.counterBtnCompact}
                         onPress={() => setArticuloActual(prev => ({ 
                           ...prev, 
                           cantidad: Math.max(0, prev.cantidad - (prev.unidadCobro === 'kilo' ? 0.5 : 1))
                         }))}
                       >
-                        <MaterialCommunityIcons name="minus" size={20} color="#6B7280" />
+                        <MaterialCommunityIcons name="minus" size={16} color="#6B7280" />
                       </TouchableOpacity>
-                      <View style={styles.counterDisplay}>
-                        <Text style={styles.counterValue}>{articuloActual.cantidad}</Text>
-                        <Text style={styles.counterUnit}>
+                      <View style={styles.counterDisplayCompact}>
+                        <Text style={styles.counterValueCompact}>{articuloActual.cantidad}</Text>
+                        <Text style={styles.counterUnitCompact}>
                           {articuloActual.unidadCobro === 'kilo' ? 'kg' : 'und'}
                         </Text>
                       </View>
                       <TouchableOpacity
-                        style={styles.counterBtn}
+                        style={styles.counterBtnCompact}
                         onPress={() => setArticuloActual(prev => ({ 
                           ...prev, 
                           cantidad: prev.cantidad + (prev.unidadCobro === 'kilo' ? 0.5 : 1)
                         }))}
                       >
-                        <MaterialCommunityIcons name="plus" size={20} color="#059669" />
+                        <MaterialCommunityIcons name="plus" size={16} color="#059669" />
                       </TouchableOpacity>
                     </View>
                   </View>
                   
-                  <View style={styles.formGroup}>
-                    <Text style={styles.label}>Precio unitario</Text>
-                    <View style={styles.priceContainer}>
+                  <View style={styles.formGroupHalf}>
+                    <Text style={styles.labelCompact}>Precio unitario</Text>
+                    <View style={styles.priceContainerCompact}>
                       <TouchableOpacity
-                        style={styles.priceBtn}
+                        style={styles.priceBtnCompact}
                         onPress={() => setArticuloActual(prev => ({ 
                           ...prev, 
                           precio: Math.max(0, prev.precio - 0.5)
                         }))}
                       >
-                        <MaterialCommunityIcons name="minus" size={16} color="#6B7280" />
+                        <MaterialCommunityIcons name="minus" size={14} color="#6B7280" />
                       </TouchableOpacity>
-                      <View style={[
-                        styles.priceDisplay,
-                        articuloActual.precio === 0 && styles.priceDisplaySuggestion
-                      ]}>
-                        <Text style={styles.priceSymbol}>$</Text>
-                        <Text style={[
-                          styles.priceValue,
-                          articuloActual.precio === 0 && styles.priceValueSuggestion
-                        ]}>
+                      <View style={styles.priceDisplayCompact}>
+                        <Text style={styles.priceSymbolCompact}>$</Text>
+                        <Text style={styles.priceValueCompact}>
                           {articuloActual.precio.toFixed(2)}
                         </Text>
-                        {articuloActual.precio === 0 && (
-                          <MaterialCommunityIcons 
-                            name="lightbulb-outline" 
-                            size={16} 
-                            color="#F59E0B" 
-                            style={{ marginLeft: 4 }} 
-                          />
-                        )}
                       </View>
                       <TouchableOpacity
-                        style={styles.priceBtn}
+                        style={styles.priceBtnCompact}
                         onPress={() => setArticuloActual(prev => ({ 
                           ...prev, 
                           precio: prev.precio + 0.5
                         }))}
                       >
-                        <MaterialCommunityIcons name="plus" size={16} color="#059669" />
+                        <MaterialCommunityIcons name="plus" size={14} color="#059669" />
                       </TouchableOpacity>
                     </View>
-                    <View style={styles.pricePresets}>
-                      {/* Presets inteligentes basados en tipo de servicio */}
-                      {(() => {
-                        let presets = [];
-                        if (articuloActual.tipoServicio === 'lavado') {
-                          presets = [3, 5, 8, 12];
-                        } else if (articuloActual.tipoServicio === 'planchado') {
-                          presets = [2, 4, 6, 10];
-                        } else {
-                          presets = [5, 10, 15, 25];
-                        }
-                        
-                        return presets.map((preset) => (
-                          <TouchableOpacity
-                            key={preset}
-                            style={[
-                              styles.presetBtn,
-                              articuloActual.precio === preset && styles.presetBtnActive
-                            ]}
-                            onPress={() => setArticuloActual(prev => ({ ...prev, precio: preset }))}
-                          >
-                            <Text style={[
-                              styles.presetText,
-                              articuloActual.precio === preset && styles.presetTextActive
-                            ]}>${preset}</Text>
-                          </TouchableOpacity>
-                        ));
-                      })()}
-                    </View>
+                  </View>
+                </View>
+
+                {/* Presets de precio más compactos */}
+                <View style={styles.presetsCompactContainer}>
+                  <View style={styles.presetsCompact}>
+                    {(() => {
+                      let presets = [];
+                      if (articuloActual.tipoServicio === 'lavado') {
+                        presets = [2, 4, 6, 10];
+                      } else if (articuloActual.tipoServicio === 'planchado') {
+                        presets = [2, 4, 6, 10];
+                      } else {
+                        presets = [5, 10, 15, 25];
+                      }
+                      
+                      return presets.map((preset) => (
+                        <TouchableOpacity
+                          key={preset}
+                          style={[
+                            styles.presetBtnCompact,
+                            articuloActual.precio === preset && styles.presetBtnCompactActive
+                          ]}
+                          onPress={() => setArticuloActual(prev => ({ ...prev, precio: preset }))}
+                        >
+                          <Text style={[
+                            styles.presetTextCompact,
+                            articuloActual.precio === preset && styles.presetTextCompactActive
+                          ]}>${preset}</Text>
+                        </TouchableOpacity>
+                      ));
+                    })()}
                   </View>
                 </View>
 
@@ -1693,5 +1683,182 @@ const styles = StyleSheet.create({
   sugerenciaBtnText: {
     fontSize: 12,
     color: '#374151',
+  },
+  // Estilos compactos para optimización de espacio
+  formRowCompact: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 16,
+  },
+  formGroupHalf: {
+    flex: 1,
+  },
+  labelCompact: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 6,
+  },
+  counterContainerCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 8,
+    padding: 4,
+  },
+  counterBtnCompact: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  counterDisplayCompact: {
+    flex: 1,
+    alignItems: 'center',
+    paddingHorizontal: 8,
+  },
+  counterValueCompact: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  counterUnitCompact: {
+    fontSize: 12,
+    color: '#6B7280',
+    marginTop: 2,
+  },
+  priceContainerCompact: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F9FAFB',
+    borderRadius: 8,
+    padding: 4,
+  },
+  priceBtnCompact: {
+    width: 32,
+    height: 32,
+    borderRadius: 6,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 1,
+    elevation: 1,
+  },
+  priceDisplayCompact: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+  },
+  priceSymbolCompact: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#059669',
+    marginRight: 2,
+  },
+  priceValueCompact: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#111827',
+  },
+  presetsCompactContainer: {
+    marginBottom: 12,
+  },
+  presetsCompact: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 6,
+  },
+  presetBtnCompact: {
+    flex: 1,
+    backgroundColor: '#F3F4F6',
+    paddingVertical: 6,
+    borderRadius: 6,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+  },
+  presetBtnCompactActive: {
+    backgroundColor: '#059669',
+    borderColor: '#059669',
+  },
+  presetTextCompact: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  presetTextCompactActive: {
+    color: '#FFFFFF',
+  },
+  // Estilos compactos para servicios
+  servicioContainerCompact: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  servicioBtnCompact: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    gap: 6,
+  },
+  servicioBtnCompactActive: {
+    backgroundColor: '#3B82F6',
+    borderColor: '#3B82F6',
+  },
+  servicioTextCompact: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  servicioTextCompactActive: {
+    color: '#FFFFFF',
+  },
+  // Estilos compactos para unidad de cobro
+  unidadContainerCompact: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  unidadBtnCompact: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 8,
+    backgroundColor: '#F9FAFB',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    gap: 6,
+  },
+  unidadBtnCompactActive: {
+    backgroundColor: '#059669',
+    borderColor: '#059669',
+  },
+  unidadTextCompact: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#374151',
+  },
+  unidadTextCompactActive: {
+    color: '#FFFFFF',
   },
 });
