@@ -223,47 +223,47 @@ export const DashboardScreen: React.FC = () => {
           {/* Panel Principal de Gestión */}
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>Gestión Principal</Text>
-            <View style={styles.grid}>
-              <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('SelectCliente')}>
-                <View style={[styles.cardIconContainer, { backgroundColor: '#EBF8FF' }]}>
-                  <MaterialCommunityIcons name="plus-circle" size={28} color="#3B82F6" />
+            <View style={styles.compactGrid}>
+              <TouchableOpacity style={styles.compactCard} onPress={() => navigation.navigate('SelectCliente')}>
+                <View style={[styles.compactIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                  <MaterialCommunityIcons name="plus-circle" size={20} color="#3B82F6" />
                 </View>
-                <Text style={styles.cardTitle}>Crear Orden</Text>
+                <Text style={styles.compactCardTitle}>Crear Orden</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('MisOrdenes')}>
-                <View style={[styles.cardIconContainer, { backgroundColor: '#F3E8FF' }]}>
-                  <MaterialCommunityIcons name="clipboard-list" size={28} color="#8B5CF6" />
+              <TouchableOpacity style={styles.compactCard} onPress={() => navigation.navigate('MisOrdenes')}>
+                <View style={[styles.compactIconContainer, { backgroundColor: '#F3E8FF' }]}>
+                  <MaterialCommunityIcons name="clipboard-list" size={20} color="#8B5CF6" />
                 </View>
-                <Text style={styles.cardTitle}>Mis Órdenes</Text>
+                <Text style={styles.compactCardTitle}>Mis Órdenes</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Turnos')}>
-                <View style={[styles.cardIconContainer, { backgroundColor: '#D1FAE5' }]}>
-                  <MaterialCommunityIcons name="calendar-today" size={28} color="#059669" />
+              <TouchableOpacity style={styles.compactCard} onPress={() => navigation.navigate('Turnos')}>
+                <View style={[styles.compactIconContainer, { backgroundColor: '#D1FAE5' }]}>
+                  <MaterialCommunityIcons name="calendar-today" size={20} color="#059669" />
                 </View>
-                <Text style={styles.cardTitle}>Mis Turnos</Text>
+                <Text style={styles.compactCardTitle}>Mis Turnos</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Turno')}>
-                <View style={[styles.cardIconContainer, { backgroundColor: '#FEF3C7' }]}>
-                  <MaterialCommunityIcons name="clock-check" size={28} color="#F59E0B" />
+              <TouchableOpacity style={styles.compactCard} onPress={() => navigation.navigate('Turno')}>
+                <View style={[styles.compactIconContainer, { backgroundColor: '#FEF3C7' }]}>
+                  <MaterialCommunityIcons name="clock-check" size={20} color="#F59E0B" />
                 </View>
-                <Text style={styles.cardTitle}>Control Turno</Text>
+                <Text style={styles.compactCardTitle}>Control Turno</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.card} onPress={() => setShowQROptions(true)}>
-                <View style={[styles.cardIconContainer, { backgroundColor: '#E0E7FF' }]}>
-                  <MaterialCommunityIcons name="qrcode" size={28} color="#6366F1" />
+              <TouchableOpacity style={styles.compactCard} onPress={() => setShowQROptions(true)}>
+                <View style={[styles.compactIconContainer, { backgroundColor: '#E0E7FF' }]}>
+                  <MaterialCommunityIcons name="qrcode" size={20} color="#6366F1" />
                 </View>
-                <Text style={styles.cardTitle}>Funciones QR</Text>
+                <Text style={styles.compactCardTitle}>Funciones QR</Text>
               </TouchableOpacity>
               
-              <TouchableOpacity style={styles.card} onPress={() => { logout(); navigation.reset({ index: 0, routes: [{ name: 'Auth' }] }); }}>
-                <View style={[styles.cardIconContainer, { backgroundColor: '#FEF2F2' }]}>
-                  <MaterialCommunityIcons name="logout-variant" size={28} color="#DC2626" />
+              <TouchableOpacity style={styles.compactCard} onPress={() => { logout(); navigation.reset({ index: 0, routes: [{ name: 'Auth' }] }); }}>
+                <View style={[styles.compactIconContainer, { backgroundColor: '#FEF2F2' }]}>
+                  <MaterialCommunityIcons name="logout-variant" size={20} color="#DC2626" />
                 </View>
-                <Text style={styles.cardTitle}>Cerrar Sesión</Text>
+                <Text style={styles.compactCardTitle}>Cerrar Sesión</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -694,5 +694,40 @@ const styles = StyleSheet.create({
     color: '#6B7280',
     marginLeft: 12,
     marginTop: 2,
+  },
+  // Estilos para tarjetas compactas
+  compactGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 10,
+  },
+  compactCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '31%',
+    minHeight: 85,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  compactIconContainer: {
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 6,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  compactCardTitle: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#374151',
+    textAlign: 'center',
+    lineHeight: 16,
   },
 });
