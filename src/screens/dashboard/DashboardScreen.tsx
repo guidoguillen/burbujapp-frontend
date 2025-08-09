@@ -485,6 +485,44 @@ export const DashboardScreen: React.FC = () => {
             </View>
           </View>
 
+          {/* WhatsApp Business */}
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>📱 WhatsApp Business</Text>
+            <View style={styles.adminGrid}>
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('WhatsAppAdmin')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#DCFCE7' }]}>
+                  <MaterialCommunityIcons name="whatsapp" size={24} color="#25D366" />
+                </View>
+                <Text style={styles.adminCardTitle}>Panel Principal</Text>
+                <Text style={styles.adminCardSubtitle}>Dashboard y estado</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('WhatsAppTemplates')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#DBEAFE' }]}>
+                  <MaterialCommunityIcons name="file-document-outline" size={24} color="#2563EB" />
+                </View>
+                <Text style={styles.adminCardTitle}>Plantillas</Text>
+                <Text style={styles.adminCardSubtitle}>Mensajes aprobados</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('WhatsAppCampaigns')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#FEF3E2' }]}>
+                  <MaterialCommunityIcons name="bullhorn-outline" size={24} color="#EA580C" />
+                </View>
+                <Text style={styles.adminCardTitle}>Campañas</Text>
+                <Text style={styles.adminCardSubtitle}>Mensajería masiva</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity style={styles.adminCard} onPress={() => navigation.navigate('WhatsAppAnalytics')}>
+                <View style={[styles.adminIconContainer, { backgroundColor: '#F3E8FF' }]}>
+                  <MaterialCommunityIcons name="chart-line" size={24} color="#9333EA" />
+                </View>
+                <Text style={styles.adminCardTitle}>Análíticas</Text>
+                <Text style={styles.adminCardSubtitle}>Métricas y reportes</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
           {/* Control Financiero */}
           <View style={styles.sectionContainer}>
             <Text style={styles.sectionTitle}>💰 Control Financiero</Text>

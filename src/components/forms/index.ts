@@ -1,0 +1,1 @@
+export { ModalNuevoArticulo } from './ModalNuevoArticulo';

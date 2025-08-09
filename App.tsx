@@ -20,6 +20,15 @@ import { FuncionesAvanzadasScreen } from './src/screens/admin/FuncionesAvanzadas
 import { ActividadLogsScreen } from './src/screens/admin/ActividadLogsScreen';
 import { GestionHorariosScreen } from './src/screens/admin/GestionHorariosScreen';
 import { GestionPermisosScreen } from './src/screens/admin/GestionPermisosScreen';
+import { WhatsAppAdminScreen } from './src/screens/admin/WhatsAppAdminScreen';
+import { WhatsAppTemplatesScreen } from './src/screens/admin/WhatsAppTemplatesScreen';
+import { 
+  WhatsAppConfigScreen, 
+  WhatsAppContactsScreen, 
+  WhatsAppCampaignsScreen, 
+  WhatsAppAutomationScreen, 
+  WhatsAppAnalyticsScreen 
+} from './src/screens/admin/WhatsAppOtherScreens';
 import { View, Text } from 'react-native';
 
 const Stack = createStackNavigator();
@@ -47,6 +56,13 @@ export default function App() {
           <Stack.Screen name="ActividadLogs" component={ActividadLogsScreen} />
           <Stack.Screen name="GestionHorarios" component={GestionHorariosScreen} />
           <Stack.Screen name="GestionPermisos" component={GestionPermisosScreen} />
+          <Stack.Screen name="WhatsAppAdmin" component={WhatsAppAdminScreen} />
+          <Stack.Screen name="WhatsAppConfig" component={WhatsAppConfigScreen} />
+          <Stack.Screen name="WhatsAppTemplates" component={WhatsAppTemplatesScreen} />
+          <Stack.Screen name="WhatsAppContacts" component={WhatsAppContactsScreen} />
+          <Stack.Screen name="WhatsAppCampaigns" component={WhatsAppCampaignsScreen} />
+          <Stack.Screen name="WhatsAppAutomation" component={WhatsAppAutomationScreen} />
+          <Stack.Screen name="WhatsAppAnalytics" component={WhatsAppAnalyticsScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </AuthProvider>

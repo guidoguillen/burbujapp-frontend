@@ -1,4 +1,6 @@
 // Tipos globales para la aplicación
+import type { Cliente, Servicio } from '../services/OrderApiService';
+
 export interface User {
   id: string;
   email: string;
@@ -79,14 +81,14 @@ export type RootStackParamList = {
   Auth: undefined;
   Main: undefined;
   Dashboard: undefined;
-  NuevaOrden: undefined;
+  NuevaOrden: { clienteSeleccionado?: Cliente } | undefined;
   SelectCliente: undefined;
   SelectArticulos: { cliente: { id: string; nombre: string; apellido: string; telefono: string; direccion: string } };
   ReviewOrden: { 
-    cliente: { id: string; nombre: string; apellido: string; telefono: string; direccion: string };
-    articulos: Array<{ id: string; nombre: string; tipoServicio: string; unidadCobro: string; cantidad: number; precio: number }>;
-    total: number;
-  };
+    cliente?: { id: string; nombre: string; apellido: string; telefono: string; direccion: string };
+    articulos?: Array<{ servicio: Servicio; cantidad: number; subtotal: number; instrucciones?: string }>;
+    total?: number;
+  } | undefined;
   MisOrdenes: undefined;
   DetalleOrden: { ordenId: string };
   Turnos: undefined;
@@ -111,6 +113,14 @@ export type RootStackParamList = {
   ActividadLogs: undefined;
   GestionHorarios: undefined;
   GestionPermisos: undefined;
+  // WhatsApp Business screens
+  WhatsAppAdmin: undefined;
+  WhatsAppConfig: undefined;
+  WhatsAppTemplates: undefined;
+  WhatsAppContacts: undefined;
+  WhatsAppCampaigns: undefined;
+  WhatsAppAutomation: undefined;
+  WhatsAppAnalytics: undefined;
 };
 
 // Tipos para formularios
