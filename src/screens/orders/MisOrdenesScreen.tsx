@@ -5,6 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
+import BusquedaAvanzadaService from '../../services/BusquedaAvanzadaService';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'MisOrdenes'>;
 
@@ -35,9 +36,58 @@ export const MisOrdenesScreen: React.FC = () => {
   const [mostrarDropdownOrden, setMostrarDropdownOrden] = useState(false);
   const [modalQRVisible, setModalQRVisible] = useState(false);
   const [ordenSeleccionada, setOrdenSeleccionada] = useState<Orden | null>(null);
+  const [cargandoOrdenes, setCargandoOrdenes] = useState(false);
+  const [todasLasOrdenes, setTodasLasOrdenes] = useState<Orden[]>([]);
 
-  // Datos mock de órdenes
-  const [ordenes] = useState<Orden[]>([
+  // Cargar órdenes desde JSON Server al montar el componente
+  useEffect(() => {
+    cargarOrdenesDesdeAPI();
+  }, []);
+
+  const cargarOrdenesDesdeAPI = async () => {
+    try {
+      setCargandoOrdenes(true);
+      
+      const resultado = await BusquedaAvanzadaService.obtenerTodasLasOrdenesAPI();
+      
+      if (resultado.success && resultado.ordenes) {
+        // Transformar los datos para que coincidan con la interfaz local
+        const ordenesTransformadas = resultado.ordenes.map((orden: any) => ({
+          id: orden.id,
+          cliente: {
+            nombre: orden.cliente?.nombre || 'Cliente',
+            apellido: orden.cliente?.apellido || 'Desconocido',
+            telefono: orden.cliente?.telefono || 'Sin teléfono'
+          },
+          fechaCreacion: orden.fechaCreacion,
+          articulos: orden.articulos?.length || 0,
+          total: orden.total || 0,
+          estado: orden.estado || 'Registrado'
+        }));
+        
+        setTodasLasOrdenes(ordenesTransformadas);
+        console.log('✅ Órdenes cargadas desde API:', ordenesTransformadas.length);
+      } else {
+        console.log('⚠️ No se pudieron cargar órdenes desde API, usando datos mock');
+        // Fallback a datos mock si no se puede conectar
+        setTodasLasOrdenes(ordenesMock);
+      }
+    } catch (error) {
+      console.error('❌ Error cargando órdenes desde API:', error);
+      Alert.alert(
+        'Error de Conexión',
+        'No se pudieron cargar las órdenes desde el servidor. Verifica que JSON Server esté corriendo.',
+        [{ text: 'Entendido' }]
+      );
+      // Fallback a datos mock
+      setTodasLasOrdenes(ordenesMock);
+    } finally {
+      setCargandoOrdenes(false);
+    }
+  };
+
+  // Datos mock de órdenes (fallback)
+  const ordenesMock: Orden[] = [
     {
       id: 'ABC123',
       cliente: { nombre: 'Juan', apellido: 'Pérez', telefono: '77712345' },
@@ -96,7 +146,7 @@ export const MisOrdenesScreen: React.FC = () => {
   };
 
   const filtrarOrdenes = (): Orden[] => {
-    let ordenesFiltradas = ordenes.filter(orden => orden.estado === estadoActivo);
+    let ordenesFiltradas = todasLasOrdenes.filter(orden => orden.estado === estadoActivo);
 
     // Aplicar filtro de búsqueda
     if (textoBusqueda.trim()) {
@@ -186,7 +236,7 @@ export const MisOrdenesScreen: React.FC = () => {
   };
 
   const getContadorPorEstado = (estado: EstadoFiltro): number => {
-    return ordenes.filter(orden => orden.estado === estado).length;
+    return todasLasOrdenes.filter(orden => orden.estado === estado).length;
   };
 
   // Función para generar datos del QR
@@ -388,22 +438,30 @@ export const MisOrdenesScreen: React.FC = () => {
       </View>
 
       {/* Lista de órdenes */}
-      <FlatList
-        data={ordenesFiltradas}
-        keyExtractor={(item) => item.id}
-        renderItem={renderOrden}
-        contentContainerStyle={styles.listaContainer}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
-          <View style={styles.emptyContainer}>
-            <MaterialCommunityIcons name="clipboard-remove" size={48} color="#9CA3AF" />
-            <Text style={styles.emptyText}>No hay órdenes {estadoActivo.toLowerCase()}</Text>
-            <Text style={styles.emptySubtext}>
-              {textoBusqueda ? 'Prueba con otro término de búsqueda' : 'Las órdenes aparecerán aquí'}
-            </Text>
-          </View>
-        }
-      />
+      {cargandoOrdenes ? (
+        <View style={styles.loadingContainer}>
+          <MaterialCommunityIcons name="loading" size={48} color="#059669" />
+          <Text style={styles.loadingText}>Cargando órdenes desde el servidor...</Text>
+          <Text style={styles.loadingSubtext}>Conectando con JSON Server</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={ordenesFiltradas}
+          keyExtractor={(item) => item.id}
+          renderItem={renderOrden}
+          contentContainerStyle={styles.listaContainer}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <MaterialCommunityIcons name="clipboard-remove" size={48} color="#9CA3AF" />
+              <Text style={styles.emptyText}>No hay órdenes {estadoActivo.toLowerCase()}</Text>
+              <Text style={styles.emptySubtext}>
+                {textoBusqueda ? 'Prueba con otro término de búsqueda' : 'Las órdenes aparecerán aquí'}
+              </Text>
+            </View>
+          }
+        />
+      )}
 
       {/* Modal QR */}
       <Modal
@@ -814,5 +872,24 @@ const styles = StyleSheet.create({
     fontSize: 13,
     fontWeight: '600',
     color: '#10B981',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 60,
+  },
+  loadingText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginTop: 16,
+    textAlign: 'center',
+  },
+  loadingSubtext: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 8,
+    textAlign: 'center',
   },
 });

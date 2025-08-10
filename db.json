@@ -97,6 +97,18 @@
       "fechaCreacion": "2024-05-08T11:20:00Z",
       "totalOrdenes": 7,
       "ultimaOrden": "2024-07-30T09:15:00Z"
+    },
+    {
+      "id": "cliente-1754790281478",
+      "nombre": "marco",
+      "apellido": "guillen",
+      "email": "",
+      "telefono": "+591 70341067",
+      "direccion": "",
+      "estado": "Activo",
+      "fechaCreacion": "2025-08-10T01:44:41.478Z",
+      "totalOrdenes": 0,
+      "ultimaOrden": null
     }
   ],
   "servicios": [
@@ -105,7 +117,7 @@
       "nombre": "Lavado Ropa Casual",
       "descripcion": "Lavado completo de ropa casual (camisas, pantalones, ropa interior)",
       "categoria": "lavado",
-      "precio": 8.50,
+      "precio": 8.5,
       "unidad": "kilo",
       "tiempoEstimado": 24,
       "instrucciones": "Separar colores claros y oscuros. Revisar bolsillos.",
@@ -118,7 +130,7 @@
       "nombre": "Lavado Ropa Delicada",
       "descripcion": "Lavado especial para ropa delicada (seda, encajes, prendas finas)",
       "categoria": "lavado",
-      "precio": 15.00,
+      "precio": 15,
       "unidad": "kilo",
       "tiempoEstimado": 48,
       "instrucciones": "Lavado a mano con productos especiales para telas delicadas.",
@@ -131,7 +143,7 @@
       "nombre": "Lavado Ropa Deportiva",
       "descripcion": "Lavado especializado para ropa deportiva y de ejercicio",
       "categoria": "lavado",
-      "precio": 10.00,
+      "precio": 10,
       "unidad": "kilo",
       "tiempoEstimado": 24,
       "instrucciones": "Eliminar olores y manchas de sudor. Usar desinfectante.",
@@ -144,7 +156,7 @@
       "nombre": "Planchado Básico",
       "descripcion": "Planchado estándar de camisas, pantalones y ropa casual",
       "categoria": "planchado",
-      "precio": 3.50,
+      "precio": 3.5,
       "unidad": "unidad",
       "tiempoEstimado": 12,
       "instrucciones": "Planchado profesional con almidón suave.",
@@ -157,7 +169,7 @@
       "nombre": "Planchado Premium",
       "descripcion": "Planchado de alta calidad para ropa formal y ejecutiva",
       "categoria": "planchado",
-      "precio": 6.00,
+      "precio": 6,
       "unidad": "unidad",
       "tiempoEstimado": 24,
       "instrucciones": "Planchado perfecto con almidón profesional y colgado especial.",
@@ -170,7 +182,7 @@
       "nombre": "Limpieza en Seco Trajes",
       "descripcion": "Limpieza profesional en seco para trajes y ropa formal",
       "categoria": "limpieza_seco",
-      "precio": 25.00,
+      "precio": 25,
       "unidad": "unidad",
       "tiempoEstimado": 72,
       "instrucciones": "Limpieza con solventes especiales. Incluye planchado profesional.",
@@ -183,7 +195,7 @@
       "nombre": "Limpieza en Seco Vestidos",
       "descripcion": "Limpieza especializada para vestidos de fiesta y ropa formal femenina",
       "categoria": "limpieza_seco",
-      "precio": 30.00,
+      "precio": 30,
       "unidad": "unidad",
       "tiempoEstimado": 72,
       "instrucciones": "Cuidado especial para telas delicadas y adornos.",
@@ -196,7 +208,7 @@
       "nombre": "Lavado de Edredones",
       "descripcion": "Lavado especializado para edredones, cobijas y ropa de cama",
       "categoria": "especiales",
-      "precio": 20.00,
+      "precio": 20,
       "unidad": "unidad",
       "tiempoEstimado": 48,
       "instrucciones": "Lavado industrial con secado completo y desinfección.",
@@ -209,7 +221,7 @@
       "nombre": "Lavado de Zapatos",
       "descripcion": "Limpieza y lavado profesional de calzado deportivo y casual",
       "categoria": "especiales",
-      "precio": 15.00,
+      "precio": 15,
       "unidad": "unidad",
       "tiempoEstimado": 24,
       "instrucciones": "Limpieza profunda con productos especializados para calzado.",
@@ -222,7 +234,7 @@
       "nombre": "Lavado de Cortinas",
       "descripcion": "Lavado profesional de cortinas y decoración textil del hogar",
       "categoria": "especiales",
-      "precio": 12.00,
+      "precio": 12,
       "unidad": "metro",
       "tiempoEstimado": 48,
       "instrucciones": "Medición previa. Lavado según tipo de tela.",
@@ -253,8 +265,8 @@
             "unidad": "kilo"
           },
           "cantidad": 3,
-          "precioUnitario": 8.50,
-          "subtotal": 25.50,
+          "precioUnitario": 8.5,
+          "subtotal": 25.5,
           "instrucciones": "Separar camisas blancas"
         },
         {
@@ -265,15 +277,15 @@
             "unidad": "unidad"
           },
           "cantidad": 5,
-          "precioUnitario": 3.50,
-          "subtotal": 17.50,
+          "precioUnitario": 3.5,
+          "subtotal": 17.5,
           "instrucciones": "Planchado con almidón suave"
         }
       ],
-      "subtotal": 43.00,
-      "descuento": 3.00,
+      "subtotal": 43,
+      "descuento": 3,
       "recargo": 0,
-      "total": 40.00,
+      "total": 40,
       "estado": "En proceso",
       "fechaCreacion": "2024-08-09T10:30:00Z",
       "fechaEstimada": "2024-08-11T18:00:00Z",
@@ -327,15 +339,15 @@
             "unidad": "unidad"
           },
           "cantidad": 2,
-          "precioUnitario": 25.00,
-          "subtotal": 50.00,
+          "precioUnitario": 25,
+          "subtotal": 50,
           "instrucciones": "Cuidado especial con las solapas"
         }
       ],
-      "subtotal": 50.00,
+      "subtotal": 50,
       "descuento": 0,
-      "recargo": 5.00,
-      "total": 55.00,
+      "recargo": 5,
+      "total": 55,
       "estado": "Listo",
       "fechaCreacion": "2024-08-08T09:20:00Z",
       "fechaEstimada": "2024-08-11T16:00:00Z",
@@ -399,15 +411,15 @@
             "unidad": "unidad"
           },
           "cantidad": 1,
-          "precioUnitario": 20.00,
-          "subtotal": 20.00,
+          "precioUnitario": 20,
+          "subtotal": 20,
           "instrucciones": "Edredón matrimonial"
         }
       ],
-      "subtotal": 20.00,
+      "subtotal": 20,
       "descuento": 0,
       "recargo": 0,
-      "total": 20.00,
+      "total": 20,
       "estado": "Registrado",
       "fechaCreacion": "2024-08-07T15:45:00Z",
       "fechaEstimada": "2024-08-09T18:00:00Z",
@@ -451,8 +463,8 @@
             "unidad": "kilo"
           },
           "cantidad": 2,
-          "precioUnitario": 10.00,
-          "subtotal": 20.00,
+          "precioUnitario": 10,
+          "subtotal": 20,
           "instrucciones": "Ropa de gimnasio"
         },
         {
@@ -463,15 +475,15 @@
             "unidad": "unidad"
           },
           "cantidad": 3,
-          "precioUnitario": 3.50,
-          "subtotal": 10.50,
+          "precioUnitario": 3.5,
+          "subtotal": 10.5,
           "instrucciones": null
         }
       ],
-      "subtotal": 30.50,
-      "descuento": 1.50,
+      "subtotal": 30.5,
+      "descuento": 1.5,
       "recargo": 0,
-      "total": 29.00,
+      "total": 29,
       "estado": "Entregado",
       "fechaCreacion": "2024-08-06T11:20:00Z",
       "fechaEstimada": "2024-08-08T16:00:00Z",
@@ -529,12 +541,12 @@
     "resumenHoy": {
       "ordenesNuevas": 3,
       "ordenesCompletadas": 1,
-      "ingresosDia": 124.00,
+      "ingresosDia": 124,
       "clientesNuevos": 1
     },
     "resumenSemana": {
       "totalOrdenes": 15,
-      "totalIngresos": 850.50,
+      "totalIngresos": 850.5,
       "ordenesPromedioDia": 2,
       "clientesActivos": 6
     },
@@ -544,5 +556,248 @@
       "serviciosDisponibles": 10,
       "ordenesUltimoMes": 25
     }
-  }
+  },
+  "usuarios": [
+    {
+      "id": "usuario-001",
+      "nombre": "Gabriel",
+      "apellido": "Molina",
+      "email": "gabriel.molina@admin.com",
+      "telefono": "+591 79954304",
+      "rol": "administrador",
+      "estado": "Activo",
+      "fechaCreacion": "2024-01-01T08:00:00Z",
+      "ultimoAcceso": "2025-08-09T23:58:03.192Z"
+    },
+    {
+      "id": "usuario-002",
+      "nombre": "María",
+      "apellido": "López",
+      "email": "maria.lopez@operador.com",
+      "telefono": "+591 78234567",
+      "rol": "operador",
+      "estado": "Activo",
+      "fechaCreacion": "2024-02-15T09:00:00Z",
+      "ultimoAcceso": "2025-08-09T09:15:00Z"
+    },
+    {
+      "id": "usuario-003",
+      "nombre": "Carlos",
+      "apellido": "Vargas",
+      "email": "carlos.vargas@operador.com",
+      "telefono": "+591 77345678",
+      "rol": "operador",
+      "estado": "Activo",
+      "fechaCreacion": "2024-03-01T10:00:00Z",
+      "ultimoAcceso": "2025-08-08T16:45:00Z"
+    },
+    {
+      "id": "018f",
+      "email": "ana.garcia@operador.com",
+      "nombre": "Ana",
+      "rol": "operador",
+      "apellido": "Garc�a",
+      "telefono": "+591 76543210"
+    }
+  ],
+  "registroAsistencia": [
+    {
+      "id": "asistencia-001",
+      "usuarioId": "usuario-001",
+      "usuario": {
+        "id": "usuario-001",
+        "nombre": "Gabriel",
+        "apellido": "Molina",
+        "rol": "administrador"
+      },
+      "fecha": "2025-08-09",
+      "horaIngreso": "2025-08-09T08:30:00Z",
+      "horaSalida": null,
+      "horasTrabajadasPrevistas": 8,
+      "horasTrabajadas": null,
+      "estado": "Trabajando",
+      "observaciones": "Ingreso normal",
+      "ubicacion": {
+        "latitud": -17.783327,
+        "longitud": -63.182129,
+        "direccion": "Oficina Principal, Santa Cruz"
+      }
+    },
+    {
+      "id": "asistencia-002",
+      "usuarioId": "usuario-002",
+      "usuario": {
+        "id": "usuario-002",
+        "nombre": "María",
+        "apellido": "López",
+        "rol": "operador"
+      },
+      "fecha": "2025-08-09",
+      "horaIngreso": "2025-08-09T09:15:00Z",
+      "horaSalida": null,
+      "horasTrabajadasPrevistas": 8,
+      "horasTrabajadas": null,
+      "estado": "Trabajando",
+      "observaciones": "Ingreso con 15 min de retraso",
+      "ubicacion": {
+        "latitud": -17.783327,
+        "longitud": -63.182129,
+        "direccion": "Oficina Principal, Santa Cruz"
+      }
+    },
+    {
+      "id": "asistencia-003",
+      "usuarioId": "usuario-003",
+      "usuario": {
+        "id": "usuario-003",
+        "nombre": "Carlos",
+        "apellido": "Vargas",
+        "rol": "operador"
+      },
+      "fecha": "2025-08-08",
+      "horaIngreso": "2025-08-08T08:45:00Z",
+      "horaSalida": "2025-08-08T16:45:00Z",
+      "horasTrabajadasPrevistas": 8,
+      "horasTrabajadas": 8,
+      "estado": "Completado",
+      "observaciones": "Jornada completa",
+      "ubicacion": {
+        "latitud": -17.783327,
+        "longitud": -63.182129,
+        "direccion": "Oficina Principal, Santa Cruz"
+      }
+    },
+    {
+      "id": "4349",
+      "usuarioId": "usuario-001",
+      "horaIngreso": "2025-08-09T23:57:45.390Z",
+      "observaciones": "Ingreso desde PowerShell",
+      "fecha": "2025-08-09",
+      "horaSalida": null,
+      "horasTrabajadasPrevistas": 8,
+      "ubicacion": {
+        "latitud": -17.783327,
+        "direccion": "Oficina Principal, Santa Cruz",
+        "longitud": -63.182129
+      },
+      "estado": "Trabajando",
+      "usuario": {
+        "nombre": "Gabriel",
+        "rol": "administrador",
+        "id": "usuario-001",
+        "apellido": "Molina"
+      },
+      "horasTrabajadas": null
+    }
+  ],
+  "movimientosCaja": [
+    {
+      "id": "movimiento-001",
+      "tipo": "ingreso",
+      "concepto": "Venta de servicios",
+      "monto": 250,
+      "metodoPago": "efectivo",
+      "fecha": "2025-08-09T10:30:00Z",
+      "usuarioId": "usuario-002",
+      "usuario": {
+        "nombre": "María",
+        "apellido": "López"
+      },
+      "ordenId": "orden-001",
+      "numeroOrden": "ORD-20240809-0001",
+      "cliente": "Gabriel Molina",
+      "descripcion": "Pago de orden de lavandería",
+      "estado": "confirmado",
+      "comprobante": "COMP-001-2025"
+    },
+    {
+      "id": "movimiento-002",
+      "tipo": "egreso",
+      "concepto": "Compra de insumos",
+      "monto": 85.5,
+      "metodoPago": "transferencia",
+      "fecha": "2025-08-09T14:15:00Z",
+      "usuarioId": "usuario-001",
+      "usuario": {
+        "nombre": "Gabriel",
+        "apellido": "Molina"
+      },
+      "ordenId": null,
+      "numeroOrden": null,
+      "cliente": null,
+      "descripcion": "Compra de detergente y suavizante",
+      "estado": "confirmado",
+      "comprobante": "FAC-456-2025"
+    },
+    {
+      "id": "movimiento-003",
+      "tipo": "ingreso",
+      "concepto": "Venta de servicios",
+      "monto": 120,
+      "metodoPago": "qr",
+      "fecha": "2025-08-09T16:45:00Z",
+      "usuarioId": "usuario-002",
+      "usuario": {
+        "nombre": "María",
+        "apellido": "López"
+      },
+      "ordenId": "orden-002",
+      "numeroOrden": "ORD-20240808-0015",
+      "cliente": "María González",
+      "descripcion": "Pago de limpieza en seco",
+      "estado": "confirmado",
+      "comprobante": "COMP-002-2025"
+    },
+    {
+      "id": "9ac8",
+      "monto": 250.75,
+      "usuarioId": "usuario-001",
+      "fecha": "2025-08-09T23:57:55.160Z",
+      "concepto": "Venta de servicios",
+      "cliente": "Mar�a L�pez",
+      "usuario": {
+        "nombre": "Gabriel",
+        "apellido": "Molina"
+      },
+      "tipo": "ingreso",
+      "metodoPago": "efectivo",
+      "ordenId": "orden-001",
+      "numeroOrden": "ORD-001",
+      "comprobante": "COMP-TEST-001",
+      "descripcion": "Pago por servicios de burbuja",
+      "estado": "confirmado"
+    }
+  ],
+  "arqueoCaja": [
+    {
+      "id": "arqueo-001",
+      "fecha": "2025-08-09",
+      "usuarioId": "usuario-001",
+      "usuario": {
+        "nombre": "Gabriel",
+        "apellido": "Molina"
+      },
+      "turno": "mañana",
+      "saldoInicial": 500,
+      "totalIngresos": 370,
+      "totalEgresos": 85.5,
+      "saldoTeorico": 784.5,
+      "saldoReal": 784.5,
+      "diferencia": 0,
+      "estado": "cuadrado",
+      "observaciones": "Caja cuadrada sin diferencias",
+      "detalleEfectivo": {
+        "billetes200": 3,
+        "billetes100": 1,
+        "billetes50": 1,
+        "billetes20": 4,
+        "billetes10": 3,
+        "monedas5": 2,
+        "monedas2": 2,
+        "monedas1": 0,
+        "centavos50": 1
+      },
+      "fechaCreacion": "2025-08-09T18:00:00Z"
+    }
+  ]
 }

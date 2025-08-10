@@ -8,6 +8,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import QRCode from 'react-native-qrcode-svg';
 import ViewShot from 'react-native-view-shot';
 import * as FileSystem from 'expo-file-system';
+import BusquedaAvanzadaService from '../../services/BusquedaAvanzadaService';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'ReviewOrden'>;
@@ -30,6 +31,7 @@ export const ReviewOrdenScreen: React.FC = () => {
   const [fechaEntrega, setFechaEntrega] = useState<Date | null>(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
+  const [procesandoOrden, setProcesandoOrden] = useState(false);
   const qrRef = useRef<ViewShot>(null);
 
   // Calcular fecha mínima de entrega (48 horas desde ahora)
@@ -85,7 +87,7 @@ export const ReviewOrdenScreen: React.FC = () => {
     return code;
   };
 
-  const handleProcesarOrden = () => {
+  const handleProcesarOrden = async () => {
     // Validar que se haya seleccionado una fecha de entrega
     if (!fechaEntrega) {
       Alert.alert(
@@ -96,26 +98,97 @@ export const ReviewOrdenScreen: React.FC = () => {
       return;
     }
 
-    const codigo = generateOrdenCode();
-    const fechaCreacion = new Date().toLocaleString('es-ES');
-    
-    // Datos de la orden para el QR
-    const ordenData = {
-      codigo,
-      cliente: `${cliente.nombre} ${cliente.apellido}`,
-      telefono: cliente.telefono,
-      fecha: fechaCreacion,
-      fechaEntrega: fechaEntrega.toLocaleString('es-ES'),
-      articulos: articulos.length,
-      total: total.toFixed(2),
-      estado: 'Pendiente'
-    };
+    try {
+      setProcesandoOrden(true);
 
-    const qrData = JSON.stringify(ordenData);
-    
-    setCodigoOrden(codigo);
-    setQrValue(qrData);
-    setOrdenCreada(true);
+      // Transformar artículos al formato esperado por la API
+      const articulosParaAPI = articulos.map((articulo: any, index: number) => ({
+        id: `articulo-${Date.now()}-${index}`,
+        servicioId: articulo.servicio?.id || `servicio-${index}`,
+        servicio: {
+          nombre: articulo.servicio?.nombre || 'Servicio',
+          unidad: articulo.servicio?.unidad || 'unidad'
+        },
+        cantidad: articulo.cantidad,
+        precioUnitario: articulo.servicio?.precio || 0,
+        subtotal: articulo.subtotal,
+        instrucciones: articulo.instrucciones || null
+      }));
+
+      // Datos de la orden para la API
+      const datosOrden = {
+        clienteId: cliente.id,
+        cliente: {
+          id: cliente.id,
+          nombre: cliente.nombre,
+          apellido: cliente.apellido,
+          telefono: cliente.telefono,
+          email: cliente.email || '',
+          direccion: cliente.direccion
+        },
+        articulos: articulosParaAPI,
+        subtotal: total,
+        descuento: 0,
+        recargo: 0,
+        total: total,
+        metodoPago: 'efectivo', // Por defecto
+        urgente: false,
+        observaciones: `Fecha estimada de entrega: ${fechaEntrega.toLocaleString('es-ES')}`,
+        fechaEstimada: fechaEntrega.toISOString()
+      };
+
+      console.log('🚀 Creando orden con datos:', datosOrden);
+
+      // Crear la orden en JSON Server
+      const resultado = await BusquedaAvanzadaService.crearOrdenAPI(datosOrden);
+
+      if (resultado.success && resultado.orden) {
+        const nuevaOrden = resultado.orden;
+        console.log('✅ Orden creada exitosamente:', nuevaOrden);
+
+        // Generar datos para el QR con la orden real
+        const ordenData = {
+          codigo: nuevaOrden.numeroOrden,
+          cliente: `${cliente.nombre} ${cliente.apellido}`,
+          telefono: cliente.telefono,
+          fecha: new Date().toLocaleString('es-ES'),
+          fechaEntrega: fechaEntrega.toLocaleString('es-ES'),
+          articulos: articulos.length,
+          total: total.toFixed(2),
+          estado: 'Registrado',
+          ordenId: nuevaOrden.id
+        };
+
+        const qrData = JSON.stringify(ordenData);
+        
+        setCodigoOrden(nuevaOrden.numeroOrden);
+        setQrValue(qrData);
+        setOrdenCreada(true);
+
+        Alert.alert(
+          '🎉 ¡Orden Creada!',
+          `Tu orden ${nuevaOrden.numeroOrden} ha sido creada exitosamente y guardada en la base de datos.`,
+          [{ text: '¡Perfecto!' }]
+        );
+
+      } else {
+        Alert.alert(
+          'Error al Crear Orden',
+          resultado.error || 'No se pudo crear la orden. Por favor intenta nuevamente.',
+          [{ text: 'Entendido' }]
+        );
+      }
+
+    } catch (error) {
+      console.error('❌ Error procesando orden:', error);
+      Alert.alert(
+        'Error de Conexión',
+        'No se pudo conectar con el servidor. Verifica que JSON Server esté corriendo en el puerto 3001.',
+        [{ text: 'Entendido' }]
+      );
+    } finally {
+      setProcesandoOrden(false);
+    }
   };
 
   const handleCompartirWhatsApp = async () => {
@@ -638,9 +711,19 @@ ${qrImageUri ? '📊 *Ver código QR adjunto para seguimiento*' : '🔍 *Código
 
       {/* Footer */}
       <View style={styles.footer}>
-        <TouchableOpacity style={styles.procesarBtn} onPress={handleProcesarOrden}>
-          <MaterialCommunityIcons name="qrcode" size={24} color="#FFFFFF" />
-          <Text style={styles.procesarBtnText}>Procesar Orden</Text>
+        <TouchableOpacity 
+          style={[styles.procesarBtn, procesandoOrden && styles.procesarBtnDisabled]} 
+          onPress={handleProcesarOrden}
+          disabled={procesandoOrden}
+        >
+          <MaterialCommunityIcons 
+            name={procesandoOrden ? "loading" : "qrcode"} 
+            size={24} 
+            color="#FFFFFF" 
+          />
+          <Text style={styles.procesarBtnText}>
+            {procesandoOrden ? 'Creando Orden...' : 'Procesar Orden'}
+          </Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -869,6 +952,10 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     borderRadius: 12,
     gap: 12,
+  },
+  procesarBtnDisabled: {
+    backgroundColor: '#9CA3AF',
+    opacity: 0.7,
   },
   procesarBtnText: {
     color: '#FFFFFF',

@@ -1,14 +1,17 @@
-// URLs de la API
+import { JSON_SERVER_URL } from '../services/config/IpConfig';
+
+// URLs de la API - Usando JSON Server para desarrollo
 export const API_URLS = {
-  BASE_URL: 'https://api.tu-empresa.com',
+  BASE_URL: JSON_SERVER_URL,
   AUTH: '/auth',
   USERS: '/users',
-  CLIENTS: '/clients',
-  PRODUCTS: '/products',
-  ORDERS: '/orders',
-  SERVICES: '/services',
+  CLIENTS: '/clientes',
+  PRODUCTS: '/productos',
+  ORDERS: '/ordenes',
+  SERVICES: '/servicios',
   PAYMENTS: '/payments',
   REPORTS: '/reports',
+  DASHBOARD: '/dashboard',
 };
 
 // Configuración de la aplicación

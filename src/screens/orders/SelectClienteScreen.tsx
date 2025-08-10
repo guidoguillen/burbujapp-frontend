@@ -4,6 +4,7 @@ import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import BusquedaAvanzadaService from '../../services/BusquedaAvanzadaService';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'SelectCliente'>;
 
@@ -17,74 +18,20 @@ interface Cliente {
   fechaUltimaOrden?: string;
   totalOrdenes?: number;
   esFavorito?: boolean;
+  fechaCreacion?: string;
+  ultimaOrden?: string;
+  estado?: string;
 }
-
-// Datos mock de clientes expandidos
-const clientesMock: Cliente[] = [
-  {
-    id: '1',
-    nombre: 'Juan',
-    apellido: 'Pérez',
-    telefono: '+591 70123456',
-    direccion: 'Av. Banzer 2do anillo, Santa Cruz',
-    email: 'juan.perez@email.com',
-    fechaUltimaOrden: '2024-08-05',
-    totalOrdenes: 15,
-    esFavorito: true
-  },
-  {
-    id: '2',
-    nombre: 'María',
-    apellido: 'González',
-    telefono: '+591 75987654',
-    direccion: 'Calle Beni entre 6to y 7mo anillo',
-    email: 'maria.gonzalez@email.com',
-    fechaUltimaOrden: '2024-08-03',
-    totalOrdenes: 8,
-    esFavorito: false
-  },
-  {
-    id: '3',
-    nombre: 'Carlos',
-    apellido: 'López',
-    telefono: '+591 68445566',
-    direccion: 'Barrio Hamacas, Plan 3000',
-    email: 'carlos.lopez@email.com',
-    fechaUltimaOrden: '2024-07-28',
-    totalOrdenes: 23,
-    esFavorito: true
-  },
-  {
-    id: '4',
-    nombre: 'Gabriel',
-    apellido: 'Molina',
-    telefono: '+591 79954303',
-    direccion: 'Zona Norte, Av. Cristo Redentor',
-    email: 'gabriel.molina@email.com',
-    fechaUltimaOrden: '2024-08-01',
-    totalOrdenes: 5,
-    esFavorito: false
-  },
-  {
-    id: '5',
-    nombre: 'Ana',
-    apellido: 'Rodríguez',
-    telefono: '+591 72334455',
-    direccion: 'Equipetrol Norte, calle 1',
-    email: 'ana.rodriguez@email.com',
-    fechaUltimaOrden: '2024-08-04',
-    totalOrdenes: 12,
-    esFavorito: true
-  }
-];
 
 export const SelectClienteScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const [busqueda, setBusqueda] = useState('');
   const [clientesFiltrados, setClientesFiltrados] = useState<Cliente[]>([]);
+  const [todosLosClientes, setTodosLosClientes] = useState<Cliente[]>([]);
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [cargando, setCargando] = useState(false);
+  const [cargandoAPI, setCargandoAPI] = useState(false);
   const [nuevoCliente, setNuevoCliente] = useState({
     nombre: '',
     apellido: '',
@@ -97,9 +44,46 @@ export const SelectClienteScreen: React.FC = () => {
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       inicializarDatos();
+      cargarClientes();
     });
     return unsubscribe;
   }, [navigation]);
+
+  // Cargar clientes desde la API
+  const cargarClientes = async () => {
+    try {
+      setCargandoAPI(true);
+      const resultado = await BusquedaAvanzadaService.buscarClientesAPI({
+        texto: '',
+        ordenarPor: 'fecha',
+        direccionOrden: 'desc'
+      });
+      
+      // Transformar datos para que coincidan con la interfaz
+      const clientesTransformados = resultado.items.map((cliente: any) => ({
+        id: cliente.id,
+        nombre: cliente.nombre,
+        apellido: cliente.apellido,
+        telefono: cliente.telefono,
+        direccion: cliente.direccion,
+        email: cliente.email,
+        fechaUltimaOrden: cliente.ultimaOrden ? new Date(cliente.ultimaOrden).toISOString().split('T')[0] : undefined,
+        totalOrdenes: cliente.totalOrdenes || 0,
+        esFavorito: cliente.totalOrdenes > 10,
+        fechaCreacion: cliente.fechaCreacion,
+        ultimaOrden: cliente.ultimaOrden,
+        estado: cliente.estado
+      }));
+
+      setTodosLosClientes(clientesTransformados);
+      console.log(`✅ Cargados ${clientesTransformados.length} clientes desde la API`);
+    } catch (error) {
+      console.error('❌ Error cargando clientes:', error);
+      Alert.alert('Error', 'No se pudieron cargar los clientes. Verifica que JSON Server esté corriendo.');
+    } finally {
+      setCargandoAPI(false);
+    }
+  };
 
   const inicializarDatos = () => {
     // Resetear campos
@@ -116,27 +100,57 @@ export const SelectClienteScreen: React.FC = () => {
     });
   };
 
-  // Búsqueda mejorada
+  // Búsqueda mejorada usando la API
   useEffect(() => {
     if (busqueda.length > 0) {
       setCargando(true);
       
       // Simular delay de búsqueda
-      const timeoutId = setTimeout(() => {
-        const filtrados = clientesMock.filter(cliente => {
-          const searchTerm = busqueda.toLowerCase();
-          return (
-            cliente.nombre.toLowerCase().includes(searchTerm) ||
-            cliente.apellido.toLowerCase().includes(searchTerm) ||
-            cliente.telefono.includes(busqueda) ||
-            (cliente.email && cliente.email.toLowerCase().includes(searchTerm)) ||
-            cliente.direccion.toLowerCase().includes(searchTerm)
-          );
-        });
-        
-        setClientesFiltrados(filtrados);
-        setMostrarDropdown(true);
-        setCargando(false);
+      const timeoutId = setTimeout(async () => {
+        try {
+          const resultado = await BusquedaAvanzadaService.buscarClientesAPI({
+            texto: busqueda,
+            ordenarPor: 'fecha',
+            direccionOrden: 'desc'
+          });
+          
+          // Transformar datos
+          const clientesTransformados = resultado.items.map((cliente: any) => ({
+            id: cliente.id,
+            nombre: cliente.nombre,
+            apellido: cliente.apellido,
+            telefono: cliente.telefono,
+            direccion: cliente.direccion,
+            email: cliente.email,
+            fechaUltimaOrden: cliente.ultimaOrden ? new Date(cliente.ultimaOrden).toISOString().split('T')[0] : undefined,
+            totalOrdenes: cliente.totalOrdenes || 0,
+            esFavorito: cliente.totalOrdenes > 10,
+            fechaCreacion: cliente.fechaCreacion,
+            ultimaOrden: cliente.ultimaOrden,
+            estado: cliente.estado
+          }));
+          
+          setClientesFiltrados(clientesTransformados);
+          setMostrarDropdown(true);
+          console.log(`🔍 Búsqueda "${busqueda}": ${clientesTransformados.length} resultados`);
+        } catch (error) {
+          console.error('❌ Error en búsqueda:', error);
+          // Fallback a búsqueda local si falla la API
+          const filtrados = todosLosClientes.filter((cliente: Cliente) => {
+            const searchTerm = busqueda.toLowerCase();
+            return (
+              cliente.nombre.toLowerCase().includes(searchTerm) ||
+              cliente.apellido.toLowerCase().includes(searchTerm) ||
+              cliente.telefono.includes(busqueda) ||
+              (cliente.email && cliente.email.toLowerCase().includes(searchTerm)) ||
+              cliente.direccion.toLowerCase().includes(searchTerm)
+            );
+          });
+          setClientesFiltrados(filtrados);
+          setMostrarDropdown(true);
+        } finally {
+          setCargando(false);
+        }
       }, 300);
 
       return () => {
@@ -148,7 +162,7 @@ export const SelectClienteScreen: React.FC = () => {
       setMostrarDropdown(false);
       setCargando(false);
     }
-  }, [busqueda]);
+  }, [busqueda, todosLosClientes]);
 
   const handleSeleccionarCliente = (cliente: Cliente) => {
     setBusqueda('');
@@ -180,7 +194,7 @@ export const SelectClienteScreen: React.FC = () => {
     return errores;
   };
 
-  const handleCrearNuevoCliente = () => {
+  const handleCrearNuevoCliente = async () => {
     const errores = validarFormulario();
     
     if (errores.length > 0) {
@@ -188,16 +202,54 @@ export const SelectClienteScreen: React.FC = () => {
       return;
     }
 
-    const cliente: Cliente = {
-      id: Date.now().toString(),
-      ...nuevoCliente,
-      fechaUltimaOrden: new Date().toISOString().split('T')[0],
-      totalOrdenes: 0,
-      esFavorito: false
-    };
-    
-    setMostrarFormulario(false);
-    navigation.navigate('SelectArticulos', { cliente });
+    try {
+      setCargando(true);
+      
+      // Crear cliente usando la API
+      const resultado = await BusquedaAvanzadaService.crearClienteAPI({
+        nombre: nuevoCliente.nombre,
+        apellido: nuevoCliente.apellido,
+        telefono: nuevoCliente.telefono,
+        direccion: nuevoCliente.direccion,
+        email: nuevoCliente.email
+      });
+
+      if (resultado.success && resultado.cliente) {
+        // Transformar datos para que coincidan con la interfaz
+        const clienteCreado: Cliente = {
+          id: resultado.cliente.id,
+          nombre: resultado.cliente.nombre,
+          apellido: resultado.cliente.apellido,
+          telefono: resultado.cliente.telefono,
+          direccion: resultado.cliente.direccion,
+          email: resultado.cliente.email,
+          fechaUltimaOrden: undefined,
+          totalOrdenes: 0,
+          esFavorito: false,
+          fechaCreacion: resultado.cliente.fechaCreacion,
+          ultimaOrden: resultado.cliente.ultimaOrden,
+          estado: resultado.cliente.estado
+        };
+        
+        console.log('✅ Cliente creado exitosamente:', clienteCreado);
+        
+        // Actualizar la lista local
+        setTodosLosClientes(prev => [clienteCreado, ...prev]);
+        
+        // Cerrar modal y continuar
+        setMostrarFormulario(false);
+        navigation.navigate('SelectArticulos', { cliente: clienteCreado });
+        
+        Alert.alert('Éxito', 'Cliente creado exitosamente');
+      } else {
+        Alert.alert('Error', resultado.error || 'No se pudo crear el cliente');
+      }
+    } catch (error) {
+      console.error('❌ Error creando cliente:', error);
+      Alert.alert('Error', 'Ocurrió un error al crear el cliente. Verifica que JSON Server esté corriendo.');
+    } finally {
+      setCargando(false);
+    }
   };
 
   const getAvatarColor = (nombre: string) => {
@@ -218,6 +270,14 @@ export const SelectClienteScreen: React.FC = () => {
         <Text style={styles.headerTitle}>Seleccionar Cliente</Text>
         <View style={styles.headerSpacer} />
       </View>
+
+      {/* Indicador de carga API */}
+      {cargandoAPI && (
+        <View style={styles.apiLoadingContainer}>
+          <MaterialCommunityIcons name="loading" size={16} color="#059669" style={styles.spinningIcon} />
+          <Text style={styles.apiLoadingText}>Cargando clientes desde la base de datos...</Text>
+        </View>
+      )}
 
       {/* Indicador de progreso */}
       <View style={styles.progressContainer}>
@@ -454,11 +514,18 @@ export const SelectClienteScreen: React.FC = () => {
               </TouchableOpacity>
               
               <TouchableOpacity 
-                style={styles.crearBtn} 
+                style={[styles.crearBtn, cargando && styles.crearBtnDisabled]} 
                 onPress={handleCrearNuevoCliente}
+                disabled={cargando}
               >
-                <MaterialCommunityIcons name="account-plus" size={20} color="#FFFFFF" />
-                <Text style={styles.crearBtnText}>Crear Cliente</Text>
+                {cargando ? (
+                  <MaterialCommunityIcons name="loading" size={20} color="#FFFFFF" />
+                ) : (
+                  <MaterialCommunityIcons name="account-plus" size={20} color="#FFFFFF" />
+                )}
+                <Text style={styles.crearBtnText}>
+                  {cargando ? 'Creando...' : 'Crear Cliente'}
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -671,6 +738,10 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#059669',
     gap: 8,
+  },
+  crearBtnDisabled: {
+    backgroundColor: '#9CA3AF',
+    opacity: 0.7,
   },
   crearBtnText: {
     fontSize: 16,
@@ -966,5 +1037,27 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '600',
     color: '#FFFFFF',
+  },
+
+  // Estilos para carga de API
+  apiLoadingContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: '#F0FDF4',
+    borderWidth: 1,
+    borderColor: '#BBF7D0',
+    margin: 16,
+    borderRadius: 8,
+  },
+  apiLoadingText: {
+    fontSize: 14,
+    color: '#059669',
+    marginLeft: 8,
+  },
+  spinningIcon: {
+    // Animación de rotación se puede agregar con Animated
   },
 });
