@@ -1,53 +1,252 @@
-# BurbujaApp Frontend
+# 🧼 BurbujApp Frontend
 
-## Descripción
-Aplicación móvil desarrollada en React Native con Expo para gestión empresarial completa. Incluye módulos para manejo de clientes, inventario, pedidos, pagos, promociones, reportes, programación de citas y servicios.
+**BurbujApp** es una aplicación móvil integral para la gestión de lavanderías bolivianas, desarrollada con React Native y Expo. Incluye un completo sistema de mock API con JSON Server para desarrollo y testing.
 
-## Tecnologías
-- React Native GG
-- Expo ~53.0.20
-- TypeScript ~5.8.3
-- React Navigation v6
-- React 18.3.1
+## 🚀 Instalación Rápida
 
-## Estructura del Proyecto
+### Una sola línea (Recomendado):
+
+**Windows PowerShell:**
+```powershell
+irm https://raw.githubusercontent.com/guidoguillen/burbujapp-frontend/master/install-burbujapp.sh | iex
+```
+
+**Linux/macOS:**
+```bash
+curl -fsSL https://raw.githubusercontent.com/guidoguillen/burbujapp-frontend/master/install-burbujapp.sh | bash
+```
+
+### O manualmente:
+```bash
+git clone https://github.com/guidoguillen/burbujapp-frontend.git
+cd burbujapp-frontend
+npm run setup
+npm run dev
+```
+
+## 🎯 Scripts de Desarrollo
+
+### 🚀 Inicio Completo
+```bash
+npm run dev              # Inicia JSON Server + Expo
+npm run dev:fast         # Sin delay en API
+npm run dev:android      # Solo Android, sin navegador
+npm run dev:stop         # Detener todos los servicios
+```
+
+### 🗃️ Solo Mock API
+```bash
+npm run mock-api         # JSON Server con delay realista
+npm run mock-api-fast    # JSON Server sin delay
+```
+
+### 📱 Solo React Native
+```bash
+npm start                # Expo Dev Server
+npm run android          # Solo Android
+npm run ios              # Solo iOS (macOS)
+```
+
+### ⚙️ Configuración
+```bash
+npm run setup            # Configurar entorno
+npm run setup:extensions # + extensiones VS Code
+npm run clone-setup      # Clonar y configurar desde cero
+```
+
+## 🌐 URLs del Entorno
+
+- **📱 App (Expo):** http://localhost:8081
+- **🗃️ Mock API:** http://localhost:3001
+- **👥 Clientes:** http://localhost:3001/clientes
+- **🛠️ Servicios:** http://localhost:3001/servicios
+- **📋 Órdenes:** http://localhost:3001/ordenes
+- **📊 Dashboard:** http://localhost:3001/dashboard
+
+## 📁 Estructura del Proyecto
+
 ```
 src/
-├── components/        # Componentes reutilizables
-│   ├── common/       # Componentes básicos (Button, Input, etc.)
-│   ├── forms/        # Componentes de formularios
-│   ├── layout/       # Componentes de layout (Header, etc.)
-│   └── ui/           # Componentes de interfaz
-├── constants/        # Constantes y configuraciones
-├── context/          # Contextos de React
-├── hooks/            # Custom hooks
-├── navigation/       # Configuración de navegación
-├── screens/          # Pantallas de la aplicación
-│   ├── auth/         # Autenticación
-│   ├── clients/      # Gestión de clientes
-│   ├── dashboard/    # Dashboard principal
-│   ├── inventory/    # Gestión de inventario
-│   ├── orders/       # Gestión de pedidos
-│   ├── payments/     # Gestión de pagos
-│   ├── promotions/   # Gestión de promociones
-│   ├── reports/      # Reportes y estadísticas
-│   ├── scheduling/   # Programación de citas
-│   └── services/     # Gestión de servicios
-├── services/         # Servicios y API calls
-├── store/            # Gestión de estado global
-├── styles/           # Estilos globales
-├── types/            # Definiciones de tipos TypeScript
-└── utils/            # Utilidades y helpers
+├── components/           # Componentes reutilizables
+│   ├── common/          # Button, Input, etc.
+│   ├── forms/           # Formularios específicos
+│   ├── layout/          # Header, Navigation
+│   └── ui/              # Componentes de interfaz
+├── screens/             # Pantallas principales
+│   ├── auth/           # Login, Registro
+│   ├── dashboard/      # Panel principal
+│   ├── clients/        # Gestión clientes
+│   ├── services/       # Gestión servicios
+│   ├── orders/         # Gestión órdenes
+│   ├── inventory/      # Control inventario
+│   ├── payments/       # Sistema de pagos
+│   ├── promotions/     # Promociones
+│   ├── reports/        # Reportes
+│   └── scheduling/     # Programación
+├── navigation/          # Configuración navegación
+├── context/            # Contextos React
+├── services/           # API y configuración
+│   ├── api.ts          # Cliente API principal
+│   └── config/         # Configuración IP y entorno
+├── types/              # Definiciones TypeScript
+├── constants/          # Constantes y temas
+├── utils/              # Utilidades
+└── styles/             # Estilos globales
+
+scripts/                 # Scripts de desarrollo
+├── setup-dev-environment.* # Configuración automática
+├── start-dev.*         # Inicio de desarrollo
+├── stop-dev.*          # Detener servicios
+└── clone-and-setup.*   # Instalación completa
+
+db.json                  # Base de datos mock
+logs/                    # Logs de desarrollo
 ```
 
-## Scripts Disponibles
+## 🗃️ Mock API - Datos Incluidos
 
-### Instalación
+### 👥 Clientes (15 registros)
+```json
+{
+  "id": 1,
+  "nombre": "María González",
+  "telefono": "70123456",
+  "email": "maria@email.com",
+  "direccion": "Av. América #123, La Paz"
+}
+```
+
+### 🛠️ Servicios (8 tipos)
+```json
+{
+  "id": 1,
+  "nombre": "Lavado Básico",
+  "precio": 15.00,
+  "tiempo_estimado": "2 horas",
+  "descripcion": "Lavado estándar para ropa diaria"
+}
+```
+
+### 📋 Órdenes (20 registros)
+```json
+{
+  "id": 1,
+  "cliente_id": 1,
+  "servicio_id": 1,
+  "estado": "en_proceso",
+  "fecha_ingreso": "2024-01-15T10:30:00Z",
+  "total": 45.50
+}
+```
+
+### 📊 Dashboard
+- Resumen de ventas diarias/mensuales
+- Estadísticas de órdenes activas
+- Métricas de clientes
+- Indicadores de rendimiento
+
+## 🔧 Tecnologías
+
+### Frontend
+- **React Native** con Expo
+- **TypeScript** para tipado fuerte
+- **React Navigation** para navegación
+- **React Context** para estado global
+- **Expo Router** para ruteo avanzado
+
+### Mock Backend
+- **JSON Server** para API REST simulada
+- **Datos realistas** bolivianos
+- **CORS habilitado** para desarrollo
+- **Delay configurable** para simular latencia
+
+### Desarrollo
+- **PowerShell/Bash** scripts multiplataforma
+- **Detección automática de IP** para red local
+- **Hot Reload** en desarrollo
+- **Logging detallado** en carpeta `logs/`
+
+## 📋 Funcionalidades
+
+### ✅ Completadas
+- 🔐 **Autenticación:** Login y logout
+- 👥 **Gestión de Clientes:** CRUD completo
+- 🛠️ **Servicios:** Catálogo y precios
+- 📋 **Órdenes:** Crear, ver, actualizar estado
+- 📊 **Dashboard:** Métricas y estadísticas
+- 🎨 **UI/UX:** Componentes reutilizables
+- 🔧 **Mock API:** Sistema completo de desarrollo
+
+### 🚧 En Desarrollo
+- 💰 **Sistema de Pagos**
+- 📦 **Control de Inventario**
+- 🎯 **Promociones y Descuentos**
+- 📈 **Reportes Avanzados**
+- ⏰ **Programación de Servicios**
+- 🔔 **Notificaciones Push**
+
+## 📚 Documentación Adicional
+
+- **[📖 Guía de Instalación Completa](INSTALLATION_GUIDE.md)**
+- **[⚡ Inicio Rápido](DEV_QUICK_START.md)**
+- **[🗃️ Documentación JSON Server](JSON_SERVER_README.md)**
+
+## 🔍 Comandos de Diagnóstico
+
 ```bash
+# Verificar estado del entorno
+node --version              # Node.js instalado
+npm --version               # npm disponible
+npx expo --version          # Expo CLI funcionando
+
+# Verificar servicios activos
+curl http://localhost:3001/clientes  # API respondiendo
+curl http://localhost:8081          # Expo activo
+
+# Ver logs en tiempo real
+tail -f logs/json-server.log        # API logs
+tail -f logs/expo.log               # Expo logs
+```
+
+## 🆘 Solución de Problemas
+
+### API no responde:
+```bash
+npm run dev:stop && npm run dev
+```
+
+### Dependencias con errores:
+```bash
+rm -rf node_modules package-lock.json
 npm install --legacy-peer-deps
 ```
 
-### Desarrollo
+### Puerto ocupado:
+```bash
+npm run dev:stop-force
+```
+
+### Cambio de red:
+```bash
+# Actualizar: src/services/config/IpConfig.ts
+npm run dev:stop && npm run dev
+```
+
+## 🤝 Contribución
+
+1. Fork el proyecto
+2. Crea una branch: `git checkout -b feature/nueva-funcionalidad`
+3. Commit: `git commit -m 'Agregar nueva funcionalidad'`
+4. Push: `git push origin feature/nueva-funcionalidad`
+5. Abre un Pull Request
+
+## 📄 Licencia
+
+Este proyecto está licenciado bajo la Licencia MIT.
+
+---
+
+**💡 Para empezar rápidamente:** Ejecuta `npm run dev` después de la instalación y tendrás toda la aplicación funcionando con datos de prueba.
 ```bash
 # Iniciar el proyecto
 npm start
