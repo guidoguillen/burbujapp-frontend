@@ -11,8 +11,13 @@
     "test": "jest",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "type-check": "tsc --noEmit",
-    "mock-api": "json-server --watch db.json --port 3001 --host 0.0.0.0 --delay 500",
-    "mock-api-fast": "json-server --watch db.json --port 3001 --host 0.0.0.0"
+    "mock-api": "json-server --watch db.json --port 3001 --host 0.0.0.0",
+    "mock-api-fast": "json-server --watch db.json --port 3001 --host 0.0.0.0",
+    "dev": "powershell -ExecutionPolicy Bypass -File scripts/start-dev.ps1",
+    "dev:fast": "powershell -ExecutionPolicy Bypass -File scripts/start-dev.ps1 -Fast",
+    "dev:android": "powershell -ExecutionPolicy Bypass -File scripts/start-dev.ps1 -AndroidOnly",
+    "dev:stop": "powershell -ExecutionPolicy Bypass -File scripts/stop-dev.ps1",
+    "dev:stop-force": "powershell -ExecutionPolicy Bypass -File scripts/stop-dev.ps1 -Force"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^2.2.0",
