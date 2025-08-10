@@ -5,6 +5,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../../types';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { ModalNuevoArticulo } from '../../components';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'SelectArticulos'>;
 type RoutePropType = RouteProp<RootStackParamList, 'SelectArticulos'>;
@@ -171,6 +172,9 @@ export const SelectArticulosScreen: React.FC = () => {
   const [articulosFiltrados, setArticulosFiltrados] = useState<typeof articulosMock>([]);
   const [mostrarDropdown, setMostrarDropdown] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalNuevoArticulo, setModalNuevoArticulo] = useState(false);
+  const [nuevoArticuloNombre, setNuevoArticuloNombre] = useState('');
+  const [nuevoArticuloDescripcion, setNuevoArticuloDescripcion] = useState('');
   const [carritoVisible, setCarritoVisible] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [articuloActual, setArticuloActual] = useState({
@@ -257,6 +261,28 @@ export const SelectArticulosScreen: React.FC = () => {
     }));
     setMostrarFormulario(true);
     setMostrarDropdown(false);
+  };
+
+  const handleCrearArticuloBasico = (nombre: string, descripcion: string) => {
+    // Crear artículo básico con valores por defecto
+    setArticuloActual({
+      nombre: nombre,
+      tipoServicio: 'lavado',
+      unidadCobro: 'unidad',
+      cantidad: 1,
+      precio: 5, // Precio por defecto
+      foto: '',
+      notas: descripcion
+    });
+    
+    // Limpiar búsqueda y cerrar dropdown
+    setBusquedaArticulo('');
+    setMostrarDropdown(false);
+    
+    // Cerrar modal simple y abrir modal de configuración completa
+    setModalNuevoArticulo(false);
+    setMostrarFormulario(true);
+    setModalVisible(true);
   };
 
   const handleAgregarAlCarrito = () => {
@@ -473,7 +499,7 @@ export const SelectArticulosScreen: React.FC = () => {
           
           <TouchableOpacity 
             style={styles.addArticuloBtn}
-            onPress={handleAbrirModalNuevoArticulo}
+            onPress={() => setModalVisible(true)}
           >
             <MaterialCommunityIcons name="plus-circle" size={24} color="#FFFFFF" />
             <Text style={styles.addArticuloBtnText}>Agregar Artículo</Text>
@@ -604,7 +630,11 @@ export const SelectArticulosScreen: React.FC = () => {
               {mostrarCrearNuevo && (
                 <TouchableOpacity
                   style={styles.crearNuevoBtn}
-                  onPress={handleCrearNuevoArticulo}
+                  onPress={() => {
+                    setNuevoArticuloNombre(busquedaArticulo);
+                    setNuevoArticuloDescripcion('');
+                    setModalNuevoArticulo(true);
+                  }}
                 >
                   <MaterialCommunityIcons name="plus-circle" size={24} color="#059669" />
                   <Text style={styles.crearNuevoText}>Crear nuevo artículo: "{busquedaArticulo}"</Text>
@@ -923,6 +953,12 @@ export const SelectArticulosScreen: React.FC = () => {
           </ScrollView>
         </View>
       </Modal>
+
+      <ModalNuevoArticulo
+        visible={modalNuevoArticulo}
+        onClose={() => setModalNuevoArticulo(false)}
+        onCrearArticulo={handleCrearArticuloBasico}
+      />
     </View>
   );
 };
