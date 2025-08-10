@@ -2,7 +2,7 @@
   "clientes": [
     {
       "id": "cliente-001",
-      "nombre": "Gabriel",
+      "nombre": "Gabriela",
       "apellido": "Molina",
       "email": "gabriel.molina@email.com",
       "telefono": "+591 79954303",
@@ -80,6 +80,18 @@
       "apellido": "Chávez",
       "email": "luis.chavez@email.com",
       "telefono": "+591 78333444",
+      "direccion": "Barrio Equipetrol, calle 15 #67",
+      "estado": "Activo",
+      "fechaCreacion": "2024-05-08T11:20:00Z",
+      "totalOrdenes": 7,
+      "ultimaOrden": "2024-07-30T09:15:00Z"
+    },
+    {
+      "id": "cliente-008",
+      "nombre": "Guido",
+      "apellido": "Guillen",
+      "email": "guido.guillen@gmail.com",
+      "telefono": "+591 76955990",
       "direccion": "Barrio Equipetrol, calle 15 #67",
       "estado": "Activo",
       "fechaCreacion": "2024-05-08T11:20:00Z",
