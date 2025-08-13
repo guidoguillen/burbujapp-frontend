@@ -136,7 +136,7 @@ export const MisOrdenesScreen: React.FC = () => {
       total: 95,
       estado: 'En proceso'
     },
-  ]);
+  ];
 
   const normalizarTexto = (texto: string): string => {
     return texto

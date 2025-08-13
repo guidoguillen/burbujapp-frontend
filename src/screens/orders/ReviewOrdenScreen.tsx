@@ -23,7 +23,24 @@ const tiposServicio = [
 export const ReviewOrdenScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const route = useRoute<RoutePropType>();
-  const { cliente, articulos, total } = route.params;
+  const { cliente, articulos, total } = route.params || {};
+
+  // Verificación de seguridad - redirigir si faltan datos
+  useEffect(() => {
+    if (!cliente || !articulos || total === undefined) {
+      Alert.alert(
+        'Error',
+        'Faltan datos para mostrar la orden. Regresando al inicio.',
+        [{ text: 'OK', onPress: () => navigation.goBack() }]
+      );
+      return;
+    }
+  }, [cliente, articulos, total, navigation]);
+
+  // Early return si faltan datos
+  if (!cliente || !articulos || total === undefined) {
+    return null;
+  }
 
   const [ordenCreada, setOrdenCreada] = useState(false);
   const [codigoOrden, setCodigoOrden] = useState('');
@@ -123,7 +140,7 @@ export const ReviewOrdenScreen: React.FC = () => {
           nombre: cliente.nombre,
           apellido: cliente.apellido,
           telefono: cliente.telefono,
-          email: cliente.email || '',
+          email: (cliente as any).email || '',
           direccion: cliente.direccion
         },
         articulos: articulosParaAPI,
@@ -207,7 +224,7 @@ export const ReviewOrdenScreen: React.FC = () => {
       }
 
       // Crear resumen detallado de artículos
-      const articulosResumen = articulos.map((articulo, index) => {
+      const articulosResumen = articulos.map((articulo: any, index) => {
         const servicio = tiposServicio.find(s => s.id === articulo.tipoServicio)?.label || 'Servicio';
         const subtotal = (articulo.cantidad * articulo.precio).toFixed(2);
         return `${index + 1}. ${articulo.nombre}\n   ${servicio} - ${articulo.cantidad} ${articulo.unidadCobro === 'kilo' ? 'kg' : 'und'} × $${articulo.precio} = $${subtotal}`;
@@ -551,10 +568,10 @@ ${qrImageUri ? '📊 *Ver código QR adjunto para seguimiento*' : '🔍 *Código
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>🧺 Resumen de Artículos ({articulos.length})</Text>
           
-          {articulos.map((item, index) => (
-            <View key={item.id} style={styles.articuloItem}>
+          {articulos.map((item: any, index) => (
+            <View key={item.id || index} style={styles.articuloItem}>
               <View style={styles.articuloHeader}>
-                <Text style={styles.articuloNombre}>{item.nombre}</Text>
+                <Text style={styles.articuloNombre}>{item.nombre || item.servicio?.nombre}</Text>
                 <Text style={styles.articuloSubtotal}>
                   ${calcularSubtotal(item).toFixed(2)}
                 </Text>
@@ -562,16 +579,16 @@ ${qrImageUri ? '📊 *Ver código QR adjunto para seguimiento*' : '🔍 *Código
               <View style={styles.articuloDetails}>
                 <View style={styles.articuloTag}>
                   <MaterialCommunityIcons 
-                    name={tiposServicio.find(s => s.id === item.tipoServicio)?.icon as any} 
+                    name={tiposServicio.find(s => s.id === (item.tipoServicio || item.servicio?.categoria))?.icon as any} 
                     size={14} 
                     color="#6B7280" 
                   />
                   <Text style={styles.tagText}>
-                    {tiposServicio.find(s => s.id === item.tipoServicio)?.label}
+                    {tiposServicio.find(s => s.id === (item.tipoServicio || item.servicio?.categoria))?.label}
                   </Text>
                 </View>
                 <Text style={styles.articuloDetalle}>
-                  {item.cantidad} {item.unidadCobro === 'kilo' ? 'kg' : 'und'} × ${item.precio}
+                  {item.cantidad} {(item.unidadCobro || item.servicio?.unidad) === 'kilo' ? 'kg' : 'und'} × ${item.precio || (item.subtotal / item.cantidad)}
                 </Text>
               </View>
             </View>
