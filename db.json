@@ -535,6 +535,57 @@
         }
       ],
       "usuarioCreacion": "Ana Martínez"
+    },
+    {
+      "id": "orden-1755060082920",
+      "numeroOrden": "ORD-20250813-2920",
+      "clienteId": "cliente-001",
+      "cliente": {
+        "id": "cliente-001",
+        "nombre": "Gabriela",
+        "apellido": "Molina",
+        "telefono": "+591 79954303",
+        "email": "gabriel.molina@email.com",
+        "direccion": "Av. Banzer 3er anillo, zona norte"
+      },
+      "articulos": [
+        {
+          "id": "articulo-1755060082914-0",
+          "servicioId": "servicio-0",
+          "servicio": {
+            "nombre": "Servicio",
+            "unidad": "unidad"
+          },
+          "cantidad": 5,
+          "precioUnitario": 0,
+          "instrucciones": null
+        }
+      ],
+      "subtotal": 42.5,
+      "descuento": 0,
+      "recargo": 0,
+      "total": 42.5,
+      "estado": "Registrado",
+      "fechaCreacion": "2025-08-13T04:41:22.920Z",
+      "fechaEstimada": "2025-08-16T04:41:21.422Z",
+      "fechaEntrega": null,
+      "observaciones": "Fecha estimada de entrega: 16/8/2025, 0:41:21",
+      "metodoPago": "efectivo",
+      "urgente": false,
+      "pagado": false,
+      "historialEstados": [
+        {
+          "id": "estado-1755060082920",
+          "ordenId": "orden-1755060082920",
+          "estadoAnterior": null,
+          "estadoNuevo": "Registrado",
+          "fechaCambio": "2025-08-13T04:41:22.920Z",
+          "usuarioId": "user-mobile",
+          "usuario": "App Móvil",
+          "observaciones": "Orden creada desde la aplicación móvil"
+        }
+      ],
+      "usuarioCreacion": "App Móvil"
     }
   ],
   "dashboard": {
