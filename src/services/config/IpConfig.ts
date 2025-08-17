@@ -4,7 +4,7 @@
  */
 
 // IP de la máquina donde corre JSON Server
-export const LOCAL_IP = '192.168.0.29';
+export const LOCAL_IP = '192.168.0.18';
 
 // Puerto donde corre JSON Server
 export const JSON_SERVER_PORT = '3001';
