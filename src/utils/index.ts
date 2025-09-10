@@ -6,6 +6,9 @@ export const formatCurrency = (amount: number, currency: string = 'USD'): string
   }).format(amount);
 };
 
+// Inicializador de servicios
+export * from './ServiceInitializer';
+
 export const formatDate = (date: Date | string, format: string = 'DD/MM/YYYY'): string => {
   const dateObj = typeof date === 'string' ? new Date(date) : date;
   

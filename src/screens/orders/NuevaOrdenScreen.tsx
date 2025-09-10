@@ -20,7 +20,7 @@ interface Cliente {
 interface Articulo {
   id: string;
   nombre: string;
-  tipoServicio: 'lavado' | 'planchado' | 'otros';
+  tipoServicio: 'lavado-completo' | 'solo-lavado' | 'planchado';
   unidadCobro: 'kilo' | 'unidad';
   cantidad: number;
   precio?: number;

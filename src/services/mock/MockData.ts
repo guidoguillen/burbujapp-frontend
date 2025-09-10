@@ -3,7 +3,7 @@
  * Estos datos serán reemplazados por los datos reales del .NET Core backend
  */
 
-import { Cliente, Servicio, Orden, EstadoOrden, MetodoPago } from '../types/ApiTypes';
+import { Cliente, Servicio, Orden, EstadoOrden, MetodoPago, Turno, EstadoTurno } from '../types/ApiTypes';
 
 // =================== CLIENTES MOCK ===================
 export const CLIENTES_MOCK: Cliente[] = [
@@ -440,7 +440,7 @@ export const generateMoreOrdenes = (count: number): Orden[] => {
       estado,
       fechaCreacion: new Date(2024, Math.floor(Math.random() * 8), Math.floor(Math.random() * 28) + 1).toISOString(),
       fechaEstimada: new Date(2024, 8, Math.floor(Math.random() * 15) + 10).toISOString(),
-      fechaEntrega: estado === 'Entregado' ? new Date(2024, 8, Math.floor(Math.random() * 9) + 1).toISOString() : null,
+      fechaEntrega: estado === 'Entregado' ? new Date(2024, 8, Math.floor(Math.random() * 9) + 1).toISOString() : undefined,
       observaciones: Math.random() > 0.6 ? 'Observaciones del cliente' : undefined,
       metodoPago: metodosPago[Math.floor(Math.random() * metodosPago.length)],
       urgente: Math.random() > 0.8,
@@ -448,7 +448,7 @@ export const generateMoreOrdenes = (count: number): Orden[] => {
       historialEstados: [{
         id: `estado-${String(index + 100).padStart(3, '0')}`,
         ordenId: `orden-${String(index + 100).padStart(3, '0')}`,
-        estadoAnterior: null,
+        estadoAnterior: undefined,
         estadoNuevo: 'Registrado',
         fechaCambio: new Date(2024, Math.floor(Math.random() * 8), Math.floor(Math.random() * 28) + 1).toISOString(),
         usuarioId: 'user-001',
@@ -460,7 +460,117 @@ export const generateMoreOrdenes = (count: number): Orden[] => {
   });
 };
 
+// =================== TURNOS MOCK ===================
+export const TURNOS_MOCK: Turno[] = [
+  {
+    id: 'turno-001',
+    empleadoId: 'emp-001',
+    empleadoNombre: 'Gabriel Molina',
+    fecha: '2024-08-15',
+    horaInicio: '08:00',
+    horaEntrada: '08:05',
+    horaSalida: '18:00',
+    cajaInicial: 500,
+    cajaFinal: 1250,
+    totalVentas: 750,
+    observaciones: 'Día normal de trabajo. Alta demanda de lavado.',
+    estado: 'Finalizado' as const,
+    fechaCreacion: '2024-08-15T08:00:00Z',
+    fechaActualizacion: '2024-08-15T18:00:00Z'
+  },
+  {
+    id: 'turno-002',
+    empleadoId: 'emp-001',
+    empleadoNombre: 'Gabriel Molina',
+    fecha: '2024-08-16',
+    horaInicio: '08:00',
+    horaEntrada: '08:10',
+    horaSalida: '17:30',
+    cajaInicial: 600,
+    cajaFinal: 1150,
+    totalVentas: 550,
+    observaciones: 'Problemas con la máquina de planchado en la tarde.',
+    estado: 'Finalizado' as const,
+    fechaCreacion: '2024-08-16T08:00:00Z',
+    fechaActualizacion: '2024-08-16T17:30:00Z'
+  },
+  {
+    id: 'turno-003',
+    empleadoId: 'emp-002',
+    empleadoNombre: 'María González',
+    fecha: '2024-08-16',
+    horaInicio: '14:00',
+    horaEntrada: '14:00',
+    horaSalida: '22:00',
+    cajaInicial: 300,
+    cajaFinal: 890,
+    totalVentas: 590,
+    observaciones: 'Turno nocturno. Buenas ventas en servicios express.',
+    estado: 'Finalizado' as const,
+    fechaCreacion: '2024-08-16T14:00:00Z',
+    fechaActualizacion: '2024-08-16T22:00:00Z'
+  },
+  {
+    id: 'turno-004',
+    empleadoId: 'emp-001',
+    empleadoNombre: 'Gabriel Molina',
+    fecha: '2024-08-17',
+    horaInicio: '08:00',
+    horaEntrada: '08:03',
+    cajaInicial: 550,
+    observaciones: 'Turno en progreso',
+    estado: 'En_Progreso' as const,
+    fechaCreacion: '2024-08-17T08:00:00Z',
+    fechaActualizacion: '2024-08-17T08:03:00Z'
+  }
+];
+
+// Función para generar más turnos de ejemplo
+export const generateMoreTurnos = (count: number): Turno[] => {
+  const empleados = [
+    { id: 'emp-001', nombre: 'Gabriel Molina' },
+    { id: 'emp-002', nombre: 'María González' },
+    { id: 'emp-003', nombre: 'Carlos Rodríguez' },
+    { id: 'emp-004', nombre: 'Ana López' }
+  ];
+
+  const estados: EstadoTurno[] = ['Finalizado', 'Finalizado', 'Finalizado', 'Cancelado'];
+
+  return Array.from({ length: count }, (_, i): Turno => {
+    const empleado = empleados[i % empleados.length];
+    const fecha = new Date();
+    fecha.setDate(fecha.getDate() - Math.floor(Math.random() * 30));
+    const fechaStr = fecha.toISOString().split('T')[0];
+    
+    const horaInicio = `0${8 + Math.floor(Math.random() * 3)}:00`;
+    const horaEntrada = `0${8 + Math.floor(Math.random() * 3)}:0${Math.floor(Math.random() * 6)}`;
+    const horaSalida = `1${7 + Math.floor(Math.random() * 2)}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`;
+    
+    const cajaInicial = 400 + Math.floor(Math.random() * 300);
+    const totalVentas = 300 + Math.floor(Math.random() * 800);
+    const cajaFinal = cajaInicial + totalVentas;
+
+    return {
+      id: `turno-${String(i + 5).padStart(3, '0')}`,
+      empleadoId: empleado.id,
+      empleadoNombre: empleado.nombre,
+      fecha: fechaStr,
+      horaInicio,
+      horaEntrada,
+      horaSalida,
+      cajaInicial,
+      cajaFinal,
+      totalVentas,
+      observaciones: i % 5 === 0 ? 'Día con alta demanda' : undefined,
+      estado: estados[i % estados.length],
+      fechaCreacion: `${fechaStr}T${horaInicio}:00Z`,
+      fechaActualizacion: `${fechaStr}T${horaSalida}:00Z`
+    };
+  });
+};
+
 // Datos completos para la simulación
 export const ALL_CLIENTES = [...CLIENTES_MOCK, ...generateMoreClientes(50)];
 export const ALL_ORDENES = [...ORDENES_MOCK, ...generateMoreOrdenes(100)];
 export const ALL_SERVICIOS = SERVICIOS_MOCK;
+export const ALL_TURNOS = [...TURNOS_MOCK, ...generateMoreTurnos(50)];

@@ -30,6 +30,10 @@ export * from './NotificationService';
 export * from './PlantillasServicios';
 export * from './BusquedaAvanzadaService';
 
+// Servicios de turnos
+export { default as turnoService } from './TurnoService';
+export { turnoMockService } from './mock/TurnoMockService';
+
 // Mock service (para testing y desarrollo)
 export { mockApiService } from './mock/MockApiService';
 

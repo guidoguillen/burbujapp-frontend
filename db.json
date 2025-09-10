@@ -637,6 +637,68 @@
         }
       ],
       "usuarioCreacion": "App Móvil"
+    },
+    {
+      "id": "orden-1756265494627",
+      "numeroOrden": "ORD-20250827-4627",
+      "clienteId": "cliente-008",
+      "cliente": {
+        "id": "cliente-008",
+        "nombre": "Guido",
+        "apellido": "Guillen",
+        "telefono": "+591 76955990",
+        "email": "guido.guillen@gmail.com",
+        "direccion": "Barrio Equipetrol, calle 15 #67"
+      },
+      "articulos": [
+        {
+          "id": "articulo-1756265494606-0",
+          "servicioId": "servicio-0",
+          "servicio": {
+            "nombre": "Servicio",
+            "unidad": "unidad"
+          },
+          "cantidad": 3,
+          "precioUnitario": 0,
+          "instrucciones": null
+        },
+        {
+          "id": "articulo-1756265494606-1",
+          "servicioId": "servicio-1",
+          "servicio": {
+            "nombre": "Servicio",
+            "unidad": "unidad"
+          },
+          "cantidad": 3,
+          "precioUnitario": 0,
+          "instrucciones": null
+        }
+      ],
+      "subtotal": 63,
+      "descuento": 0,
+      "recargo": 0,
+      "total": 63,
+      "estado": "Registrado",
+      "fechaCreacion": "2025-08-27T03:31:34.627Z",
+      "fechaEstimada": "2025-09-02T03:30:00.000Z",
+      "fechaEntrega": null,
+      "observaciones": "Fecha estimada de entrega: 1/9/2025, 20:30:00",
+      "metodoPago": "efectivo",
+      "urgente": false,
+      "pagado": false,
+      "historialEstados": [
+        {
+          "id": "estado-1756265494627",
+          "ordenId": "orden-1756265494627",
+          "estadoAnterior": null,
+          "estadoNuevo": "Registrado",
+          "fechaCambio": "2025-08-27T03:31:34.627Z",
+          "usuarioId": "user-mobile",
+          "usuario": "App Móvil",
+          "observaciones": "Orden creada desde la aplicación móvil"
+        }
+      ],
+      "usuarioCreacion": "App Móvil"
     }
   ],
   "dashboard": {

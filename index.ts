@@ -1,4 +1,22 @@
+// Importar polyfill para suprimir warnings conocidos
+import './src/polyfills/suppressWarnings';
+
 import { registerRootComponent } from 'expo';
+
+// Suprimir warning específico de expo-notifications en Expo Go
+const originalWarn = console.warn;
+console.warn = (...args) => {
+  const message = args.join(' ');
+  if (
+    message.includes('expo-notifications') && 
+    message.includes('removed from Expo Go') &&
+    message.includes('SDK 53')
+  ) {
+    // Suprimir este warning específico - es conocido y esperado
+    return;
+  }
+  originalWarn.apply(console, args);
+};
 
 import App from './App';
 

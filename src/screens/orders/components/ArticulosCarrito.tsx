@@ -13,7 +13,7 @@ interface Cliente {
 interface Articulo {
   id: string;
   nombre: string;
-  tipoServicio: 'lavado' | 'planchado' | 'otros';
+  tipoServicio: 'lavado-completo' | 'solo-lavado' | 'planchado';
   unidadCobro: 'kilo' | 'unidad';
   cantidad: number;
   precio?: number;
@@ -57,7 +57,7 @@ export const ArticulosCarrito: React.FC<Props> = ({
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [articuloActual, setArticuloActual] = useState({
     nombre: '',
-    tipoServicio: 'lavado' as 'lavado' | 'planchado' | 'otros',
+    tipoServicio: 'lavado-completo' as 'lavado-completo' | 'solo-lavado' | 'planchado',
     unidadCobro: 'unidad' as 'kilo' | 'unidad',
     cantidad: 1,
     precio: 0
@@ -111,7 +111,7 @@ export const ArticulosCarrito: React.FC<Props> = ({
     // Resetear formulario
     setArticuloActual({
       nombre: '',
-      tipoServicio: 'lavado',
+      tipoServicio: 'lavado-completo',
       unidadCobro: 'unidad',
       cantidad: 1,
       precio: 0

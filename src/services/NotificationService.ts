@@ -1,18 +1,72 @@
 import { Alert, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications';
 
-// Configurar el comportamiento de las notificaciones
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
+// Verificar si estamos en Expo Go para ajustar funcionalidad
+const isExpoGo = __DEV__ && !Platform.select({
+  native: process.env.EXPO_IS_DEVELOPMENT_BUILD === 'true',
+  default: false,
 });
 
+// Configurar el comportamiento de las notificaciones
+// En Expo Go, esto puede mostrar un warning que podemos ignorar
+try {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+} catch (error) {
+  if (isExpoGo) {
+    console.log('ℹ️  Notificaciones configuradas para Expo Go (funcionalidad limitada)');
+  } else {
+    console.error('Error configurando notificaciones:', error);
+  }
+}
+
 export class NotificationService {
+  // Verificar si las notificaciones push están disponibles
+  static isPushNotificationAvailable(): boolean {
+    return !isExpoGo;
+  }
+
+  // Mostrar warning sobre limitaciones en Expo Go
+  static showExpoGoLimitation() {
+    if (isExpoGo) {
+      console.warn('⚠️  Notificaciones Push no disponibles en Expo Go (SDK 53+)');
+      console.log('ℹ️  Las notificaciones locales funcionan normalmente');
+      console.log('🛠️  Para push notifications, usar: eas build --profile development');
+      
+      Alert.alert(
+        'Limitación de Expo Go',
+        'Las notificaciones push no están disponibles en Expo Go desde SDK 53.\n\n✅ Notificaciones locales: Funcionan\n❌ Notificaciones push: Requieren development build\n\nPara desarrollo normal, puedes ignorar este mensaje.',
+        [
+          { text: 'Más info', onPress: () => console.log('Ver: docs/Notificaciones-SDK53.md') },
+          { text: 'Entendido', style: 'default' }
+        ]
+      );
+    }
+  }
+
+  // Método para suprimir warnings de expo-notifications en Expo Go
+  static suppressExpoGoWarnings() {
+    if (isExpoGo) {
+      // Suprimir console.warn específico de expo-notifications
+      const originalWarn = console.warn;
+      console.warn = (...args) => {
+        const message = args.join(' ');
+        if (message.includes('expo-notifications') && message.includes('removed from Expo Go')) {
+          // Suprimir este warning específico
+          return;
+        }
+        originalWarn.apply(console, args);
+      };
+    }
+  }
+
   static async requestPermissions() {
     try {
       if (Platform.OS === 'android') {

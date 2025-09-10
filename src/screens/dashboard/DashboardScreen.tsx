@@ -6,6 +6,7 @@ import { RootStackParamList } from '../../types';
 import { useAuth } from '../../context/AuthContext';
 import { globalStyles } from '../../styles';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 export const DashboardScreen: React.FC = () => {
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
@@ -14,7 +15,6 @@ export const DashboardScreen: React.FC = () => {
   // Estados para modales
   const [showNotifications, setShowNotifications] = useState(false);
   const [showQROptions, setShowQROptions] = useState(false);
-  const [showQuickActions, setShowQuickActions] = useState(false);
 
   // Estadísticas mock (en una app real vendrían de una API)
   const estadisticas = {
@@ -62,39 +62,6 @@ export const DashboardScreen: React.FC = () => {
     }
   ];
 
-  // Función para manejar acciones rápidas
-  const handleQuickAction = (action: string) => {
-    setShowQuickActions(false);
-    
-    switch (action) {
-      case 'express':
-        Alert.alert('Orden Express', '¿Crear orden rápida para cliente frecuente?', [
-          { text: 'Cancelar', style: 'cancel' },
-          { text: 'Crear', onPress: () => navigation.navigate('SelectCliente') }
-        ]);
-        break;
-      case 'qr-scanner':
-        setShowQROptions(true);
-        break;
-      case 'frequent-clients':
-        // Navegar a lista de clientes frecuentes
-        navigation.navigate('SelectCliente');
-        break;
-      case 'inventory':
-        Alert.alert('Inventario Bajo', `${estadisticas.inventarioBajo} productos requieren reposición`, [
-          { text: 'Ver detalles', onPress: () => console.log('Mostrar inventario bajo') },
-          { text: 'Cerrar', style: 'cancel' }
-        ]);
-        break;
-      case 'daily-cash':
-        Alert.alert('Resumen del Día', 
-          `Caja: $${estadisticas.cajaDelDia}\nVentas: $${estadisticas.ventasHoy}\nÓrdenes: ${estadisticas.ordenesHoy}`,
-          [{ text: 'Cerrar', style: 'cancel' }]
-        );
-        break;
-    }
-  };
-
   // Función para manejar opciones QR
   const handleQRAction = (action: string) => {
     setShowQROptions(false);
@@ -128,23 +95,19 @@ export const DashboardScreen: React.FC = () => {
   // Solo mostrar opciones si el usuario es operador
   if (state.user?.role === 'operator') {
     return (
-      <View style={styles.container}>
-        {/* Header con botón de back y notificaciones */}
-        <View style={styles.header}>
-          {navigation.canGoBack() && (
-            <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-              <MaterialCommunityIcons name="arrow-left" size={24} color="#374151" />
-            </TouchableOpacity>
-          )}
-          <Text style={styles.headerTitle}>Panel Operador</Text>
+      <View style={styles.containerLight}>
+        {/* Header estilo light moderno */}
+        <View style={styles.headerLight}>
+          <View style={styles.headerSpacer} />
+          <Text style={styles.headerTitleLight}>Panel de Operador</Text>
           <TouchableOpacity 
-            style={styles.notificationBtn} 
+            style={styles.settingsBtnLight} 
             onPress={() => setShowNotifications(true)}
           >
-            <MaterialCommunityIcons name="bell" size={24} color="#374151" />
+            <MaterialCommunityIcons name="cog" size={24} color="#696969" />
             {notificaciones.filter(n => n.urgente).length > 0 && (
-              <View style={styles.notificationBadge}>
-                <Text style={styles.notificationBadgeText}>
+              <View style={styles.notificationBadgeLight}>
+                <Text style={styles.notificationBadgeTextLight}>
                   {notificaciones.filter(n => n.urgente).length}
                 </Text>
               </View>
@@ -152,122 +115,106 @@ export const DashboardScreen: React.FC = () => {
           </TouchableOpacity>
         </View>
         
-        <ScrollView style={styles.main} showsVerticalScrollIndicator={false}>
-          {/* Estadísticas Rápidas */}
-          <View style={styles.statsContainer}>
-            <Text style={styles.statsTitle}>Resumen del Día</Text>
-            <View style={styles.statsGrid}>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>{estadisticas.ordenesHoy}</Text>
-                <Text style={styles.statLabel}>Órdenes</Text>
+        <ScrollView style={styles.mainLight} showsVerticalScrollIndicator={false}>
+          {/* Resumen del día - estilo light */}
+          <View style={styles.sectionHeaderLight}>
+            <Text style={styles.sectionTitleLight}>Resumen del Día</Text>
+          </View>
+          
+          <View style={styles.statsListLight}>
+            <TouchableOpacity style={styles.statCardLight}>
+              <View style={styles.statIconContainerPrimary}>
+                <MaterialCommunityIcons name="clipboard-check" size={28} color="#1E90FF" />
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>{estadisticas.ordenesEnProceso}</Text>
-                <Text style={styles.statLabel}>En Proceso</Text>
+              <View style={styles.statContentLight}>
+                <Text style={styles.statLabelLight}>Órdenes completadas</Text>
+                <Text style={styles.statNumberLight}>{estadisticas.ordenesHoy}</Text>
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>${estadisticas.ventasHoy}</Text>
-                <Text style={styles.statLabel}>Ventas</Text>
+              <MaterialCommunityIcons name="chevron-right" size={20} color="#D1D5DB" />
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.statCardLight}>
+              <View style={styles.statIconContainerAccent}>
+                <MaterialCommunityIcons name="currency-usd" size={28} color="#32CD32" />
               </View>
-              <View style={styles.statCard}>
-                <Text style={styles.statNumber}>${estadisticas.cajaDelDia}</Text>
-                <Text style={styles.statLabel}>Caja</Text>
+              <View style={styles.statContentLight}>
+                <Text style={styles.statLabelLight}>Ingresos totales</Text>
+                <Text style={styles.statNumberLight}>${estadisticas.ventasHoy}</Text>
               </View>
-            </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color="#D1D5DB" />
+            </TouchableOpacity>
           </View>
 
-          {/* Acciones Rápidas */}
-          <View style={styles.sectionContainer}>
-            <View style={styles.sectionHeader}>
-              <Text style={styles.sectionTitle}>Acciones Rápidas</Text>
-              <TouchableOpacity onPress={() => setShowQuickActions(true)}>
-                <MaterialCommunityIcons name="dots-horizontal" size={20} color="#6B7280" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.quickActionsGrid}>
-              <TouchableOpacity style={styles.quickActionCard} onPress={() => handleQuickAction('express')}>
-                <View style={[styles.quickActionIcon, { backgroundColor: '#FEF3C7' }]}>
-                  <MaterialCommunityIcons name="lightning-bolt" size={20} color="#F59E0B" />
-                </View>
-                <Text style={styles.quickActionText}>Express</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.quickActionCard} onPress={() => handleQuickAction('qr-scanner')}>
-                <View style={[styles.quickActionIcon, { backgroundColor: '#E0E7FF' }]}>
-                  <MaterialCommunityIcons name="qrcode-scan" size={20} color="#6366F1" />
-                </View>
-                <Text style={styles.quickActionText}>Escanear</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.quickActionCard} onPress={() => handleQuickAction('frequent-clients')}>
-                <View style={[styles.quickActionIcon, { backgroundColor: '#F3E8FF' }]}>
-                  <MaterialCommunityIcons name="account-star" size={20} color="#8B5CF6" />
-                </View>
-                <Text style={styles.quickActionText}>Frecuentes</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.quickActionCard} onPress={() => handleQuickAction('inventory')}>
-                <View style={[styles.quickActionIcon, { backgroundColor: '#FEE2E2' }]}>
-                  <MaterialCommunityIcons name="package-variant" size={20} color="#EF4444" />
-                </View>
-                <Text style={styles.quickActionText}>Inventario</Text>
-                {estadisticas.inventarioBajo > 0 && (
-                  <View style={styles.alertBadge}>
-                    <Text style={styles.alertBadgeText}>{estadisticas.inventarioBajo}</Text>
-                  </View>
-                )}
-              </TouchableOpacity>
-            </View>
+          {/* Acciones rápidas - estilo light */}
+          <View style={styles.sectionHeaderLight}>
+            <Text style={styles.sectionTitleLight}>Acciones Rápidas</Text>
           </View>
-
-          {/* Panel Principal de Gestión */}
-          <View style={styles.sectionContainer}>
-            <Text style={styles.sectionTitle}>Gestión Principal</Text>
-            <View style={styles.compactGrid}>
-              <TouchableOpacity style={styles.compactCard} onPress={() => navigation.navigate('SelectCliente')}>
-                <View style={[styles.compactIconContainer, { backgroundColor: '#EBF8FF' }]}>
-                  <MaterialCommunityIcons name="plus-circle" size={20} color="#3B82F6" />
-                </View>
-                <Text style={styles.compactCardTitle}>Crear Orden</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.compactCard} onPress={() => navigation.navigate('MisOrdenes')}>
-                <View style={[styles.compactIconContainer, { backgroundColor: '#F3E8FF' }]}>
-                  <MaterialCommunityIcons name="clipboard-list" size={20} color="#8B5CF6" />
-                </View>
-                <Text style={styles.compactCardTitle}>Mis Órdenes</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.compactCard} onPress={() => navigation.navigate('Turnos')}>
-                <View style={[styles.compactIconContainer, { backgroundColor: '#D1FAE5' }]}>
-                  <MaterialCommunityIcons name="calendar-today" size={20} color="#059669" />
-                </View>
-                <Text style={styles.compactCardTitle}>Mis Turnos</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.compactCard} onPress={() => navigation.navigate('Turno')}>
-                <View style={[styles.compactIconContainer, { backgroundColor: '#FEF3C7' }]}>
-                  <MaterialCommunityIcons name="clock-check" size={20} color="#F59E0B" />
-                </View>
-                <Text style={styles.compactCardTitle}>Control Turno</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.compactCard} onPress={() => setShowQROptions(true)}>
-                <View style={[styles.compactIconContainer, { backgroundColor: '#E0E7FF' }]}>
-                  <MaterialCommunityIcons name="qrcode" size={20} color="#6366F1" />
-                </View>
-                <Text style={styles.compactCardTitle}>Funciones QR</Text>
-              </TouchableOpacity>
-              
-              <TouchableOpacity style={styles.compactCard} onPress={() => { logout(); navigation.reset({ index: 0, routes: [{ name: 'Auth' }] }); }}>
-                <View style={[styles.compactIconContainer, { backgroundColor: '#FEF2F2' }]}>
-                  <MaterialCommunityIcons name="logout-variant" size={20} color="#DC2626" />
-                </View>
-                <Text style={styles.compactCardTitle}>Cerrar Sesión</Text>
-              </TouchableOpacity>
-            </View>
+          
+          <View style={styles.actionListLight}>
+            <TouchableOpacity style={styles.actionCardLight} onPress={() => navigation.navigate('SelectCliente')}>
+              <View style={styles.actionIconContainerLight}>
+                <MaterialCommunityIcons name="plus-box" size={28} color="#1E90FF" />
+              </View>
+              <View style={styles.actionContentLight}>
+                <Text style={styles.actionTitleLight}>Crear Orden</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color="#D1D5DB" />
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.actionCardLight} onPress={() => navigation.navigate('MisOrdenes')}>
+              <View style={styles.actionIconContainerLight}>
+                <MaterialCommunityIcons name="receipt" size={28} color="#1E90FF" />
+              </View>
+              <View style={styles.actionContentLight}>
+                <Text style={styles.actionTitleLight}>Mis Órdenes</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color="#D1D5DB" />
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.actionCardLight} onPress={() => navigation.navigate('Turno')}>
+              <View style={styles.actionIconContainerLight}>
+                <MaterialCommunityIcons name="clock-check" size={28} color="#1E90FF" />
+              </View>
+              <View style={styles.actionContentLight}>
+                <Text style={styles.actionTitleLight}>Control de Turno</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color="#D1D5DB" />
+            </TouchableOpacity>
+            
+            <TouchableOpacity style={styles.actionCardLight} onPress={() => setShowQROptions(true)}>
+              <View style={styles.actionIconContainerLight}>
+                <MaterialCommunityIcons name="qrcode" size={28} color="#1E90FF" />
+              </View>
+              <View style={styles.actionContentLight}>
+                <Text style={styles.actionTitleLight}>Funciones QR</Text>
+              </View>
+              <MaterialCommunityIcons name="chevron-right" size={20} color="#D1D5DB" />
+            </TouchableOpacity>
           </View>
         </ScrollView>
+
+        {/* Bottom Navigation */}
+        <View style={styles.bottomNavLight}>
+          <TouchableOpacity style={styles.navItemActiveLight}>
+            <MaterialCommunityIcons name="home" size={24} color="#1E90FF" />
+            <Text style={styles.navLabelActiveLight}>Inicio</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.navItemLight} onPress={() => navigation.navigate('MisOrdenes')}>
+            <MaterialCommunityIcons name="receipt" size={24} color="#696969" />
+            <Text style={styles.navLabelLight}>Órdenes</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.navItemLight} onPress={() => navigation.navigate('Turno')}>
+            <MaterialCommunityIcons name="currency-usd" size={24} color="#696969" />
+            <Text style={styles.navLabelLight}>Ingresos</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity style={styles.navItemLight} onPress={() => navigation.navigate('ConfiguracionSistema')}>
+            <MaterialCommunityIcons name="account" size={24} color="#696969" />
+            <Text style={styles.navLabelLight}>Perfil</Text>
+          </TouchableOpacity>
+        </View>
 
         {/* Modal de Notificaciones */}
         <Modal
@@ -312,45 +259,6 @@ export const DashboardScreen: React.FC = () => {
                   </TouchableOpacity>
                 ))}
               </ScrollView>
-            </View>
-          </View>
-        </Modal>
-
-        {/* Modal de Acciones Rápidas */}
-        <Modal
-          visible={showQuickActions}
-          animationType="fade"
-          transparent={true}
-          onRequestClose={() => setShowQuickActions(false)}
-        >
-          <View style={styles.modalOverlay}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalHeader}>
-                <Text style={styles.modalTitle}>Acciones Rápidas</Text>
-                <TouchableOpacity onPress={() => setShowQuickActions(false)}>
-                  <MaterialCommunityIcons name="close" size={24} color="#6B7280" />
-                </TouchableOpacity>
-              </View>
-              
-              <View style={styles.modalContent}>
-                <TouchableOpacity style={styles.actionButton} onPress={() => handleQuickAction('express')}>
-                  <MaterialCommunityIcons name="lightning-bolt" size={24} color="#F59E0B" />
-                  <Text style={styles.actionButtonText}>Orden Express</Text>
-                  <Text style={styles.actionButtonSubtext}>Cliente frecuente</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.actionButton} onPress={() => handleQuickAction('daily-cash')}>
-                  <MaterialCommunityIcons name="cash-register" size={24} color="#059669" />
-                  <Text style={styles.actionButtonText}>Resumen de Caja</Text>
-                  <Text style={styles.actionButtonSubtext}>Ventas del día</Text>
-                </TouchableOpacity>
-                
-                <TouchableOpacity style={styles.actionButton} onPress={() => handleQuickAction('inventory')}>
-                  <MaterialCommunityIcons name="package-variant" size={24} color="#EF4444" />
-                  <Text style={styles.actionButtonText}>Inventario Bajo</Text>
-                  <Text style={styles.actionButtonSubtext}>{estadisticas.inventarioBajo} productos</Text>
-                </TouchableOpacity>
-              </View>
             </View>
           </View>
         </Modal>
@@ -818,57 +726,198 @@ export const DashboardScreen: React.FC = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#111a22',
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 16,
     backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingTop: 50,
+    paddingBottom: 16,
+    borderBottomLeftRadius: 24,
+    borderBottomRightRadius: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.05,
-    shadowRadius: 2,
-    elevation: 2,
-    paddingHorizontal: 16,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  headerGradient: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 50,
+    paddingBottom: 20,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 12,
   },
   headerTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
+    fontSize: 24,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 1,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
   },
   headerSpacer: {
     width: 24,
   },
   backBtn: {
-    padding: 8,
+    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   notificationBtn: {
-    padding: 8,
     position: 'relative',
+    padding: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
   },
   notificationBadge: {
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: 6,
+    right: 6,
     backgroundColor: '#EF4444',
     borderRadius: 10,
     minWidth: 20,
     height: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
   },
   notificationBadgeText: {
     color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '600',
+    fontSize: 11,
+    fontWeight: '700',
   },
   main: {
     flex: 1,
-    paddingHorizontal: 20,
-    paddingTop: 24,
-    paddingBottom: 24,
+    paddingHorizontal: 16,
+    paddingTop: 20,
+  },
+  // Estilos Dark Theme
+  headerDark: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 50,
+    paddingBottom: 16,
+    backgroundColor: '#111a22',
+  },
+  headerTitleDark: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    letterSpacing: -0.015,
+  },
+  settingsBtn: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  notificationBadgeDark: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: '#1173d4',
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mainDark: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  sectionHeaderDark: {
+    paddingTop: 20,
+    paddingBottom: 12,
+  },
+  sectionTitleDark: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: -0.015,
+  },
+  statsGridDark: {
+    flexDirection: 'row',
+    gap: 16,
+    marginBottom: 20,
+  },
+  statCardDark: {
+    flex: 1,
+    backgroundColor: '#192633',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#233648',
+    padding: 16,
+    gap: 8,
+  },
+  statLabelDark: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#94a3b8',
+  },
+  statNumberDark: {
+    fontSize: 30,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    lineHeight: 36,
+  },
+  actionGridDark: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 16,
+  },
+  actionCardDark: {
+    width: '47%',
+    aspectRatio: 1,
+    backgroundColor: '#192633',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#233648',
+    padding: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
+  },
+  actionCardTitleDark: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    lineHeight: 20,
   },
   grid: {
     flexDirection: 'row',
@@ -905,68 +954,91 @@ const styles = StyleSheet.create({
     lineHeight: 18,
   },
   statsContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 15,
+    elevation: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   statsTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
-    marginBottom: 16,
+    fontSize: 20,
+    fontWeight: '800',
+    color: '#1E293B',
+    marginBottom: 20,
+    letterSpacing: 0.3,
   },
   statsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 12,
+    gap: 16,
   },
   statCard: {
     flex: 1,
     minWidth: '45%',
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-    padding: 12,
+    borderRadius: 18,
+    padding: 18,
     alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#059669',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 5 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
     marginBottom: 4,
   },
+  statNumber: {
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#FFFFFF',
+    marginBottom: 8,
+    letterSpacing: 0.5,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 3,
+  },
   statLabel: {
-    fontSize: 12,
-    color: '#6B7280',
-    fontWeight: '500',
+    fontSize: 14,
+    color: '#FFFFFF',
+    fontWeight: '700',
     textAlign: 'center',
+    letterSpacing: 0.3,
+    textShadowColor: 'rgba(0, 0, 0, 0.2)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   sectionContainer: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 20,
+    padding: 20,
+    marginBottom: 24,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowRadius: 15,
+    elevation: 10,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
   },
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: 20,
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#111827',
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#1E293B',
+    letterSpacing: 0.5,
+    textAlign: 'center',
+    textShadowColor: 'rgba(0, 0, 0, 0.1)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   quickActionsGrid: {
     flexDirection: 'row',
@@ -1010,166 +1082,447 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
     justifyContent: 'flex-end',
   },
   modalContainer: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    maxHeight: '80%',
-    minHeight: 300,
+    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    borderTopLeftRadius: 28,
+    borderTopRightRadius: 28,
+    maxHeight: '85%',
+    minHeight: 320,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 20,
+    elevation: 15,
   },
   modalHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    padding: 20,
+    padding: 24,
     borderBottomWidth: 1,
-    borderBottomColor: '#E5E7EB',
+    borderBottomColor: '#F1F5F9',
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#111827',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#1E293B',
+    letterSpacing: 0.3,
   },
   modalContent: {
-    padding: 20,
+    padding: 24,
   },
   notificationItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 12,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 8,
-    marginBottom: 8,
+    padding: 16,
+    backgroundColor: 'rgba(248, 250, 252, 0.8)',
+    borderRadius: 16,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    elevation: 3,
   },
   notificationUrgent: {
-    backgroundColor: '#FEF2F2',
-    borderLeftWidth: 3,
+    backgroundColor: 'rgba(254, 242, 242, 0.9)',
+    borderLeftWidth: 4,
     borderLeftColor: '#EF4444',
+    shadowColor: '#EF4444',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
   },
   notificationIcon: {
-    marginRight: 12,
-    padding: 8,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 8,
-  },
-  notificationContent: {
-    flex: 1,
-  },
-  notificationText: {
-    fontSize: 14,
-    color: '#374151',
-    fontWeight: '500',
-    marginBottom: 2,
-  },
-  notificationTextUrgent: {
-    color: '#991B1B',
-    fontWeight: '600',
-  },
-  notificationTime: {
-    fontSize: 12,
-    color: '#6B7280',
-  },
-  urgentIndicator: {
-    marginLeft: 8,
-  },
-  actionButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    backgroundColor: '#F8FAFC',
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  actionButtonText: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#111827',
-    marginLeft: 12,
-    flex: 1,
-  },
-  actionButtonSubtext: {
-    fontSize: 12,
-    color: '#6B7280',
-    marginLeft: 12,
-    marginTop: 2,
-  },
-  // Estilos para tarjetas compactas
-  compactGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    gap: 10,
-  },
-  compactCard: {
+    marginRight: 16,
+    padding: 10,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    padding: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: '31%',
-    minHeight: 85,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
     elevation: 2,
   },
-  compactIconContainer: {
-    borderRadius: 8,
-    padding: 8,
-    marginBottom: 6,
+  notificationContent: {
+    flex: 1,
+  },
+  notificationText: {
+    fontSize: 15,
+    color: '#1E293B',
+    fontWeight: '600',
+    marginBottom: 4,
+    letterSpacing: 0.1,
+  },
+  notificationTextUrgent: {
+    color: '#991B1B',
+    fontWeight: '700',
+  },
+  notificationTime: {
+    fontSize: 13,
+    color: '#64748B',
+    fontWeight: '500',
+  },
+  urgentIndicator: {
+    marginLeft: 12,
+  },
+  actionButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 18,
+    backgroundColor: 'rgba(248, 250, 252, 0.9)',
+    borderRadius: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
+    elevation: 5,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.3)',
+  },
+  actionButtonText: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#1E293B',
+    marginLeft: 16,
+    flex: 1,
+    letterSpacing: 0.2,
+  },
+  actionButtonSubtext: {
+    fontSize: 13,
+    color: '#64748B',
+    marginLeft: 16,
+    marginTop: 3,
+    fontWeight: '500',
+    letterSpacing: 0.1,
+  },
+  // Estilos para tarjetas compactas
+  compactGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    gap: 14,
+  },
+  compactCard: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 18,
+    padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    width: '31%',
+    minHeight: 95,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 10,
+    elevation: 6,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+    transform: [{ scale: 1 }],
+  },
+  compactIconContainer: {
+    borderRadius: 14,
+    padding: 10,
+    marginBottom: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
   },
   compactCardTitle: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#374151',
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#1E293B',
     textAlign: 'center',
-    lineHeight: 16,
+    lineHeight: 18,
+    letterSpacing: 0.2,
+  },
+  // Nuevos estilos para tarjetas con gradiente
+  compactCardGradient: {
+    borderRadius: 20,
+    padding: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '31%',
+    minHeight: 105,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+    marginBottom: 4,
+  },
+  compactIconContainerWhite: {
+    borderRadius: 16,
+    padding: 12,
+    marginBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.15,
+    shadowRadius: 6,
+    elevation: 4,
+  },
+  compactCardTitleWhite: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    textAlign: 'center',
+    lineHeight: 18,
+    letterSpacing: 0.3,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
+  },
+  cardTouchable: {
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   // Estilos para panel de administrador
   adminGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    gap: 12,
+    gap: 16,
   },
   adminCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    padding: 16,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderRadius: 20,
+    padding: 20,
     alignItems: 'center',
     justifyContent: 'center',
     width: '48%',
-    minHeight: 110,
+    minHeight: 120,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+    elevation: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.2)',
+  },
+  adminIconContainer: {
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.1,
     shadowRadius: 4,
     elevation: 3,
   },
-  adminIconContainer: {
+  adminCardTitle: {
+    fontSize: 15,
+    fontWeight: '800',
+    color: '#1E293B',
+    textAlign: 'center',
+    marginBottom: 4,
+    letterSpacing: 0.2,
+  },
+  adminCardSubtitle: {
+    fontSize: 13,
+    color: '#64748B',
+    textAlign: 'center',
+    fontWeight: '600',
+    letterSpacing: 0.1,
+  },
+  // Estilos Light Theme
+  containerLight: {
+    flex: 1,
+    backgroundColor: '#F9FAFB',
+  },
+  headerLight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: 50,
+    paddingBottom: 16,
+    backgroundColor: '#F9FAFB',
+  },
+  headerTitleLight: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#2F4F4F',
+    textAlign: 'center',
+    letterSpacing: -0.015,
+  },
+  settingsBtnLight: {
+    width: 48,
+    height: 48,
+    borderRadius: 12,
+    backgroundColor: 'transparent',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  notificationBadgeLight: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: '#1E90FF',
     borderRadius: 10,
-    padding: 10,
-    marginBottom: 8,
+    minWidth: 20,
+    height: 20,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  adminCardTitle: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#111827',
-    textAlign: 'center',
-    marginBottom: 2,
-  },
-  adminCardSubtitle: {
+  notificationBadgeTextLight: {
+    color: '#FFFFFF',
     fontSize: 12,
-    color: '#6B7280',
-    textAlign: 'center',
+    fontWeight: '700',
+  },
+  mainLight: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+  sectionHeaderLight: {
+    paddingTop: 20,
+    paddingBottom: 12,
+  },
+  sectionTitleLight: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#2F4F4F',
+    letterSpacing: -0.015,
+  },
+  statsListLight: {
+    gap: 16,
+    marginBottom: 20,
+  },
+  statCardLight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(229, 231, 235, 0.8)',
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  statIconContainerPrimary: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    backgroundColor: '#F0F8FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statIconContainerAccent: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    backgroundColor: 'rgba(50, 205, 50, 0.1)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statContentLight: {
+    flex: 1,
+  },
+  statLabelLight: {
+    fontSize: 16,
     fontWeight: '500',
+    color: '#696969',
+    marginBottom: 4,
+  },
+  statNumberLight: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: '#2F4F4F',
+    lineHeight: 32,
+  },
+  actionListLight: {
+    gap: 16,
+    paddingBottom: 20,
+  },
+  actionCardLight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: 'rgba(229, 231, 235, 0.8)',
+    padding: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  actionIconContainerLight: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    backgroundColor: '#F0F8FF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  actionContentLight: {
+    flex: 1,
+  },
+  actionTitleLight: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: '#2F4F4F',
+    lineHeight: 22,
+  },
+  // Bottom Navigation Styles
+  bottomNavLight: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderTopWidth: 1,
+    borderTopColor: 'rgba(229, 231, 235, 0.8)',
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    paddingBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: -2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 5,
+  },
+  navItemActiveLight: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  navItemLight: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 4,
+  },
+  navLabelActiveLight: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#1E90FF',
+    lineHeight: 14,
+  },
+  navLabelLight: {
+    fontSize: 12,
+    fontWeight: '500',
+    color: '#696969',
+    lineHeight: 14,
   },
 });

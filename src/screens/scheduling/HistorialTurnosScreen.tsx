@@ -21,10 +21,24 @@ interface TurnoCompleto {
   observaciones?: string;
 }
 
+interface ReporteDiario {
+  fecha: string;
+  totalIngresos: number;
+  totalServicios: number;
+  serviciosPorTipo: {
+    lavado: { cantidad: number; ingresos: number };
+    soloLavado: { cantidad: number; ingresos: number };
+    planchado: { cantidad: number; ingresos: number };
+  };
+  clientesAtendidos: number;
+  operador: string;
+}
+
 export const HistorialTurnosScreen: React.FC = () => {
   const navigation = useNavigation<NavigationProp>();
   const [filtroTexto, setFiltroTexto] = useState('');
   const [filtroEstado, setFiltroEstado] = useState<string>('Todos');
+  const [vistaActual, setVistaActual] = useState<'turnos' | 'reportes'>('turnos');
   
   // Datos mock del historial completo
   const [turnos] = useState<TurnoCompleto[]>([
@@ -94,6 +108,58 @@ export const HistorialTurnosScreen: React.FC = () => {
       cajaFinal: 350,
       totalVentas: 270,
     },
+  ]);
+
+  // Datos mock de reportes diarios con ingresos por servicios
+  const [reportesDiarios] = useState<ReporteDiario[]>([
+    {
+      fecha: '2025-08-02',
+      totalIngresos: 320,
+      totalServicios: 24,
+      serviciosPorTipo: {
+        lavado: { cantidad: 10, ingresos: 150 },
+        soloLavado: { cantidad: 8, ingresos: 80 },
+        planchado: { cantidad: 6, ingresos: 90 }
+      },
+      clientesAtendidos: 16,
+      operador: 'María González'
+    },
+    {
+      fecha: '2025-08-01',
+      totalIngresos: 290,
+      totalServicios: 20,
+      serviciosPorTipo: {
+        lavado: { cantidad: 8, ingresos: 120 },
+        soloLavado: { cantidad: 7, ingresos: 70 },
+        planchado: { cantidad: 5, ingresos: 100 }
+      },
+      clientesAtendidos: 14,
+      operador: 'Carlos López'
+    },
+    {
+      fecha: '2025-07-31',
+      totalIngresos: 370,
+      totalServicios: 28,
+      serviciosPorTipo: {
+        lavado: { cantidad: 12, ingresos: 180 },
+        soloLavado: { cantidad: 10, ingresos: 100 },
+        planchado: { cantidad: 6, ingresos: 90 }
+      },
+      clientesAtendidos: 19,
+      operador: 'Ana Martínez'
+    },
+    {
+      fecha: '2025-07-29',
+      totalIngresos: 270,
+      totalServicios: 18,
+      serviciosPorTipo: {
+        lavado: { cantidad: 7, ingresos: 105 },
+        soloLavado: { cantidad: 6, ingresos: 60 },
+        planchado: { cantidad: 5, ingresos: 105 }
+      },
+      clientesAtendidos: 12,
+      operador: 'Luis Rodríguez'
+    }
   ]);
 
   const filtrosEstado = ['Todos', 'Finalizado', 'En curso', 'Pendiente', 'Cancelado'];
@@ -189,6 +255,83 @@ export const HistorialTurnosScreen: React.FC = () => {
     );
   };
 
+  const renderReporte = ({ item }: { item: ReporteDiario }) => {
+    const formatearFechaCompleta = (fecha: string) => {
+      return new Date(fecha).toLocaleDateString('es-ES', {
+        weekday: 'long',
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      });
+    };
+
+    return (
+      <View style={styles.reporteCard}>
+        <View style={styles.reporteHeader}>
+          <MaterialCommunityIcons name="chart-line" size={24} color="#F59E0B" />
+          <Text style={styles.reporteFecha}>{formatearFechaCompleta(item.fecha)}</Text>
+        </View>
+
+        <View style={styles.operadorReporte}>
+          <MaterialCommunityIcons name="account" size={18} color="#6B7280" />
+          <Text style={styles.operadorReporteText}>{item.operador}</Text>
+        </View>
+
+        <View style={styles.reporteStats}>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{item.totalIngresos} Bs</Text>
+            <Text style={styles.statLabel}>Total Ingresos</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{item.totalServicios}</Text>
+            <Text style={styles.statLabel}>Servicios</Text>
+          </View>
+          <View style={styles.statItem}>
+            <Text style={styles.statValue}>{item.clientesAtendidos}</Text>
+            <Text style={styles.statLabel}>Clientes</Text>
+          </View>
+        </View>
+
+        <View style={styles.serviciosDetalle}>
+          <Text style={styles.serviciosDetalleTitle}>Ingresos por servicios:</Text>
+          
+          <View style={styles.servicioDetalle}>
+            <View style={styles.servicioDetalleHeader}>
+              <MaterialCommunityIcons name="washing-machine" size={18} color="#3B82F6" />
+              <Text style={styles.servicioDetalleNombre}>Lavado</Text>
+            </View>
+            <View style={styles.servicioDetalleInfo}>
+              <Text style={styles.servicioDetalleCantidad}>{item.serviciosPorTipo.lavado.cantidad} servicios</Text>
+              <Text style={styles.servicioDetalleIngresos}>{item.serviciosPorTipo.lavado.ingresos} Bs</Text>
+            </View>
+          </View>
+
+          <View style={styles.servicioDetalle}>
+            <View style={styles.servicioDetalleHeader}>
+              <MaterialCommunityIcons name="water" size={18} color="#10B981" />
+              <Text style={styles.servicioDetalleNombre}>Solo Lavado</Text>
+            </View>
+            <View style={styles.servicioDetalleInfo}>
+              <Text style={styles.servicioDetalleCantidad}>{item.serviciosPorTipo.soloLavado.cantidad} servicios</Text>
+              <Text style={styles.servicioDetalleIngresos}>{item.serviciosPorTipo.soloLavado.ingresos} Bs</Text>
+            </View>
+          </View>
+
+          <View style={styles.servicioDetalle}>
+            <View style={styles.servicioDetalleHeader}>
+              <MaterialCommunityIcons name="iron" size={18} color="#F59E0B" />
+              <Text style={styles.servicioDetalleNombre}>Planchado</Text>
+            </View>
+            <View style={styles.servicioDetalleInfo}>
+              <Text style={styles.servicioDetalleCantidad}>{item.serviciosPorTipo.planchado.cantidad} servicios</Text>
+              <Text style={styles.servicioDetalleIngresos}>{item.serviciosPorTipo.planchado.ingresos} Bs</Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    );
+  };
+
   return (
     <View style={styles.container}>
       {/* Header */}
@@ -200,7 +343,39 @@ export const HistorialTurnosScreen: React.FC = () => {
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* Filtros */}
+      {/* Pestañas */}
+      <View style={styles.tabsContainer}>
+        <TouchableOpacity 
+          style={[styles.tab, vistaActual === 'turnos' && styles.tabActive]}
+          onPress={() => setVistaActual('turnos')}
+        >
+          <MaterialCommunityIcons 
+            name="clock-outline" 
+            size={20} 
+            color={vistaActual === 'turnos' ? '#3B82F6' : '#6B7280'} 
+          />
+          <Text style={[styles.tabText, vistaActual === 'turnos' && styles.tabTextActive]}>
+            Turnos
+          </Text>
+        </TouchableOpacity>
+        
+        <TouchableOpacity 
+          style={[styles.tab, vistaActual === 'reportes' && styles.tabActive]}
+          onPress={() => setVistaActual('reportes')}
+        >
+          <MaterialCommunityIcons 
+            name="chart-line" 
+            size={20} 
+            color={vistaActual === 'reportes' ? '#3B82F6' : '#6B7280'} 
+          />
+          <Text style={[styles.tabText, vistaActual === 'reportes' && styles.tabTextActive]}>
+            Reportes Diarios
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Filtros - Solo mostrar en vista de turnos */}
+      {vistaActual === 'turnos' && (
       <View style={styles.filtrosContainer}>
         <View style={styles.searchContainer}>
           <MaterialCommunityIcons name="magnify" size={20} color="#6B7280" />
@@ -241,15 +416,18 @@ export const HistorialTurnosScreen: React.FC = () => {
           ))}
         </ScrollView>
       </View>
+      )}
 
-      {/* Lista de turnos */}
-      <FlatList
-        data={turnosFiltrados}
-        keyExtractor={(item) => item.id}
-        renderItem={renderTurno}
-        contentContainerStyle={styles.listaContainer}
-        showsVerticalScrollIndicator={false}
-        ListEmptyComponent={
+      {/* Contenido según la vista actual */}
+      {vistaActual === 'turnos' ? (
+        /* Lista de turnos */
+        <FlatList
+          data={turnosFiltrados}
+          keyExtractor={(item) => item.id}
+          renderItem={renderTurno}
+          contentContainerStyle={styles.listaContainer}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
           <View style={styles.emptyContainer}>
             <MaterialCommunityIcons name="calendar-remove" size={48} color="#9CA3AF" />
             <Text style={styles.emptyText}>No se encontraron turnos</Text>
@@ -259,6 +437,25 @@ export const HistorialTurnosScreen: React.FC = () => {
           </View>
         }
       />
+      ) : (
+        /* Lista de reportes diarios */
+        <FlatList
+          data={reportesDiarios}
+          keyExtractor={(item) => item.fecha}
+          renderItem={renderReporte}
+          contentContainerStyle={styles.listaContainer}
+          showsVerticalScrollIndicator={false}
+          ListEmptyComponent={
+            <View style={styles.emptyContainer}>
+              <MaterialCommunityIcons name="chart-line" size={48} color="#9CA3AF" />
+              <Text style={styles.emptyText}>No hay reportes disponibles</Text>
+              <Text style={styles.emptySubtext}>
+                Los reportes se generan automáticamente al completar turnos
+              </Text>
+            </View>
+          }
+        />
+      )}
     </View>
   );
 };
@@ -427,5 +624,130 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#9CA3AF',
     textAlign: 'center',
+  },
+  // Estilos para pestañas
+  tabsContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E5E7EB',
+  },
+  tab: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 12,
+    gap: 8,
+  },
+  tabActive: {
+    backgroundColor: '#EFF6FF',
+  },
+  tabText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#6B7280',
+  },
+  tabTextActive: {
+    color: '#3B82F6',
+  },
+  // Estilos para tarjetas de reportes
+  reporteCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 3,
+  },
+  reporteHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    marginBottom: 12,
+  },
+  reporteFecha: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+  },
+  operadorReporte: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginBottom: 16,
+  },
+  operadorReporteText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: '#374151',
+  },
+  reporteStats: {
+    flexDirection: 'row',
+    gap: 12,
+    marginBottom: 20,
+  },
+  statItem: {
+    flex: 1,
+    alignItems: 'center',
+    padding: 16,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 12,
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  serviciosDetalle: {
+    gap: 12,
+  },
+  serviciosDetalleTitle: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#374151',
+    marginBottom: 12,
+  },
+  servicioDetalle: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: 12,
+    backgroundColor: '#F8FAFC',
+    borderRadius: 10,
+  },
+  servicioDetalleHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  servicioDetalleNombre: {
+    fontSize: 14,
+    fontWeight: '500',
+    color: '#374151',
+  },
+  servicioDetalleInfo: {
+    alignItems: 'flex-end',
+  },
+  servicioDetalleCantidad: {
+    fontSize: 12,
+    color: '#6B7280',
+  },
+  servicioDetalleIngresos: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#10B981',
   },
 });

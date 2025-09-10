@@ -13,7 +13,7 @@ type RoutePropType = RouteProp<RootStackParamList, 'SelectArticulos'>;
 interface Articulo {
   id: string;
   nombre: string;
-  tipoServicio: 'lavado' | 'planchado' | 'otros';
+  tipoServicio: 'lavado-completo' | 'solo-lavado' | 'planchado';
   unidadCobro: 'kilo' | 'unidad';
   cantidad: number;
   precio: number;
@@ -157,9 +157,9 @@ const articulosMock = [
 ];
 
 const tiposServicio = [
-  { id: 'lavado', label: 'Lavado', icon: 'washing-machine', color: '#3B82F6' },
+  { id: 'lavado-completo', label: 'Lavado', icon: 'washing-machine', color: '#3B82F6' },
+  { id: 'solo-lavado', label: 'Solo Lavado', icon: 'water', color: '#10B981' },
   { id: 'planchado', label: 'Planchado', icon: 'iron', color: '#F59E0B' },
-  { id: 'otros', label: 'Otros', icon: 'cog', color: '#8B5CF6' },
 ];
 
 export const SelectArticulosScreen: React.FC = () => {
@@ -179,7 +179,7 @@ export const SelectArticulosScreen: React.FC = () => {
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [articuloActual, setArticuloActual] = useState({
     nombre: '',
-    tipoServicio: 'lavado' as 'lavado' | 'planchado' | 'otros',
+    tipoServicio: 'lavado-completo' as 'lavado-completo' | 'solo-lavado' | 'planchado',
     unidadCobro: 'unidad' as 'kilo' | 'unidad',
     cantidad: 1,
     precio: 0,
@@ -199,7 +199,7 @@ export const SelectArticulosScreen: React.FC = () => {
       // Resetear artículo actual
       setArticuloActual({
         nombre: '',
-        tipoServicio: 'lavado',
+        tipoServicio: 'lavado-completo',
         unidadCobro: 'unidad',
         cantidad: 1,
         precio: 0,
@@ -250,8 +250,8 @@ export const SelectArticulosScreen: React.FC = () => {
   };
 
   const handleCrearNuevoArticulo = () => {
-    // Sugerir precio basado en el tipo de servicio por defecto (lavado)
-    const precioSugerido = 5; // Precio base para lavado
+    // Sugerir precio basado en el tipo de servicio por defecto (lavado completo)
+    const precioSugerido = 5; // Precio base para lavado completo
     
     Keyboard.dismiss(); // Ocultar el teclado automáticamente
     setArticuloActual(prev => ({
@@ -267,7 +267,7 @@ export const SelectArticulosScreen: React.FC = () => {
     // Crear artículo básico con valores por defecto
     setArticuloActual({
       nombre: nombre,
-      tipoServicio: 'lavado',
+      tipoServicio: 'lavado-completo',
       unidadCobro: 'unidad',
       cantidad: 1,
       precio: 5, // Precio por defecto
@@ -320,7 +320,7 @@ export const SelectArticulosScreen: React.FC = () => {
     // Resetear formulario con precio sugerido
     setArticuloActual({
       nombre: '',
-      tipoServicio: 'lavado',
+      tipoServicio: 'lavado-completo',
       unidadCobro: 'unidad',
       cantidad: 1,
       precio: 5, // Precio sugerido por defecto
@@ -381,7 +381,7 @@ export const SelectArticulosScreen: React.FC = () => {
     // Resetear formulario
     setArticuloActual({
       nombre: '',
-      tipoServicio: 'lavado',
+      tipoServicio: 'lavado-completo',
       unidadCobro: 'unidad',
       cantidad: 1,
       precio: 0,
@@ -393,17 +393,17 @@ export const SelectArticulosScreen: React.FC = () => {
     setModalVisible(true);
   };
 
-  const handleCambiarTipoServicio = (tipoServicio: 'lavado' | 'planchado' | 'otros') => {
+  const handleCambiarTipoServicio = (tipoServicio: 'lavado-completo' | 'solo-lavado' | 'planchado') => {
     let precioSugerido = articuloActual.precio;
     
     // Solo cambiar precio si está en 0 o si es la primera vez que selecciona
     if (articuloActual.precio === 0) {
-      if (tipoServicio === 'lavado') {
+      if (tipoServicio === 'lavado-completo') {
         precioSugerido = 5;
+      } else if (tipoServicio === 'solo-lavado') {
+        precioSugerido = 3;
       } else if (tipoServicio === 'planchado') {
         precioSugerido = 4;
-      } else {
-        precioSugerido = 10;
       }
     }
     
@@ -795,13 +795,13 @@ export const SelectArticulosScreen: React.FC = () => {
                 <View style={styles.presetsCompactContainer}>
                   <View style={styles.presetsCompact}>
                     {(() => {
-                      let presets = [];
-                      if (articuloActual.tipoServicio === 'lavado') {
+                      let presets: number[] = [];
+                      if (articuloActual.tipoServicio === 'lavado-completo') {
                         presets = [2, 4, 6, 10];
+                      } else if (articuloActual.tipoServicio === 'solo-lavado') {
+                        presets = [1, 2, 3, 5];
                       } else if (articuloActual.tipoServicio === 'planchado') {
                         presets = [2, 4, 6, 10];
-                      } else {
-                        presets = [5, 10, 15, 25];
                       }
                       
                       return presets.map((preset) => (

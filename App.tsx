@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { AuthProvider } from './src/context/AuthContext';
+import { initializeServices, showEnvironmentInfo } from './src/utils/ServiceInitializer';
 import { LoginScreen } from './src/screens/auth/LoginScreen';
 import { DashboardScreen } from './src/screens/dashboard/DashboardScreen';
 import { SelectClienteScreen } from './src/screens/orders/SelectClienteScreen';
@@ -34,6 +35,16 @@ import { View, Text } from 'react-native';
 const Stack = createStackNavigator();
 
 export default function App() {
+  // Inicializar servicios al cargar la app
+  useEffect(() => {
+    const init = async () => {
+      showEnvironmentInfo();
+      await initializeServices();
+    };
+    
+    init();
+  }, []);
+
   return (
     <AuthProvider>
       <NavigationContainer>

@@ -348,6 +348,59 @@ export interface AppConfig {
   };
 }
 
+// =================== TURNOS ===================
+export type EstadoTurno = 'Iniciado' | 'En_Progreso' | 'Finalizado' | 'Cancelado';
+
+export interface Turno {
+  id: string;
+  empleadoId: string;
+  empleadoNombre: string;
+  fecha: string;
+  horaInicio: string;
+  horaEntrada?: string;
+  horaSalida?: string;
+  cajaInicial?: number;
+  cajaFinal?: number;
+  totalVentas?: number;
+  observaciones?: string;
+  estado: EstadoTurno;
+  fechaCreacion: string;
+  fechaActualizacion?: string;
+}
+
+export interface CreateTurnoRequest {
+  empleadoId: string;
+  empleadoNombre: string;
+  horaInicio: string;
+  cajaInicial?: number;
+  observaciones?: string;
+}
+
+export interface UpdateTurnoRequest {
+  horaEntrada?: string;
+  horaSalida?: string;
+  cajaInicial?: number;
+  cajaFinal?: number;
+  totalVentas?: number;
+  observaciones?: string;
+  estado?: EstadoTurno;
+}
+
+export interface FinalizarTurnoRequest {
+  horaSalida: string;
+  cajaFinal: number;
+  totalVentas: number;
+  observaciones?: string;
+}
+
+export interface TurnoStats {
+  totalTurnos: number;
+  turnosActivos: number;
+  turnosFinalizados: number;
+  ingresosTotales: number;
+  promedioPorTurno: number;
+}
+
 export default {
   // Exportar todos los tipos para uso general
 };
